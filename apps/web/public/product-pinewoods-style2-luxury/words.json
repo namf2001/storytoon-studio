@@ -1,0 +1,792 @@
+[
+  {
+    "text": "Một",
+    "startMs": 0,
+    "endMs": 160
+  },
+  {
+    "text": "căn",
+    "startMs": 160,
+    "endMs": 280
+  },
+  {
+    "text": "bếp",
+    "startMs": 280,
+    "endMs": 500
+  },
+  {
+    "text": "gọn",
+    "startMs": 500,
+    "endMs": 640
+  },
+  {
+    "text": "gàng",
+    "startMs": 640,
+    "endMs": 840
+  },
+  {
+    "text": "và",
+    "startMs": 840,
+    "endMs": 960
+  },
+  {
+    "text": "tinh",
+    "startMs": 960,
+    "endMs": 1100
+  },
+  {
+    "text": "tế",
+    "startMs": 1100,
+    "endMs": 1280
+  },
+  {
+    "text": "luôn",
+    "startMs": 1280,
+    "endMs": 1540
+  },
+  {
+    "text": "bắt",
+    "startMs": 1540,
+    "endMs": 1720
+  },
+  {
+    "text": "đầu",
+    "startMs": 1720,
+    "endMs": 1860
+  },
+  {
+    "text": "từ",
+    "startMs": 1860,
+    "endMs": 2000
+  },
+  {
+    "text": "cách",
+    "startMs": 2000,
+    "endMs": 2080
+  },
+  {
+    "text": "bạn",
+    "startMs": 2080,
+    "endMs": 2240
+  },
+  {
+    "text": "nâng",
+    "startMs": 2240,
+    "endMs": 2480
+  },
+  {
+    "text": "niu",
+    "startMs": 2480,
+    "endMs": 2640
+  },
+  {
+    "text": "từng",
+    "startMs": 2640,
+    "endMs": 2840
+  },
+  {
+    "text": "hạt",
+    "startMs": 2840,
+    "endMs": 2960
+  },
+  {
+    "text": "gạo,",
+    "startMs": 2960,
+    "endMs": 3160
+  },
+  {
+    "text": "hạt",
+    "startMs": 3460,
+    "endMs": 3580
+  },
+  {
+    "text": "đỗ",
+    "startMs": 3580,
+    "endMs": 3740
+  },
+  {
+    "text": "mỗi",
+    "startMs": 3740,
+    "endMs": 3920
+  },
+  {
+    "text": "ngày.",
+    "startMs": 3920,
+    "endMs": 4100
+  },
+  {
+    "text": "Khám",
+    "startMs": 4440,
+    "endMs": 4660
+  },
+  {
+    "text": "phá",
+    "startMs": 4660,
+    "endMs": 4860
+  },
+  {
+    "text": "ngay",
+    "startMs": 4860,
+    "endMs": 5040
+  },
+  {
+    "text": "tuyệt",
+    "startMs": 5040,
+    "endMs": 5200
+  },
+  {
+    "text": "tác",
+    "startMs": 5200,
+    "endMs": 5320
+  },
+  {
+    "text": "thùng",
+    "startMs": 5320,
+    "endMs": 5500
+  },
+  {
+    "text": "đựng",
+    "startMs": 5500,
+    "endMs": 5720
+  },
+  {
+    "text": "hạt",
+    "startMs": 5720,
+    "endMs": 5860
+  },
+  {
+    "text": "xoay",
+    "startMs": 5860,
+    "endMs": 6100
+  },
+  {
+    "text": "ba",
+    "startMs": 6100,
+    "endMs": 6220
+  },
+  {
+    "text": "trăm",
+    "startMs": 6220,
+    "endMs": 6400
+  },
+  {
+    "text": "sáu",
+    "startMs": 6400,
+    "endMs": 6600
+  },
+  {
+    "text": "mươi",
+    "startMs": 6600,
+    "endMs": 6720
+  },
+  {
+    "text": "độ",
+    "startMs": 6720,
+    "endMs": 6820
+  },
+  {
+    "text": "Pinewoods.",
+    "startMs": 6820,
+    "endMs": 7300
+  },
+  {
+    "text": "Thân",
+    "startMs": 7516,
+    "endMs": 7676
+  },
+  {
+    "text": "trụ",
+    "startMs": 7676,
+    "endMs": 7836
+  },
+  {
+    "text": "trắng",
+    "startMs": 7836,
+    "endMs": 7976
+  },
+  {
+    "text": "ngọc",
+    "startMs": 7976,
+    "endMs": 8196
+  },
+  {
+    "text": "trai",
+    "startMs": 8196,
+    "endMs": 8376
+  },
+  {
+    "text": "điểm",
+    "startMs": 8376,
+    "endMs": 8496
+  },
+  {
+    "text": "viền",
+    "startMs": 8496,
+    "endMs": 8696
+  },
+  {
+    "text": "vàng",
+    "startMs": 8696,
+    "endMs": 8936
+  },
+  {
+    "text": "ánh",
+    "startMs": 8936,
+    "endMs": 9116
+  },
+  {
+    "text": "kim",
+    "startMs": 9116,
+    "endMs": 9276
+  },
+  {
+    "text": "sang",
+    "startMs": 9276,
+    "endMs": 9476
+  },
+  {
+    "text": "trọng,",
+    "startMs": 9476,
+    "endMs": 9916
+  },
+  {
+    "text": "lớp",
+    "startMs": 9916,
+    "endMs": 10236
+  },
+  {
+    "text": "vỏ",
+    "startMs": 10236,
+    "endMs": 10376
+  },
+  {
+    "text": "trong",
+    "startMs": 10376,
+    "endMs": 10556
+  },
+  {
+    "text": "suốt",
+    "startMs": 10556,
+    "endMs": 10776
+  },
+  {
+    "text": "tôn",
+    "startMs": 10776,
+    "endMs": 10956
+  },
+  {
+    "text": "lên",
+    "startMs": 10956,
+    "endMs": 11096
+  },
+  {
+    "text": "sắc",
+    "startMs": 11096,
+    "endMs": 11316
+  },
+  {
+    "text": "màu",
+    "startMs": 11316,
+    "endMs": 11535
+  },
+  {
+    "text": "tươi",
+    "startMs": 11535,
+    "endMs": 11676
+  },
+  {
+    "text": "mới",
+    "startMs": 11676,
+    "endMs": 11796
+  },
+  {
+    "text": "của",
+    "startMs": 11796,
+    "endMs": 11976
+  },
+  {
+    "text": "sáu",
+    "startMs": 11976,
+    "endMs": 12176
+  },
+  {
+    "text": "loại",
+    "startMs": 12176,
+    "endMs": 12336
+  },
+  {
+    "text": "đậu",
+    "startMs": 12336,
+    "endMs": 12516
+  },
+  {
+    "text": "và",
+    "startMs": 12516,
+    "endMs": 12636
+  },
+  {
+    "text": "ngũ",
+    "startMs": 12636,
+    "endMs": 12796
+  },
+  {
+    "text": "cốc",
+    "startMs": 12796,
+    "endMs": 12936
+  },
+  {
+    "text": "dinh",
+    "startMs": 12936,
+    "endMs": 13176
+  },
+  {
+    "text": "dưỡng.",
+    "startMs": 13176,
+    "endMs": 13356
+  },
+  {
+    "text": "Nhẹ",
+    "startMs": 13751,
+    "endMs": 13951
+  },
+  {
+    "text": "nhàng",
+    "startMs": 13951,
+    "endMs": 14151
+  },
+  {
+    "text": "xoay",
+    "startMs": 14151,
+    "endMs": 14331
+  },
+  {
+    "text": "chọn",
+    "startMs": 14331,
+    "endMs": 14511
+  },
+  {
+    "text": "loại",
+    "startMs": 14511,
+    "endMs": 14691
+  },
+  {
+    "text": "hạt",
+    "startMs": 14691,
+    "endMs": 14871
+  },
+  {
+    "text": "yêu",
+    "startMs": 14871,
+    "endMs": 14991
+  },
+  {
+    "text": "thích,",
+    "startMs": 14991,
+    "endMs": 15211
+  },
+  {
+    "text": "ấn",
+    "startMs": 15431,
+    "endMs": 15551
+  },
+  {
+    "text": "nút",
+    "startMs": 15551,
+    "endMs": 15711
+  },
+  {
+    "text": "êm",
+    "startMs": 15711,
+    "endMs": 15891
+  },
+  {
+    "text": "ái",
+    "startMs": 15891,
+    "endMs": 16091
+  },
+  {
+    "text": "để",
+    "startMs": 16091,
+    "endMs": 16251
+  },
+  {
+    "text": "đong",
+    "startMs": 16251,
+    "endMs": 16391
+  },
+  {
+    "text": "vừa",
+    "startMs": 16391,
+    "endMs": 16531
+  },
+  {
+    "text": "đủ",
+    "startMs": 16531,
+    "endMs": 16651
+  },
+  {
+    "text": "khẩu",
+    "startMs": 16651,
+    "endMs": 16851
+  },
+  {
+    "text": "phần",
+    "startMs": 16851,
+    "endMs": 16991
+  },
+  {
+    "text": "ăn",
+    "startMs": 16991,
+    "endMs": 17151
+  },
+  {
+    "text": "và",
+    "startMs": 17151,
+    "endMs": 17371
+  },
+  {
+    "text": "tráng",
+    "startMs": 17371,
+    "endMs": 17551
+  },
+  {
+    "text": "rửa",
+    "startMs": 17551,
+    "endMs": 17831
+  },
+  {
+    "text": "trực",
+    "startMs": 17831,
+    "endMs": 17971
+  },
+  {
+    "text": "tiếp",
+    "startMs": 17971,
+    "endMs": 18151
+  },
+  {
+    "text": "ngay",
+    "startMs": 18151,
+    "endMs": 18371
+  },
+  {
+    "text": "trên",
+    "startMs": 18371,
+    "endMs": 18531
+  },
+  {
+    "text": "khay",
+    "startMs": 18531,
+    "endMs": 18711
+  },
+  {
+    "text": "rút",
+    "startMs": 18711,
+    "endMs": 18871
+  },
+  {
+    "text": "thông",
+    "startMs": 18871,
+    "endMs": 19031
+  },
+  {
+    "text": "minh.",
+    "startMs": 19031,
+    "endMs": 19271
+  },
+  {
+    "text": "Ngăn",
+    "startMs": 19563,
+    "endMs": 19743
+  },
+  {
+    "text": "nhỏ",
+    "startMs": 19743,
+    "endMs": 19943
+  },
+  {
+    "text": "trên",
+    "startMs": 19943,
+    "endMs": 20103
+  },
+  {
+    "text": "đỉnh",
+    "startMs": 20103,
+    "endMs": 20263
+  },
+  {
+    "text": "nắp",
+    "startMs": 20263,
+    "endMs": 20463
+  },
+  {
+    "text": "giữ",
+    "startMs": 20463,
+    "endMs": 20603
+  },
+  {
+    "text": "trọn",
+    "startMs": 20603,
+    "endMs": 20803
+  },
+  {
+    "text": "hương",
+    "startMs": 20803,
+    "endMs": 20963
+  },
+  {
+    "text": "thơm",
+    "startMs": 20963,
+    "endMs": 21183
+  },
+  {
+    "text": "của",
+    "startMs": 21183,
+    "endMs": 21263
+  },
+  {
+    "text": "hoa",
+    "startMs": 21263,
+    "endMs": 21463
+  },
+  {
+    "text": "hồi,",
+    "startMs": 21463,
+    "endMs": 21663
+  },
+  {
+    "text": "quế",
+    "startMs": 21963,
+    "endMs": 22083
+  },
+  {
+    "text": "và",
+    "startMs": 22083,
+    "endMs": 22263
+  },
+  {
+    "text": "tỏi",
+    "startMs": 22263,
+    "endMs": 22423
+  },
+  {
+    "text": "khô,",
+    "startMs": 22423,
+    "endMs": 22683
+  },
+  {
+    "text": "bảo",
+    "startMs": 22983,
+    "endMs": 23103
+  },
+  {
+    "text": "vệ",
+    "startMs": 23103,
+    "endMs": 23263
+  },
+  {
+    "text": "từng",
+    "startMs": 23263,
+    "endMs": 23403
+  },
+  {
+    "text": "hạt",
+    "startMs": 23403,
+    "endMs": 23543
+  },
+  {
+    "text": "gạo",
+    "startMs": 23543,
+    "endMs": 23723
+  },
+  {
+    "text": "luôn",
+    "startMs": 23723,
+    "endMs": 23863
+  },
+  {
+    "text": "thơm",
+    "startMs": 24003,
+    "endMs": 24083
+  },
+  {
+    "text": "ngon",
+    "startMs": 24083,
+    "endMs": 24223
+  },
+  {
+    "text": "thuần",
+    "startMs": 24223,
+    "endMs": 24383
+  },
+  {
+    "text": "khiết",
+    "startMs": 24383,
+    "endMs": 24603
+  },
+  {
+    "text": "không",
+    "startMs": 24603,
+    "endMs": 24763
+  },
+  {
+    "text": "lo",
+    "startMs": 24763,
+    "endMs": 24903
+  },
+  {
+    "text": "ẩm",
+    "startMs": 24903,
+    "endMs": 25103
+  },
+  {
+    "text": "mốc.",
+    "startMs": 25103,
+    "endMs": 25263
+  },
+  {
+    "text": "Nâng",
+    "startMs": 25553,
+    "endMs": 25793
+  },
+  {
+    "text": "tầm",
+    "startMs": 25793,
+    "endMs": 25973
+  },
+  {
+    "text": "đẳng",
+    "startMs": 25973,
+    "endMs": 26133
+  },
+  {
+    "text": "cấp",
+    "startMs": 26133,
+    "endMs": 26253
+  },
+  {
+    "text": "gian",
+    "startMs": 26253,
+    "endMs": 26393
+  },
+  {
+    "text": "bếp",
+    "startMs": 26393,
+    "endMs": 26613
+  },
+  {
+    "text": "hiện",
+    "startMs": 26613,
+    "endMs": 26713
+  },
+  {
+    "text": "đại",
+    "startMs": 26713,
+    "endMs": 26913
+  },
+  {
+    "text": "với",
+    "startMs": 26913,
+    "endMs": 27033
+  },
+  {
+    "text": "hai",
+    "startMs": 27033,
+    "endMs": 27193
+  },
+  {
+    "text": "dung",
+    "startMs": 27193,
+    "endMs": 27353
+  },
+  {
+    "text": "tích",
+    "startMs": 27353,
+    "endMs": 27473
+  },
+  {
+    "text": "sáu",
+    "startMs": 27473,
+    "endMs": 27713
+  },
+  {
+    "text": "ký",
+    "startMs": 27713,
+    "endMs": 27873
+  },
+  {
+    "text": "và",
+    "startMs": 27873,
+    "endMs": 28013
+  },
+  {
+    "text": "chín",
+    "startMs": 28013,
+    "endMs": 28213
+  },
+  {
+    "text": "ký,",
+    "startMs": 28213,
+    "endMs": 28493
+  },
+  {
+    "text": "chạm",
+    "startMs": 28713,
+    "endMs": 28913
+  },
+  {
+    "text": "nhẹ",
+    "startMs": 28913,
+    "endMs": 29053
+  },
+  {
+    "text": "vào",
+    "startMs": 29053,
+    "endMs": 29173
+  },
+  {
+    "text": "giỏ",
+    "startMs": 29173,
+    "endMs": 29373
+  },
+  {
+    "text": "hàng",
+    "startMs": 29373,
+    "endMs": 29533
+  },
+  {
+    "text": "để",
+    "startMs": 29533,
+    "endMs": 29733
+  },
+  {
+    "text": "rước",
+    "startMs": 29733,
+    "endMs": 29953
+  },
+  {
+    "text": "ngay",
+    "startMs": 29953,
+    "endMs": 30173
+  },
+  {
+    "text": "về",
+    "startMs": 30173,
+    "endMs": 30273
+  },
+  {
+    "text": "nhà",
+    "startMs": 30273,
+    "endMs": 30393
+  },
+  {
+    "text": "hôm",
+    "startMs": 30393,
+    "endMs": 30593
+  },
+  {
+    "text": "nay.",
+    "startMs": 30593,
+    "endMs": 30713
+  }
+]

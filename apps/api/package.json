@@ -1,0 +1,9 @@
+{
+  "name": "@storytoon/api",
+  "private": true,
+  "scripts": {
+    "dev": "sh -c 'lsof -ti :9090 | xargs kill -9 2>/dev/null || true; exec go run ./cmd/api'",
+    "build": "go build -o dist/api ./cmd/api",
+    "lint": "go vet ./..."
+  }
+}

@@ -1,0 +1,75 @@
+"use client";
+
+import { forwardRef, useEffect, useState } from "react";
+import { Player, type PlayerRef } from "@remotion/player";
+import type { FootballBroadcastConfig, Project } from "@storytoon/shared-types";
+import { FootballShortVideo, VtvNewsVideo, FPS, msToFrames } from "@storytoon/video-engine";
+
+interface Props {
+  project: Project;
+  config: FootballBroadcastConfig;
+}
+
+/** Live Remotion 9:16 Program Monitor of the Football Broadcast Short. */
+export const FootballPlayer = forwardRef<PlayerRef, Props>(function FootballPlayer(
+  { project, config },
+  ref
+) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const playerStyle: React.CSSProperties = {
+    height: "100%",
+    maxHeight: "100%",
+    aspectRatio: "9/16",
+    width: "auto",
+    maxWidth: "100%",
+    background: "#0A1C3E",
+    borderRadius: 10,
+    margin: "0 auto",
+    boxShadow: "0 16px 48px rgba(0,0,0,0.8)",
+  };
+
+  if (!mounted) {
+    return (
+      <div
+        style={{
+          ...playerStyle,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#94a3b8",
+          fontSize: 12,
+        }}
+      >
+        Đang khởi động Program Monitor...
+      </div>
+    );
+  }
+
+  const isVtvNews = config.templateId === "vtv_news_template";
+  const TemplateComponent = isVtvNews ? VtvNewsVideo : FootballShortVideo;
+
+  return (
+    <Player
+      key={config.templateId || "broadcast"}
+      ref={ref}
+      component={TemplateComponent}
+      inputProps={{
+        audioUrl: project.audioUrl,
+        durationMs: project.durationMs,
+        words: project.words ?? [],
+        scenes: project.scenes ?? [],
+        config,
+      }}
+      durationInFrames={msToFrames(Math.max(project.durationMs, 1000))}
+      fps={FPS}
+      compositionWidth={1080}
+      compositionHeight={1920}
+      controls
+      style={playerStyle}
+    />
+  );
+});

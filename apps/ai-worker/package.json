@@ -1,0 +1,7 @@
+{
+  "name": "@storytoon/ai-worker",
+  "private": true,
+  "scripts": {
+    "dev": "PYTHONPATH=. .venv/bin/uvicorn app.main:app --port 8000"
+  }
+}
