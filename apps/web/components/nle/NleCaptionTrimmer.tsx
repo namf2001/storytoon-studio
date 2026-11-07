@@ -259,7 +259,7 @@ export function NleCaptionTrimmer({
 
   if (!scene) {
     return (
-      <div className="rounded-lg bg-[#14161b] p-3 text-center text-xs text-zinc-500">
+      <div className="rounded-lg bg-surface-3 p-3 text-center text-xs text-zinc-500">
         Chọn một cảnh trên Timeline để chỉnh sửa In/Out theo Caption.
       </div>
     );
@@ -295,7 +295,7 @@ export function NleCaptionTrimmer({
   return (
     <div
       className={cn(
-        "rounded-xl bg-[#0d0e12] p-3 text-zinc-100 shadow-xl transition-all select-none overflow-hidden",
+        "rounded-xl bg-surface-1 p-3 text-zinc-100 shadow-xl transition-all select-none overflow-hidden",
         className
       )}
     >
@@ -371,7 +371,7 @@ export function NleCaptionTrimmer({
 
       {/* 2. THE HERO JOG WHEEL & CAPTION DISPLAY (Collapsible on demand) */}
       {expanded && (
-        <div className="relative flex flex-col items-center rounded-lg bg-gradient-to-b from-zinc-950 via-[#101217] to-black p-3">
+        <div className="relative flex flex-col items-center rounded-lg bg-gradient-to-b from-zinc-950 via-surface-2 to-black p-3">
           {/* Caption Display */}
           <div className="mb-1.5 flex flex-col items-center text-center">
             <span className="text-[10px] uppercase tracking-wider text-amber-500 font-bold flex items-center gap-1">
@@ -447,7 +447,7 @@ export function NleCaptionTrimmer({
                       )}
                     />
                     {t.isMajor && (
-                      <span className="font-mono text-[9px] text-zinc-400 select-none pb-0.5">
+                      <span className="font-mono text-[10px] text-zinc-400 select-none pb-0.5">
                         {(t.ms / 1000).toFixed(0)}s
                       </span>
                     )}
@@ -467,7 +467,7 @@ export function NleCaptionTrimmer({
                   }}
                   title={`Điểm Vào [IN]: ${fmtMs(scene.startMs)}`}
                 >
-                  <span className="rounded bg-emerald-500 px-1 py-0.2 font-mono text-[8px] font-bold text-black shadow">
+                  <span className="rounded bg-emerald-500 px-1 py-0.2 font-mono text-[10px] font-bold text-black shadow">
                     IN
                   </span>
                   <div className="h-6 w-[1.5px] bg-emerald-400" />
@@ -486,7 +486,7 @@ export function NleCaptionTrimmer({
                   }}
                   title={`Điểm Ra [OUT]: ${fmtMs(scene.endMs)}`}
                 >
-                  <span className="rounded bg-rose-500 px-1 py-0.2 font-mono text-[8px] font-bold text-white shadow">
+                  <span className="rounded bg-rose-500 px-1 py-0.2 font-mono text-[10px] font-bold text-white shadow">
                     OUT
                   </span>
                   <div className="h-6 w-[1.5px] bg-rose-400" />
@@ -666,7 +666,7 @@ export function NleCaptionTrimmer({
           {onDeleteScene && allScenes.length > 1 && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
+                <Button aria-label="Xóa cảnh này (Delete)"
                   type="button"
                   size="sm"
                   variant="ghost"

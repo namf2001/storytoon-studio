@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "sonner";
 import type { PlayerRef } from "@remotion/player";
@@ -16,8 +17,6 @@ import {
   PanelRight,
   Pause,
   Play,
-  Rocket,
-  Sliders,
   Square,
   Terminal,
   Trash2,
@@ -34,16 +33,19 @@ import { API_URL, api, fmtMs, type ProjectSummary } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { FootballPlayer } from "@/components/FootballPlayer";
 import { RenderAndYoutubePanel } from "@/components/RenderAndYoutubePanel";
-import { NleTimeline } from "@/components/nle/NleTimeline";
+import { NleTimeline, type TimelineAudioMix } from "@/components/nle/NleTimeline";
 import { NleInspector } from "@/components/nle/NleInspector";
 import { NleMediaPool, type MediaPoolClip } from "@/components/nle/NleMediaPool";
 import { NleSceneViewer } from "@/components/nle/NleSceneViewer";
+import { NleWorkspaceSwitcher } from "@/components/nle/NleWorkspaceSwitcher";
+import { ProjectLoadingOverlay } from "@/components/nle/ProjectLoadingOverlay";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
+import { useConfirmDialog, deleteProjectConfirm } from "@/components/ui/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -706,11 +708,34 @@ function extractFootballMediaClips(p: Project): MediaPoolClip[] {
   return clips;
 }
 
-export default function FootballStudioPage() {
+const FOOTBALL_DEMO_IDS = new Set(Object.values(DEMO_PRESETS).map((p) => p.project.id));
+
+/** Placeholder trống trong lúc tải dự án thật — không hiển thị dự án mẫu thay thế. */
+const LOADING_FOOTBALL_PROJECT: Project = {
+  ...DEMO_PRESETS.el_clasico.project,
+  id: "loading-football",
+  title: "",
+  rawScript: "",
+  durationMs: 0,
+  scenes: [],
+  words: [],
+  audioUrl: null,
+};
+
+function FootballStudioContent() {
   const playerRef = useRef<PlayerRef>(null);
+  const searchParams = useSearchParams();
+  const [confirm, confirmDialog] = useConfirmDialog();
+  const queryId = searchParams.get("id") || searchParams.get("project");
+  const opensRealProject = !!queryId && !FOOTBALL_DEMO_IDS.has(queryId);
 
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
-  const [project, setProject] = useState<Project>(DEMO_PRESETS.el_clasico.project);
+  const [loadingProjectId, setLoadingProjectId] = useState<string | null>(() =>
+    opensRealProject ? queryId : null
+  );
+  const [project, setProject] = useState<Project>(() =>
+    opensRealProject ? LOADING_FOOTBALL_PROJECT : DEMO_PRESETS.el_clasico.project
+  );
   const [broadcastConfig, setBroadcastConfig] = useState<FootballBroadcastConfig>(() => ({
     ...defaultBroadcastConfig("navy"),
     ...DEMO_PRESETS.el_clasico.config,
@@ -727,9 +752,11 @@ export default function FootballStudioPage() {
   const [showBottomPanel, setShowBottomPanel] = useState(true);
   const [viewerMode, setViewerMode] = useState<"dual" | "scene" | "program">("dual");
 
-  const [selectedSceneId, setSelectedSceneId] = useState<string>("demo-ec-3");
+  const [selectedSceneId, setSelectedSceneId] = useState<string>(() =>
+    opensRealProject ? "" : "demo-ec-3"
+  );
   const [videoClips, setVideoClips] = useState<MediaPoolClip[]>(() =>
-    extractFootballMediaClips(DEMO_PRESETS.el_clasico.project)
+    opensRealProject ? [] : extractFootballMediaClips(DEMO_PRESETS.el_clasico.project)
   );
 
   // Script & Voice Creator State
@@ -745,6 +772,8 @@ export default function FootballStudioPage() {
   const [copiedJson, setCopiedJson] = useState(false);
   const [nowMs, setNowMs] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  // Track mixer (mute / volume) from the timeline, applied live to the Program Monitor
+  const [audioMix, setAudioMix] = useState<TimelineAudioMix | null>(null);
 
   const updateScenesWithHistory = useCallback((updater: (prev: Scene[]) => Scene[]) => {
     setProject((prev) => {
@@ -1260,6 +1289,7 @@ export default function FootballStudioPage() {
     if (id === "demo-man-city-vs-psg") return loadDemoPreset("mancity_psg");
     if (id === "demo-roma-vs-real-madrid") return loadDemoPreset("roma_real");
     if (id === "demo-vtv-news-template") return loadDemoPreset("vtv_news_reel");
+    setLoadingProjectId(id);
     try {
       const p = await api.getProject(id);
       setHistoryPast([]);
@@ -1274,6 +1304,9 @@ export default function FootballStudioPage() {
       toast.success(`Đã mở dự án: ${p.title}`);
     } catch (e) {
       toast.error("Không thể tải dự án", { description: (e as Error).message });
+      if (project.id === LOADING_FOOTBALL_PROJECT.id) loadDemoPreset("el_clasico");
+    } finally {
+      setLoadingProjectId((cur) => (cur === id ? null : cur));
     }
   }
 
@@ -1282,7 +1315,7 @@ export default function FootballStudioPage() {
       toast.info("Không thể xóa dự án mẫu cài sẵn!");
       return;
     }
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn dự án "${projectTitle}" không?`)) {
+    if (!(await confirm(deleteProjectConfirm(projectTitle)))) {
       return;
     }
     const toastId = toast.loading(`Đang xóa dự án "${projectTitle}"...`);
@@ -1472,14 +1505,16 @@ export default function FootballStudioPage() {
   const missingCount = project.scenes.filter((s) => !s.imageUrl).length;
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-[#0c0d10] text-zinc-100 select-none">
+    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-surface-1 text-zinc-100 select-none">
+      {loadingProjectId && <ProjectLoadingOverlay />}
+      {confirmDialog}
       {/* 1. TOP NLE HEADER BAR (48px) */}
-      <header className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/90 bg-[#14161b] px-3">
+      <header className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/90 bg-surface-3 px-3">
         {/* Left: Toggle Left Panel + Project Selector */}
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
+              <button aria-label="Media Pool (Thư viện media)"
                 type="button"
                 onClick={() => setShowLeftPanel((v) => !v)}
                 className={cn(
@@ -1495,7 +1530,7 @@ export default function FootballStudioPage() {
             <TooltipContent side="bottom">Media Pool (Thư viện media)</TooltipContent>
           </Tooltip>
 
-          <Select value={project.id} onValueChange={loadExistingProject}>
+          <Select value={loadingProjectId ?? project.id} onValueChange={loadExistingProject}>
             <SelectTrigger className="h-7 w-[220px] border-zinc-700/80 bg-zinc-900/90 text-xs text-zinc-100">
               <SelectValue placeholder="Chọn dự án..." />
             </SelectTrigger>
@@ -1538,7 +1573,7 @@ export default function FootballStudioPage() {
           {!project.id.startsWith("demo-") && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
+                <button aria-label="Xóa dự án này khỏi hệ thống"
                   type="button"
                   onClick={() => handleDeleteCurrentProject(project.id, project.title)}
                   className="flex h-7 w-7 items-center justify-center rounded-md border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
@@ -1553,40 +1588,13 @@ export default function FootballStudioPage() {
 
         {/* Center: DaVinci Resolve Workspace Switcher + Dual Monitor Mode */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-950/90 p-0.5">
-            <button
-              type="button"
-              onClick={() => setWorkspaceMode("edit")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-all",
-                workspaceMode === "edit"
-                  ? "bg-amber-500 text-black shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200"
-              )}
-            >
-              <Sliders className="h-3.5 w-3.5" />
-              Edit
-            </button>
-            <button
-              type="button"
-              onClick={() => setWorkspaceMode("deliver")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-all",
-                workspaceMode === "deliver"
-                  ? "bg-red-600 text-white shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200"
-              )}
-            >
-              <Rocket className="h-3.5 w-3.5" />
-              Deliver
-            </button>
-          </div>
+          <NleWorkspaceSwitcher mode={workspaceMode} onChange={setWorkspaceMode} />
 
           {workspaceMode === "edit" && (
             <div className="hidden lg:flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5 text-[11px] gap-0.5">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Dual Monitor (Cảnh đang làm + Full Video)"
                     type="button"
                     onClick={() => setViewerMode("dual")}
                     className={cn(
@@ -1604,7 +1612,7 @@ export default function FootballStudioPage() {
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Single Monitor (Chỉ xem Cảnh đang làm)"
                     type="button"
                     onClick={() => setViewerMode("scene")}
                     className={cn(
@@ -1622,7 +1630,7 @@ export default function FootballStudioPage() {
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Single Monitor (Chỉ xem Full Video)"
                     type="button"
                     onClick={() => setViewerMode("program")}
                     className={cn(
@@ -1670,7 +1678,7 @@ export default function FootballStudioPage() {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
+              <button aria-label="Đóng / Mở Timeline"
                 type="button"
                 onClick={() => setShowBottomPanel((v) => !v)}
                 className={cn(
@@ -1688,7 +1696,7 @@ export default function FootballStudioPage() {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
+              <button aria-label="Đóng / Mở Inspector"
                 type="button"
                 onClick={() => setShowRightPanel((v) => !v)}
                 className={cn(
@@ -1777,9 +1785,9 @@ export default function FootballStudioPage() {
                       defaultSize={viewerMode === "dual" ? "50%" : "100%"}
                       minSize="25%"
                     >
-                      <div className="flex h-full w-full flex-col min-w-0 bg-[#09090b] overflow-hidden">
+                      <div className="flex h-full w-full flex-col min-w-0 bg-background overflow-hidden">
                         {/* Program Monitor Compact Transport Bar */}
-                        <div className="flex h-8 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-[#111318] px-2.5 text-[11px]">
+                        <div className="flex h-8 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-surface-2 px-2.5 text-[11px]">
                           <button
                             type="button"
                             onClick={togglePlay}
@@ -1814,6 +1822,7 @@ export default function FootballStudioPage() {
                             ref={playerRef}
                             project={project}
                             config={broadcastConfig}
+                            mix={audioMix ?? undefined}
                           />
                         </div>
                       </div>
@@ -1877,6 +1886,9 @@ export default function FootballStudioPage() {
                   canRedo={historyFuture.length > 0}
                   onUndo={handleUndo}
                   onRedo={handleRedo}
+                  onDeleteScene={handleDeleteScene}
+                  onAudioMixChange={setAudioMix}
+                  initialBgmVolume={broadcastConfig.bgmVolume ?? 0.14}
                 />
               </ResizablePanel>
             </>
@@ -1884,9 +1896,9 @@ export default function FootballStudioPage() {
         </ResizablePanelGroup>
       ) : (
         /* DELIVER WORKSPACE (Render MP4 & Upload YouTube) */
-        <div className="flex-1 overflow-y-auto bg-[#09090b] p-6">
+        <div className="flex-1 overflow-y-auto bg-background p-6">
           <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-12">
-            <div className="lg:col-span-7 rounded-xl bg-[#14161b] p-5 shadow-xl">
+            <div className="lg:col-span-7 rounded-xl bg-surface-3 p-5 shadow-xl">
               <div className="mb-4 flex items-center justify-between pb-3">
                 <div>
                   <h2 className="flex items-center gap-2 text-base font-bold text-zinc-100">
@@ -1916,14 +1928,15 @@ export default function FootballStudioPage() {
                   durationMs: Math.max(project.durationMs, 1000),
                   words: project.words ?? [],
                   scenes: project.scenes ?? [],
-                  config: broadcastConfig,
+                  config: audioMix ? { ...broadcastConfig, bgmVolume: audioMix.bgm } : broadcastConfig,
+                  voiceVolume: audioMix ? audioMix.voice : 1,
                 }}
                 defaultTitle={`${broadcastConfig.headlines.join(" ")} #Shorts`}
                 script={project.rawScript}
               />
             </div>
 
-            <div className="lg:col-span-5 rounded-xl bg-[#14161b] p-5 shadow-xl space-y-3">
+            <div className="lg:col-span-5 rounded-xl bg-surface-3 p-5 shadow-xl space-y-3">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200">
                   <Terminal className="h-3.5 w-3.5 text-amber-400" />
@@ -1961,5 +1974,20 @@ export default function FootballStudioPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function FootballStudioPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen w-full items-center justify-center bg-background text-sm text-zinc-400">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin text-amber-400" />
+          Đang khởi động Football Studio...
+        </div>
+      }
+    >
+      <FootballStudioContent />
+    </Suspense>
   );
 }

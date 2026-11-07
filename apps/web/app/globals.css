@@ -35,6 +35,11 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 14%;
     --sidebar-ring: 47.9 95.8% 53.1%;
+
+    /* NLE surfaces (dark → lighter). Dùng bg-surface-1/2/3 thay cho mã hex rời rạc. */
+    --surface-1: 225 14% 5.5%;  /* nền vùng dựng phim */
+    --surface-2: 223 17% 8%;    /* thanh công cụ, panel */
+    --surface-3: 223 15% 9.5%;  /* header, khối nổi */
   }
 }
 

@@ -290,7 +290,7 @@ export function NleInspector({
 
   if (!scene) {
     return (
-      <aside className="flex h-full w-full flex-col border-l border-zinc-800 bg-[#121216] p-4 text-xs text-zinc-500">
+      <aside className="flex h-full w-full flex-col border-l border-zinc-800 bg-surface-2 p-4 text-xs text-zinc-500">
         Chọn một phân cảnh trên Timeline để chỉnh sửa.
       </aside>
     );
@@ -637,9 +637,9 @@ export function NleInspector({
   const durSec = ((activeScene.endMs - activeScene.startMs) / 1000).toFixed(1);
 
   return (
-    <aside className="flex h-full w-full flex-col border-l border-zinc-800 bg-[#121216] select-none overflow-hidden">
+    <aside className="flex h-full w-full flex-col border-l border-zinc-800 bg-surface-2 select-none overflow-hidden">
       {/* Inspector Header Tabs */}
-      <div className="flex h-9 shrink-0 items-center border-b border-zinc-800 bg-[#16161c] px-1.5 gap-1 overflow-x-auto scrollbar-none">
+      <div className="flex h-9 shrink-0 items-center border-b border-zinc-800 bg-surface-3 px-1.5 gap-1 overflow-x-auto scrollbar-none">
         <button
           type="button"
           onClick={() => setTab("clip")}
@@ -702,7 +702,7 @@ export function NleInspector({
         )}
 
         {onClose && (
-          <button
+          <button aria-label="Thu gọn Inspector (Bên phải)"
             type="button"
             onClick={onClose}
             className="shrink-0 rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"
@@ -751,7 +751,7 @@ export function NleInspector({
             />
 
             {/* 1. LAYERS MANAGER (DANH SÁCH LAYER TRONG CẢNH) */}
-            <div className="space-y-2 rounded-lg bg-[#17171d] p-3 border border-zinc-800/80">
+            <div className="space-y-2 rounded-lg bg-surface-3 p-3 border border-zinc-800/80">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 font-semibold text-zinc-200">
                   <SlidersHorizontal className="h-3.5 w-3.5 text-sky-400" />
@@ -833,7 +833,7 @@ export function NleInspector({
                         <span className="text-xs">{icon}</span>
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium">{title}</p>
-                          <p className="truncate text-[9px] text-zinc-500">
+                          <p className="truncate text-[10px] text-zinc-500">
                             Layer #{idx + 1} • {l.type.toUpperCase()}
                           </p>
                         </div>
@@ -852,7 +852,7 @@ export function NleInspector({
                           {l.visible !== false ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                         </button>
                         {activeLayers.length > 1 && (
-                          <button
+                          <button aria-label="Xóa layer này"
                             type="button"
                             onClick={() => deleteLayer(l.id)}
                             className="rounded p-1 text-zinc-500 hover:text-red-400 hover:bg-zinc-700/50"
@@ -870,7 +870,7 @@ export function NleInspector({
 
             {/* 2. ACTIVE LAYER INSPECTOR (Media & Speed) */}
             {selectedLayer && selectedLayer.type === "media" && (
-            <div className="space-y-2 rounded-lg bg-[#17171d] p-2.5 border border-zinc-800/80">
+            <div className="space-y-2 rounded-lg bg-surface-3 p-2.5 border border-zinc-800/80">
               {/* ⚡ Video Speed & Auto-Fit Controller */}
               {media.isVideo && (
                 <div className="rounded-md border border-amber-500/25 bg-amber-500/5 p-2 space-y-1.5">
@@ -1026,7 +1026,7 @@ export function NleInspector({
             {selectedLayer && selectedLayer.type === "text" && (() => {
               const textLayer = selectedLayer as TextLayer;
               return (
-                <div className="space-y-3 rounded-lg bg-[#17171d] p-3 border border-zinc-800">
+                <div className="space-y-3 rounded-lg bg-surface-3 p-3 border border-zinc-800">
                   <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
                     <span className="flex items-center gap-1.5 font-semibold text-zinc-200">
                       <Type className="h-3.5 w-3.5 text-amber-400" />
@@ -1201,7 +1201,7 @@ export function NleInspector({
             {selectedLayer && selectedLayer.type === "image" && (() => {
               const imgLayer = selectedLayer as ImageLayer;
               return (
-                <div className="space-y-3 rounded-lg bg-[#17171d] p-3 border border-zinc-800">
+                <div className="space-y-3 rounded-lg bg-surface-3 p-3 border border-zinc-800">
                   <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
                     <span className="flex items-center gap-1.5 font-semibold text-zinc-200">
                       <Film className="h-3.5 w-3.5 text-sky-400" />
@@ -1366,7 +1366,7 @@ export function NleInspector({
             <Accordion
               type="multiple"
               defaultValue={["callout", "camera"]}
-              className="rounded-lg border border-zinc-800/80 bg-[#17171d] overflow-hidden"
+              className="rounded-lg border border-zinc-800/80 bg-surface-3 overflow-hidden"
             >
               <AccordionItem value="callout">
                 <AccordionTrigger className="px-3 py-2">
@@ -1379,7 +1379,7 @@ export function NleInspector({
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] text-zinc-400">Dòng 1: Nhãn tính năng (Thanh mảnh)</span>
-                      <span className="text-[9px] text-zinc-500 font-mono">weight 400</span>
+                      <span className="text-[10px] text-zinc-500 font-mono">weight 400</span>
                     </div>
                     <Input
                       value={activeScene.calloutTag ?? ""}
@@ -1396,7 +1396,7 @@ export function NleInspector({
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] text-zinc-400">Dòng 2: Ý chính nổi bật (Cực đậm)</span>
-                      <span className="text-[9px] text-amber-400/80 font-mono font-bold">weight 800</span>
+                      <span className="text-[10px] text-amber-400/80 font-mono font-bold">weight 800</span>
                     </div>
                     <Input
                       value={activeScene.calloutText ?? ""}
@@ -1859,7 +1859,7 @@ export function NleInspector({
                   <Volume2 className="h-3.5 w-3.5 text-emerald-400" />
                   Phụ đề & Hiệu ứng âm thanh
                 </Label>
-                <div className="flex items-center justify-between rounded bg-[#17171d] px-2.5 py-1.5">
+                <div className="flex items-center justify-between rounded bg-surface-3 px-2.5 py-1.5">
                   <span className="text-zinc-300">Live Karaoke Pill (Chữ trực tiếp)</span>
                   <Switch
                     checked={broadcastConfig.showCaptions}
@@ -1868,7 +1868,7 @@ export function NleInspector({
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between rounded bg-[#17171d] px-2.5 py-1.5">
+                <div className="flex items-center justify-between rounded bg-surface-3 px-2.5 py-1.5">
                   <span className="text-zinc-300">Âm thanh chuyển cảnh (SFX Whoosh)</span>
                   <Switch
                     checked={broadcastConfig.enableTransitionSfx}
@@ -1877,7 +1877,7 @@ export function NleInspector({
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between rounded bg-[#17171d] px-2.5 py-1.5">
+                <div className="flex items-center justify-between rounded bg-surface-3 px-2.5 py-1.5">
                   <span className="text-zinc-300">Chớp trắng khi sang cảnh mới</span>
                   <Switch
                     checked={broadcastConfig.enableFlashOnTransition}
@@ -2008,7 +2008,7 @@ export function NleInspector({
                         <span className="text-sm">{bg.icon}</span>
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium">{bg.title}</p>
-                          <p className="truncate text-[9px] text-zinc-500">{bg.desc}</p>
+                          <p className="truncate text-[10px] text-zinc-500">{bg.desc}</p>
                         </div>
                       </button>
                     );
@@ -2164,7 +2164,7 @@ export function NleInspector({
                             }));
                           }
                         }}
-                        className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-[9px] text-zinc-400 hover:bg-zinc-700 hover:text-amber-300"
+                        className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-[10px] text-zinc-400 hover:bg-zinc-700 hover:text-amber-300"
                       >
                         + {tag}
                       </button>
@@ -2247,7 +2247,7 @@ export function NleInspector({
                   <Volume2 className="h-3.5 w-3.5 text-emerald-400" />
                   Phụ đề Karaoke & Âm thanh
                 </Label>
-                <div className="flex items-center justify-between rounded bg-[#17171d] px-2.5 py-1.5">
+                <div className="flex items-center justify-between rounded bg-surface-3 px-2.5 py-1.5">
                   <span className="text-zinc-300">Phụ đề Karaoke từng từ (Word-by-word)</span>
                   <Switch
                     checked={broadcastConfig.showCaptions}

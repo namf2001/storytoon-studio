@@ -2,17 +2,27 @@
 
 import { forwardRef, useEffect, useState } from "react";
 import { Player, type PlayerRef } from "@remotion/player";
+import { MonitorBootPlaceholder, monitorPlayerStateProps } from "@/components/nle/MonitorStates";
 import type { FootballBroadcastConfig, Project } from "@storytoon/shared-types";
 import { FootballShortVideo, VtvNewsVideo, FPS, msToFrames } from "@storytoon/video-engine";
+
+interface AudioMix {
+  /** Voice-over gain, 0 = muted. */
+  voice: number;
+  /** Background-music gain, 0 = muted. */
+  bgm: number;
+}
 
 interface Props {
   project: Project;
   config: FootballBroadcastConfig;
+  /** Live track mix from the timeline (overrides config.bgmVolume). */
+  mix?: AudioMix;
 }
 
 /** Live Remotion 9:16 Program Monitor of the Football Broadcast Short. */
 export const FootballPlayer = forwardRef<PlayerRef, Props>(function FootballPlayer(
-  { project, config },
+  { project, config, mix },
   ref
 ) {
   const [mounted, setMounted] = useState(false);
@@ -34,18 +44,12 @@ export const FootballPlayer = forwardRef<PlayerRef, Props>(function FootballPlay
 
   if (!mounted) {
     return (
-      <div
+      <MonitorBootPlaceholder
+        label="Đang khởi động Program Monitor…"
         style={{
           ...playerStyle,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#94a3b8",
-          fontSize: 12,
         }}
-      >
-        Đang khởi động Program Monitor...
-      </div>
+      />
     );
   }
 
@@ -62,13 +66,15 @@ export const FootballPlayer = forwardRef<PlayerRef, Props>(function FootballPlay
         durationMs: project.durationMs,
         words: project.words ?? [],
         scenes: project.scenes ?? [],
-        config,
+        config: mix ? { ...config, bgmVolume: mix.bgm } : config,
+        voiceVolume: mix ? mix.voice : 1,
       }}
       durationInFrames={msToFrames(Math.max(project.durationMs, 1000))}
       fps={FPS}
       compositionWidth={1080}
       compositionHeight={1920}
       controls
+      {...monitorPlayerStateProps}
       style={playerStyle}
     />
   );

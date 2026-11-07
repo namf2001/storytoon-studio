@@ -72,6 +72,16 @@ export function NleSceneViewer({
   const [busy, setBusy] = useState(false);
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
 
+  // Chế độ gọn khi panel hẹp: ẩn nhãn chữ, chỉ giữ icon (tránh bẻ dòng / tràn thanh công cụ)
+  const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null);
+  const [compact, setCompact] = useState(false);
+  useEffect(() => {
+    if (!rootEl || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(([entry]) => setCompact(entry.contentRect.width < 520));
+    ro.observe(rootEl);
+    return () => ro.disconnect();
+  }, [rootEl]);
+
   const layers: SceneLayer[] = scene?.layers ?? [];
   const layoutType: SceneLayoutType = scene?.layoutType || "standard";
   const mediaLayers = layers.filter(
@@ -151,7 +161,7 @@ export function NleSceneViewer({
 
   if (!scene) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-[#09090b] text-xs text-zinc-500">
+      <div className="flex h-full w-full flex-col items-center justify-center bg-background text-xs text-zinc-500">
         Chọn một phân cảnh trên Timeline để xem trong Scene Monitor.
       </div>
     );
@@ -330,16 +340,21 @@ export function NleSceneViewer({
   }
 
   return (
-    <div className="flex h-full w-full flex-col min-w-0 bg-[#09090b] overflow-hidden select-none">
+    <div
+      ref={setRootEl}
+      className="flex h-full w-full flex-col min-w-0 bg-background overflow-hidden select-none"
+    >
       {/* 1. Scene Monitor Compact Toolbar (No redundant title/scene badge) */}
-      <div className="flex h-8 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-[#111318] px-2.5 text-[11px]">
-        <div className="flex items-center gap-1 min-w-0">
+      <div className="flex h-8 shrink-0 items-center justify-between gap-2 whitespace-nowrap border-b border-zinc-800/80 bg-surface-2 px-2.5 text-[11px]">
+        <div className="flex items-center gap-1 min-w-0 overflow-hidden">
           {/* Toggle Crop Frame Overlay ON / OFF */}
           <button
             type="button"
             onClick={() => setShowCropFrame((v) => !v)}
+            aria-label={showCropFrame ? "Ẩn khung cắt" : "Bật khung cắt"}
+            aria-pressed={showCropFrame}
             className={cn(
-              "flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium transition-colors",
+              "flex shrink-0 items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] font-medium transition-colors",
               showCropFrame
                 ? "border-amber-400/70 bg-amber-500/20 text-amber-300"
                 : "border-zinc-800 bg-zinc-900/80 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
@@ -351,14 +366,16 @@ export function NleSceneViewer({
             }
           >
             <Crop className="h-3 w-3" />
-            <span>{showCropFrame ? "Ẩn khung cắt" : "Khung cắt"}</span>
+            {!compact && <span>{showCropFrame ? "Ẩn khung cắt" : "Khung cắt"}</span>}
           </button>
 
           <button
             type="button"
             onClick={() => setShowGrid((v) => !v)}
+            aria-label="Bật/tắt lưới 1/3"
+            aria-pressed={showGrid}
             className={cn(
-              "rounded p-1 transition-colors",
+              "shrink-0 rounded p-1 transition-colors",
               showGrid
                 ? "bg-amber-500/20 text-amber-300"
                 : "text-zinc-500 hover:text-zinc-300"
@@ -370,14 +387,14 @@ export function NleSceneViewer({
 
           {/* Universal Quick Zoom Presets & Reset */}
           {media.cleanUrl && (
-            <div className="flex items-center gap-1 border-l border-zinc-800 pl-1.5 ml-0.5">
+            <div className="flex shrink-0 items-center gap-1 border-l border-zinc-800 pl-1.5 ml-0.5">
               {[1, 1.25, 1.5].map((z) => (
                 <button
                   key={z}
                   type="button"
                   onClick={() => applyCrop({ cropZoom: z })}
                   className={cn(
-                    "rounded px-1.5 py-0.5 font-mono text-[9.5px] transition-colors",
+                    "rounded px-1.5 py-0.5 font-mono text-[11px] transition-colors",
                     Math.abs(cropZoom - z) < 0.05
                       ? "bg-amber-400 text-black font-bold"
                       : "bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700"
@@ -394,8 +411,9 @@ export function NleSceneViewer({
                     applyCrop({ cropX: 50, cropY: 50, cropZoom: 1, trimStartSec: 0 });
                     toast.info("Đã đặt lại khung cắt mặc định");
                   }}
-                  className="flex items-center gap-0.5 rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-300 hover:bg-zinc-700"
+                  className="flex items-center gap-0.5 rounded bg-zinc-800 px-1.5 py-0.5 text-[11px] text-zinc-300 hover:bg-zinc-700"
                   title="Đặt lại khung cắt (Reset Crop)"
+                  aria-label="Đặt lại khung cắt"
                 >
                   <RotateCcw className="h-2.5 w-2.5" />
                 </button>
@@ -430,11 +448,12 @@ export function NleSceneViewer({
             <button
               type="button"
               onClick={() => onSeekToScene(activeScene.startMs)}
-              className="flex items-center gap-1 rounded bg-cyan-500/15 border border-cyan-500/40 px-1.5 py-0.5 text-[10px] font-semibold text-cyan-300 hover:bg-cyan-500/25"
+              className="flex items-center gap-1 rounded bg-cyan-500/15 border border-cyan-500/40 px-1.5 py-0.5 text-[11px] font-semibold text-cyan-300 hover:bg-cyan-500/25"
               title="Đưa kim Playhead của Full Video tới đầu cảnh này"
+              aria-label="Đồng bộ playhead tới đầu cảnh"
             >
               <Play className="h-2.5 w-2.5" />
-              Đồng bộ TC
+              {!compact && "Đồng bộ TC"}
             </button>
           )}
         </div>
@@ -513,7 +532,7 @@ export function NleSceneViewer({
                       className="h-full w-full object-cover"
                     />
                   )}
-                  <div className="absolute top-2 left-2 rounded bg-black/70 px-1 py-0.5 text-[9px] font-mono font-bold text-amber-300">
+                  <div className="absolute top-2 left-2 rounded bg-black/70 px-1 py-0.5 text-[10px] font-mono font-bold text-amber-300">
                     TRÁI
                   </div>
                 </div>
@@ -545,7 +564,7 @@ export function NleSceneViewer({
                       className="h-full w-full object-cover"
                     />
                   )}
-                  <div className="absolute top-2 right-2 rounded bg-black/70 px-1 py-0.5 text-[9px] font-mono font-bold text-sky-300">
+                  <div className="absolute top-2 right-2 rounded bg-black/70 px-1 py-0.5 text-[10px] font-mono font-bold text-sky-300">
                     PHẢI
                   </div>
                 </div>
@@ -878,7 +897,7 @@ export function NleSceneViewer({
                     <div className="flex items-center gap-1">
                       <span className="inline-flex items-center gap-1 rounded bg-amber-400 px-1.5 py-0.5 font-mono text-[10px] font-bold text-black shadow">
                         <Crop className="h-2.5 w-2.5" />
-                        KHUNG LẤY HÌNH {frameAspectRatio}
+                        {compact ? frameAspectRatio : `KHUNG ${frameAspectRatio}`}
                       </span>
                       <button
                         type="button"
@@ -888,13 +907,19 @@ export function NleSceneViewer({
                           setShowCropFrame(false);
                         }}
                         title="Ẩn khung lấy hình này"
+                        aria-label="Ẩn khung lấy hình"
                         className="pointer-events-auto inline-flex items-center gap-1 rounded bg-black/85 border border-zinc-700 px-1.5 py-0.5 text-[10px] font-medium text-zinc-200 hover:border-amber-400 hover:text-amber-300"
                       >
                         <EyeOff className="h-2.5 w-2.5" />
-                        Ẩn
+                        {!compact && "Ẩn"}
                       </button>
                     </div>
-                    <span className="rounded bg-black/80 px-1.5 py-0.5 font-mono text-[10px] text-amber-300">
+                    <span
+                      className={cn(
+                        "rounded bg-black/80 px-1.5 py-0.5 font-mono text-[10px] text-amber-300",
+                        compact && "hidden"
+                      )}
+                    >
                       {media.isVideo ? (
                         <span className="inline-flex items-center gap-1">
                           <Film className="h-2.5 w-2.5" /> VIDEO · {cropZoom}x
@@ -908,11 +933,13 @@ export function NleSceneViewer({
                   </div>
 
                   {/* Bottom HUD inside Crop Box */}
-                  <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/80 to-transparent p-2">
-                    <span className="font-mono text-[10px] text-zinc-200">
-                      Kéo chuột để chọn vùng · Lăn chuột để Zoom
-                    </span>
-                    <span className="rounded bg-black/80 px-1.5 py-0.5 font-mono text-[10px] text-cyan-300">
+                  <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-gradient-to-t from-black/80 to-transparent p-2">
+                    {!compact && (
+                      <span className="truncate text-[10px] text-zinc-300">
+                        Kéo để chọn vùng · Lăn chuột để zoom
+                      </span>
+                    )}
+                    <span className="ml-auto shrink-0 rounded bg-black/80 px-1.5 py-0.5 font-mono text-[10px] text-cyan-300">
                       X:{cropX}% · Y:{cropY}%
                     </span>
                   </div>
@@ -954,9 +981,9 @@ export function NleSceneViewer({
 
       {/* 3. Scene Monitor Quick Crop & Trim Footer Bar (Only rendered when Crop Frame is ON) */}
       {showCropFrame && (
-        <div className="flex h-7 shrink-0 items-center justify-between gap-2 border-t border-zinc-800/80 bg-[#111318] px-2.5 text-[11px]">
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] text-zinc-400 mr-1">Vùng cắt:</span>
+        <div className="flex h-8 shrink-0 items-center justify-between gap-2 overflow-hidden whitespace-nowrap border-t border-zinc-800/80 bg-surface-2 px-2.5 text-[11px]">
+          <div className="flex min-w-0 items-center gap-1">
+            {!compact && <span className="mr-1 text-[11px] text-zinc-400">Vùng cắt:</span>}
             {Y_PRESETS.map((p) => (
               <button
                 key={p.label}
@@ -964,7 +991,7 @@ export function NleSceneViewer({
                 disabled={!media.cleanUrl}
                 onClick={() => applyCrop({ cropY: p.y })}
                 className={cn(
-                  "rounded px-1.5 py-0.5 text-[10px] font-medium transition-colors disabled:opacity-30",
+                  "shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium transition-colors disabled:opacity-30",
                   Math.abs(cropY - p.y) <= 6
                     ? "bg-amber-400 text-black font-bold"
                     : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
@@ -976,8 +1003,8 @@ export function NleSceneViewer({
           </div>
 
           {media.isVideo && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-zinc-400">Giây BĐ:</span>
+            <div className="flex shrink-0 items-center gap-1.5">
+              {!compact && <span className="text-[11px] text-zinc-400">Bắt đầu:</span>}
               <input
                 type="range"
                 min={0}
@@ -985,6 +1012,7 @@ export function NleSceneViewer({
                 step={0.5}
                 value={trimStartSec}
                 onChange={(e) => applyCrop({ trimStartSec: Number(e.target.value) })}
+                aria-label="Giây bắt đầu của clip"
                 className="h-1 w-14 accent-amber-400 cursor-pointer"
               />
               <span className="font-mono text-[10px] text-amber-300 w-6">

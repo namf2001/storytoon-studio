@@ -76,7 +76,7 @@ export function ColorPickerPopover({
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-60 space-y-3 border-zinc-800 bg-[#141419] p-3 shadow-2xl" align="end">
+      <PopoverContent className="w-60 space-y-3 border-zinc-800 bg-surface-3 p-3 shadow-2xl" align="end">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-200">
             <Pipette className="h-3.5 w-3.5 text-amber-400" />

@@ -92,7 +92,18 @@ class UploadYoutubeRequest(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"ok": True}
+    """Liveness + the models actually configured, so the UI never hard-codes them."""
+    scene_llm = (
+        {"provider": "Groq", "model": config.GROQ_MODEL}
+        if config.GROQ_API_KEY
+        else {"provider": "Heuristic", "model": "Chia theo câu (chưa có GROQ_API_KEY)"}
+    )
+    return {
+        "ok": True,
+        "sceneLlm": scene_llm,
+        "whisperModel": config.WHISPER_MODEL,
+        "tts": "VieNeu-TTS" + (" + Edge-TTS" if config.TTS_FALLBACK_EDGE else ""),
+    }
 
 
 @app.get("/tts/voices")

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Clapperboard,
   FolderKanban,
@@ -17,6 +17,9 @@ import {
   ShoppingBag,
   SquareTerminal,
   Search,
+  LayoutDashboard,
+  MonitorSmartphone,
+  X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -27,6 +30,31 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { api, fmtMs, type ProjectSummary } from "@/lib/api";
+import { useWorkerInfo, type ServiceState } from "@/lib/system-info";
+import { projectKind } from "@/lib/project-kind";
+
+/** Tracks a CSS media query (false during SSR). */
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const update = () => setMatches(mql.matches);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, [query]);
+  return matches;
+}
+
+/** Reads ?id= reactively; isolated so useSearchParams sits inside its own Suspense boundary. */
+function ActiveIdReader({ onChange }: { onChange: (id: string | null) => void }) {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") || searchParams.get("project");
+  useEffect(() => {
+    onChange(id);
+  }, [id, onChange]);
+  return null;
+}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -39,65 +67,74 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [toolsOpen, setToolsOpen] = useState(true);
   const [commandOpen, setCommandOpen] = useState(false);
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
+  const [projectsError, setProjectsError] = useState(false);
+  const [activeQueryId, setActiveQueryId] = useState<string | null>(null);
+  const { state: workerState } = useWorkerInfo();
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // Auto-collapse sidebar into a sleek DaVinci-style icon rail when entering NLE Studio routes
   useEffect(() => {
     setCollapsed(isNleRoute);
   }, [isNleRoute]);
 
+  // Mobile: sidebar là ngăn kéo, tự đóng khi chuyển trang
   useEffect(() => {
-    const fetchProjects = () => {
-      api
-        .listProjects()
-        .then(setProjects)
-        .catch(() => {});
+    setMobileOpen(false);
+  }, [pathname, activeQueryId]);
+
+  // Trên mobile, ngăn kéo luôn hiển thị đầy đủ (không dùng icon rail)
+  const railCollapsed = isMobile ? false : collapsed;
+  const toggleSidebar = () => (isMobile ? setMobileOpen((o) => !o) : setCollapsed((c) => !c));
+
+  // Danh sách dự án: hỏi nhanh (3s) chỉ khi có dự án đang xử lý AI, còn lại 30s / khi quay lại tab.
+  useEffect(() => {
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const fetchProjects = async () => {
+      clearTimeout(timer);
+      let anyProcessing = false;
+      try {
+        const list = await api.listProjects();
+        if (cancelled) return;
+        setProjects(list);
+        setProjectsError(false);
+        anyProcessing = list.some((p) => p.status === "processing");
+      } catch {
+        if (!cancelled) setProjectsError(true);
+      }
+      if (!cancelled) timer = setTimeout(fetchProjects, anyProcessing ? 3000 : 30000);
     };
     fetchProjects();
-    const interval = setInterval(fetchProjects, 3000);
     window.addEventListener("focus", fetchProjects);
     return () => {
-      clearInterval(interval);
+      cancelled = true;
+      clearTimeout(timer);
       window.removeEventListener("focus", fetchProjects);
     };
   }, [pathname]);
 
   const storytoonProjects = useMemo(
-    () =>
-      projects.filter(
-        (p) =>
-          p.videoType === "storytoon" ||
-          (!p.videoType && p.aspectRatio !== "9:16")
-      ),
+    () => projects.filter((p) => projectKind(p) === "storytoon"),
     [projects]
   );
-
   const footballProjects = useMemo(
-    () =>
-      projects.filter(
-        (p) =>
-          p.videoType === "football" ||
-          (p.aspectRatio === "9:16" && p.videoType !== "product")
-      ),
+    () => projects.filter((p) => projectKind(p) === "football"),
     [projects]
   );
-
   const productProjects = useMemo(
-    () =>
-      projects.filter((p) => p.videoType === "product"),
+    () => projects.filter((p) => projectKind(p) === "product"),
     [projects]
   );
 
   const navItems = [
     {
-      title: "Storytoon 2D Studio",
+      // Trang chủ liệt kê mọi loại dự án và là nơi tạo dự án Storytoon 2D
+      title: "Bảng điều khiển",
       href: "/",
-      icon: FolderKanban,
-      active:
-        pathname === "/" ||
-        (pathname.startsWith("/projects/") &&
-          !pathname.includes("/football") &&
-          !pathname.includes("/product")),
-      badge: storytoonProjects.length > 0 ? String(storytoonProjects.length) : undefined,
+      icon: LayoutDashboard,
+      active: pathname === "/" || pathname.startsWith("/projects/"),
+      badge: projects.length > 0 ? String(projects.length) : undefined,
     },
     {
       title: "Football Shorts",
@@ -134,10 +171,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       badge: "9:16",
       projects: footballProjects,
       getHref: (p: ProjectSummary) => `/football?id=${p.id}`,
-      isActive: (p: ProjectSummary) =>
-        pathname.startsWith("/football") &&
-        typeof window !== "undefined" &&
-        window.location.search.includes(p.id),
+      isActive: (p: ProjectSummary) => pathname.startsWith("/football") && activeQueryId === p.id,
     },
     {
       id: "product",
@@ -147,10 +181,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       badge: "9:16",
       projects: productProjects,
       getHref: (p: ProjectSummary) => `/product?id=${p.id}`,
-      isActive: (p: ProjectSummary) =>
-        pathname.startsWith("/product") &&
-        typeof window !== "undefined" &&
-        window.location.search.includes(p.id),
+      isActive: (p: ProjectSummary) => pathname.startsWith("/product") && activeQueryId === p.id,
     },
   ];
 
@@ -158,15 +189,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <TooltipProvider delayDuration={120}>
       <div
         className={cn(
-          "flex w-full bg-[#09090b] text-foreground",
+          "flex w-full bg-background text-foreground",
           isNleRoute ? "h-screen overflow-hidden" : "min-h-screen"
         )}
       >
+        <Suspense fallback={null}>
+          <ActiveIdReader onChange={setActiveQueryId} />
+        </Suspense>
+
+        {/* Mobile backdrop */}
+        {isMobile && mobileOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            onClick={() => setMobileOpen(false)}
+            aria-hidden
+          />
+        )}
+
         {/* Left Navigation Rail / Sidebar */}
         <aside
+          aria-label="Điều hướng chính"
           className={cn(
-            "sticky top-0 z-30 flex h-screen flex-col border-r border-zinc-800/40 bg-[#0d0d10] text-sidebar-foreground transition-all duration-150",
-            collapsed ? "w-14" : "w-60"
+            // Mobile (<768px): ngăn kéo cố định, ẩn mặc định. Desktop: thanh bên sticky / icon rail.
+            // Dùng class responsive thay vì JS để HTML render từ server đã đúng layout (không bị "trượt" khi tải).
+            "fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col border-r border-zinc-800/40 bg-surface-1 text-sidebar-foreground shadow-2xl transition-[transform,width] duration-150",
+            "md:sticky md:top-0 md:z-30 md:shrink-0 md:translate-x-0 md:shadow-none",
+            mobileOpen ? "translate-x-0" : "-translate-x-full",
+            collapsed ? "md:w-14" : "md:w-60"
           )}
         >
           {/* Brand Header */}
@@ -175,22 +224,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
                 <Clapperboard className="h-4 w-4" />
               </div>
-              {!collapsed && (
+              {!railCollapsed && (
                 <div className="flex flex-col truncate">
                   <span className="truncate text-xs font-bold tracking-tight">Storytoon NLE</span>
-                  <span className="truncate text-[10px] text-muted-foreground">AI Video Studio</span>
+                  <span className="truncate text-[11px] text-muted-foreground">AI Video Studio</span>
                 </div>
               )}
             </Link>
-            {!collapsed && (
+            {!railCollapsed && (
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 text-muted-foreground"
-                onClick={() => setCollapsed(true)}
-                title="Thu gọn thanh bên"
+                onClick={() => (isMobile ? setMobileOpen(false) : setCollapsed(true))}
+                title={isMobile ? "Đóng menu" : "Thu gọn thanh bên"}
+                aria-label={isMobile ? "Đóng menu" : "Thu gọn thanh bên"}
               >
-                <PanelLeft className="h-3.5 w-3.5" />
+                {isMobile ? <X className="h-4 w-4" /> : <PanelLeft className="h-3.5 w-3.5" />}
               </Button>
             )}
           </div>
@@ -206,31 +256,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     onClick={() => setCommandOpen(true)}
                     className={cn(
                       "mb-2 flex w-full items-center justify-between rounded-lg border border-zinc-800/90 bg-zinc-900/70 px-2.5 py-1.5 text-xs text-zinc-400 transition-colors hover:border-amber-500/40 hover:bg-zinc-800/80 hover:text-zinc-100",
-                      collapsed && "justify-center px-0"
+                      railCollapsed && "justify-center px-0"
                     )}
                   >
                     <span className="flex items-center gap-2 truncate">
                       <Search className="h-3.5 w-3.5 shrink-0 text-amber-400" />
-                      {!collapsed && <span className="truncate">Tìm nhanh / Lệnh...</span>}
+                      {!railCollapsed && <span className="truncate">Tìm nhanh / Lệnh...</span>}
                     </span>
-                    {!collapsed && (
-                      <kbd className="rounded border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">
+                    {!railCollapsed && (
+                      <kbd className="rounded border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400">
                         ⌘K
                       </kbd>
                     )}
                   </button>
                 </TooltipTrigger>
-                {collapsed && (
+                {railCollapsed && (
                   <TooltipContent side="right">
                     Bảng lệnh nhanh & Tìm dự án (⌘K)
                   </TooltipContent>
                 )}
               </Tooltip>
 
-              {collapsed && !isNleRoute && (
+              {railCollapsed && !isNleRoute && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button
+                    <button aria-label="Mở rộng thanh điều hướng"
                       type="button"
                       onClick={() => setCollapsed(false)}
                       className="mb-1 flex h-9 w-full items-center justify-center rounded-lg text-muted-foreground hover:bg-zinc-800/70 hover:text-foreground"
@@ -260,9 +310,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           className="flex items-center gap-2.5 truncate after:absolute after:inset-0"
                         >
                           <Icon className="h-4 w-4 shrink-0 text-primary" />
-                          {!collapsed && <span className="truncate">{item.title}</span>}
+                          {!railCollapsed && <span className="truncate">{item.title}</span>}
                         </Link>
-                        {!collapsed && (
+                        {!railCollapsed && (
                           <div className="flex items-center gap-1.5">
                             {item.href === "/product" && (
                               <Link
@@ -274,7 +324,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                               </Link>
                             )}
                             {item.badge && (
-                              <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">
+                              <Badge variant="secondary" className="h-4 px-1.5 text-[11px]">
                                 {item.badge}
                               </Badge>
                             )}
@@ -282,7 +332,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         )}
                       </div>
                     </TooltipTrigger>
-                    {collapsed && <TooltipContent side="right">{item.title}</TooltipContent>}
+                    {railCollapsed && <TooltipContent side="right">{item.title}</TooltipContent>}
                   </Tooltip>
                 );
               })}
@@ -292,9 +342,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             {/* Platform / Tools Section */}
             <div className="space-y-1">
-              {!collapsed && (
+              {!railCollapsed && (
                 <p className="px-2 pt-1 pb-1 text-[11px] font-medium text-muted-foreground/70">
-                  Platform
+                  Công cụ thử nghiệm
                 </p>
               )}
 
@@ -304,7 +354,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <button
                     type="button"
                     onClick={() => {
-                      if (collapsed) setCollapsed(false);
+                      if (railCollapsed) setCollapsed(false);
                       setToolsOpen((prev) => !prev);
                     }}
                     className={cn(
@@ -316,9 +366,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   >
                     <span className="flex items-center gap-2.5 truncate">
                       <SquareTerminal className="h-4 w-4 shrink-0 text-primary" />
-                      {!collapsed && <span className="truncate">Playground</span>}
+                      {!railCollapsed && <span className="truncate">Avatar 2D</span>}
                     </span>
-                    {!collapsed && (
+                    {!railCollapsed && (
                       <ChevronRight
                         className={cn(
                           "h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-200",
@@ -328,16 +378,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     )}
                   </button>
                 </TooltipTrigger>
-                {collapsed && (
+                {railCollapsed && (
                   <TooltipContent side="right">
-                    Playground (2D Avatar Tools)
+                    Công cụ Avatar 2D
                   </TooltipContent>
                 )}
               </Tooltip>
 
               {/* Sub-items (with left tree line and smooth motion) */}
               <AnimatePresence initial={false}>
-                {toolsOpen && !collapsed && (
+                {toolsOpen && !railCollapsed && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
@@ -376,8 +426,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             {/* Recent Projects Grouped by Video Type */}
             <div className="space-y-3">
-              {!collapsed && (
-                <p className="px-2 pb-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
+              {!railCollapsed && (
+                <p className="px-2 pb-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
                   Dự án gần đây
                 </p>
               )}
@@ -387,8 +437,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 const GroupIcon = group.icon;
                 return (
                   <div key={group.id} className="space-y-1">
-                    {!collapsed && (
-                      <div className="flex items-center justify-between px-2 pt-1 pb-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                    {!railCollapsed && (
+                      <div className="flex items-center justify-between px-2 pt-1 pb-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
                         <span className="flex items-center gap-1.5 truncate">
                           <GroupIcon className={cn("h-3 w-3 shrink-0", group.iconColor)} />
                           <span className="truncate">{group.label}</span>
@@ -403,7 +453,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                               <Plus className="h-3 w-3 stroke-[2.5]" />
                             </Link>
                           )}
-                          <span className="rounded bg-zinc-800/80 px-1 font-mono text-[9px] text-zinc-400">
+                          <span className="rounded bg-zinc-800/80 px-1 font-mono text-[11px] text-zinc-400">
                             {group.projects.length}
                           </span>
                         </div>
@@ -443,7 +493,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             >
                               <span className="flex min-w-0 flex-1 items-center gap-2">
                                 <StatusIcon className={cn("h-3.5 w-3.5 shrink-0", statusColor)} />
-                                {!collapsed && (
+                                {!railCollapsed && (
                                   <span
                                     className="truncate text-xs font-medium max-w-[130px]"
                                     title={p.title}
@@ -452,8 +502,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                   </span>
                                 )}
                               </span>
-                              {!collapsed && (
-                                <span className="ml-1.5 shrink-0 font-mono text-[10px] opacity-60">
+                              {!railCollapsed && (
+                                <span className="ml-1.5 shrink-0 font-mono text-[11px] opacity-60">
                                   {fmtMs(p.durationMs)}
                                 </span>
                               )}
@@ -461,7 +511,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           </TooltipTrigger>
                           <TooltipContent side="right" className="max-w-xs">
                             <p className="font-semibold text-xs text-foreground">{p.title}</p>
-                            <p className="text-[10px] text-muted-foreground">
+                            <p className="text-[11px] text-muted-foreground">
                               {group.label} · {fmtMs(p.durationMs)}
                             </p>
                           </TooltipContent>
@@ -474,49 +524,40 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </ScrollArea>
 
-          {/* Sidebar Footer */}
-          <div className="border-t border-zinc-800/40 p-2.5">
-            <div className="flex items-center justify-center gap-2">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-emerald-500/15 text-emerald-400">
-                <Cpu className="h-3.5 w-3.5" />
-              </div>
-              {!collapsed && (
-                <div className="flex flex-1 flex-col truncate">
-                  <span className="flex items-center gap-1.5 text-[11px] font-medium">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                    AI Worker Ready
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Sidebar Footer — trạng thái dịch vụ thật (API + AI worker) */}
+          <SystemStatus
+            workerState={workerState}
+            apiState={projectsError ? "down" : "ok"}
+            collapsed={railCollapsed}
+          />
         </aside>
 
         {/* Main Content Area */}
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           {!isNleRoute && (
-            <header className="sticky top-0 z-20 flex h-12 items-center justify-between border-b border-zinc-800/40 bg-background/80 px-6 backdrop-blur-md">
-              <div className="flex items-center gap-3">
+            <header className="sticky top-0 z-20 flex h-12 items-center justify-between gap-2 border-b border-zinc-800/40 bg-background/80 px-3 backdrop-blur-md md:px-6">
+              <div className="flex min-w-0 items-center gap-3">
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8"
-                  onClick={() => setCollapsed((c) => !c)}
+                  onClick={toggleSidebar}
+                  aria-label={isMobile ? "Mở menu" : "Thu gọn / mở rộng thanh bên"}
                 >
                   <PanelLeft className="h-4 w-4" />
                 </Button>
                 <Separator orientation="vertical" className="h-4" />
-                <nav className="flex items-center gap-1.5 text-xs">
+                <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 text-xs">
                   <Link href="/" className="text-muted-foreground hover:text-foreground">
-                    Workspace
+                    Trang chủ
                   </Link>
                   <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-medium text-foreground">
+                  <span className="truncate font-medium text-foreground">
                     {pathname === "/tools/avatar-svg"
-                      ? "2D Avatar Studio — Phương án 1 (SVG Rig)"
+                      ? "Avatar 2D — Phương án 1 (SVG Rig)"
                       : pathname === "/tools/avatar-rive"
-                      ? "2D Avatar Studio — Phương án 2 (Rive / Mesh)"
-                      : "Quản lý Dự án"}
+                      ? "Avatar 2D — Phương án 2 (Rive / Mesh)"
+                      : "Bảng điều khiển"}
                   </span>
                 </nav>
               </div>
@@ -524,20 +565,37 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 variant="outline"
                 size="sm"
                 onClick={() => setCommandOpen(true)}
-                className="h-8 gap-2 border-zinc-800 bg-zinc-900/80 text-xs text-zinc-300 hover:border-amber-500/40 hover:text-white"
+                className="h-8 shrink-0 gap-2 border-zinc-800 bg-zinc-900/80 text-xs text-zinc-300 hover:border-amber-500/40 hover:text-white"
+                aria-label="Tìm dự án / Lệnh nhanh"
               >
                 <Search className="h-3.5 w-3.5 text-amber-400" />
-                <span>Tìm dự án / Lệnh nhanh</span>
-                <kbd className="ml-1 rounded border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">
+                <span className="hidden sm:inline">Tìm dự án / Lệnh nhanh</span>
+                <kbd className="ml-1 hidden rounded sm:inline border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400">
                   ⌘K
                 </kbd>
               </Button>
             </header>
           )}
 
-          <main className={cn("flex-1", isNleRoute ? "h-full overflow-hidden p-0" : "p-6")}>
+          <main className={cn("flex-1", isNleRoute ? "h-full overflow-hidden p-0" : "p-4 md:p-6")}>
             {children}
           </main>
+
+          {/* Trình dựng phim (NLE) cần màn hình rộng — báo rõ thay vì vỡ layout */}
+          {isNleRoute && (
+            <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-background p-6 text-center lg:hidden">
+              <MonitorSmartphone className="h-10 w-10 text-amber-400" aria-hidden />
+              <div className="space-y-1">
+                <p className="text-base font-semibold text-zinc-100">Trình dựng phim cần màn hình rộng hơn</p>
+                <p className="text-sm text-zinc-400">
+                  Hãy mở trang này trên máy tính hoặc cửa sổ rộng tối thiểu 1024px.
+                </p>
+              </div>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/">Về danh sách dự án</Link>
+              </Button>
+            </div>
+          )}
         </div>
 
         <CommandPalette
@@ -547,5 +605,59 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         />
       </div>
     </TooltipProvider>
+  );
+}
+
+function SystemStatus({
+  workerState,
+  apiState,
+  collapsed,
+}: {
+  workerState: ServiceState;
+  apiState: ServiceState;
+  collapsed: boolean;
+}) {
+  const down = workerState === "down" || apiState === "down";
+  const checking = !down && workerState === "checking";
+  const label = checking
+    ? "Đang kiểm tra hệ thống…"
+    : apiState === "down" && workerState === "down"
+      ? "API & AI Worker mất kết nối"
+      : apiState === "down"
+        ? "API mất kết nối"
+        : workerState === "down"
+          ? "AI Worker mất kết nối"
+          : "Hệ thống sẵn sàng";
+  const tone = checking
+    ? { box: "bg-zinc-800 text-zinc-400", dot: "bg-zinc-500 animate-pulse" }
+    : down
+      ? { box: "bg-red-500/15 text-red-400", dot: "bg-red-400" }
+      : { box: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400" };
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label={label}
+          className="flex items-center justify-center gap-2 border-t border-zinc-800/40 p-2.5"
+        >
+          <div className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-md", tone.box)}>
+            <Cpu className="h-3.5 w-3.5" />
+          </div>
+          {!collapsed && (
+            <span className="flex flex-1 items-center gap-1.5 truncate text-[11px] font-medium">
+              <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", tone.dot)} />
+              <span className="truncate">{label}</span>
+            </span>
+          )}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side="right" className="text-xs">
+        <p>API: {apiState === "down" ? "mất kết nối" : "OK"}</p>
+        <p>AI Worker: {workerState === "checking" ? "đang kiểm tra" : workerState === "down" ? "mất kết nối" : "OK"}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }

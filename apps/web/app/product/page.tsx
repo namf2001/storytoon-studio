@@ -21,7 +21,6 @@ import {
   Redo2,
   Rocket,
   ShoppingBag,
-  Sliders,
   Sparkles,
   Square,
   Terminal,
@@ -38,16 +37,19 @@ import { API_URL, api, fmtMs, type ProjectSummary } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { ProductPlayer } from "@/components/ProductPlayer";
 import { RenderAndYoutubePanel } from "@/components/RenderAndYoutubePanel";
-import { NleTimeline } from "@/components/nle/NleTimeline";
+import { NleTimeline, type TimelineAudioMix } from "@/components/nle/NleTimeline";
 import { NleInspector } from "@/components/nle/NleInspector";
 import { NleMediaPool, type MediaPoolClip } from "@/components/nle/NleMediaPool";
 import { NleSceneViewer } from "@/components/nle/NleSceneViewer";
+import { NleWorkspaceSwitcher } from "@/components/nle/NleWorkspaceSwitcher";
+import { ProjectLoadingOverlay } from "@/components/nle/ProjectLoadingOverlay";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
+import { useConfirmDialog, deleteProjectConfirm } from "@/components/ui/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -706,12 +708,18 @@ const ASPECT_OPTIONS: { value: MediaAspectRatio; label: string }[] = [
 function ProductStudioContent() {
   const playerRef = useRef<PlayerRef>(null);
   const searchParams = useSearchParams();
+  const [confirm, confirmDialog] = useConfirmDialog();
   const queryId = searchParams.get("id") || searchParams.get("project");
   const isNew = searchParams.get("new") === "1";
 
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
+  // URL trỏ tới dự án thật (không phải mẫu) -> chưa có dữ liệu, KHÔNG hiển thị dự án mẫu trong lúc chờ API
+  const opensRealProject = !isNew && !!queryId && !(queryId in PRODUCT_DEMO_PRESETS);
+  const [loadingProjectId, setLoadingProjectId] = useState<string | null>(() =>
+    opensRealProject ? queryId : null
+  );
   const [project, setProject] = useState<Project>(() => {
-    if (isNew) return BLANK_PRODUCT_PROJECT;
+    if (isNew || opensRealProject) return BLANK_PRODUCT_PROJECT;
     if (queryId && queryId in PRODUCT_DEMO_PRESETS) {
       return PRODUCT_DEMO_PRESETS[queryId].project;
     }
@@ -783,6 +791,9 @@ function ProductStudioContent() {
 
   // Frame aspect ratio cho scene crop (default: 3:4)
   const [frameAspectRatio, setFrameAspectRatio] = useState<MediaAspectRatio>("3:4");
+
+  // Track mixer (mute / volume) from the timeline, applied live to the Program Monitor
+  const [audioMix, setAudioMix] = useState<TimelineAudioMix | null>(null);
 
   const updateScenesWithHistory = useCallback((updater: (prev: Scene[]) => Scene[]) => {
     setProject((prev) => {
@@ -882,6 +893,7 @@ function ProductStudioContent() {
       if (id in PRODUCT_DEMO_PRESETS) {
         return loadDemoPreset(id as keyof typeof PRODUCT_DEMO_PRESETS);
       }
+      setLoadingProjectId(id);
       try {
         const p = await api.getProject(id);
         setHistoryPast([]);
@@ -902,6 +914,8 @@ function ProductStudioContent() {
         toast.success(`Đã mở dự án: ${p.title}`);
       } catch (e) {
         toast.error("Không thể tải dự án", { description: (e as Error).message });
+      } finally {
+        setLoadingProjectId((cur) => (cur === id ? null : cur));
       }
     },
     [handleCreateNewBlankProject]
@@ -1014,11 +1028,7 @@ function ProductStudioContent() {
       toast.info("Không thể xóa dự án mẫu cài sẵn!");
       return;
     }
-    if (
-      !window.confirm(
-        `Bạn có chắc chắn muốn xóa vĩnh viễn dự án "${projectTitle}" không?`
-      )
-    ) {
+    if (!(await confirm(deleteProjectConfirm(projectTitle)))) {
       return;
     }
     const toastId = toast.loading(`Đang xóa dự án "${projectTitle}"...`);
@@ -1612,14 +1622,16 @@ function ProductStudioContent() {
   );
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-[#0c0d10] text-zinc-100 select-none">
+    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-surface-1 text-zinc-100 select-none">
+      {loadingProjectId && <ProjectLoadingOverlay />}
+      {confirmDialog}
       {/* 1. TOP NLE HEADER BAR (48px - Giống hệt Football Studio) */}
-      <header className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/90 bg-[#14161b] px-3 z-20">
+      <header className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/90 bg-surface-3 px-3 z-20">
         {/* Left: Media Pool Toggle + Brand Badge + Project Selector */}
         <div className="flex items-center gap-2 min-w-0">
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
+              <button aria-label="Media Pool (Thư viện media & kịch bản)"
                 type="button"
                 onClick={() => setShowLeftPanel((v) => !v)}
                 className={cn(
@@ -1646,13 +1658,19 @@ function ProductStudioContent() {
           </Button>
 
           <Select
-            value={project.id === "new-blank-product" ? "__new_blank__" : project.id}
+            value={
+              loadingProjectId
+                ? loadingProjectId
+                : project.id === "new-blank-product"
+                  ? "__new_blank__"
+                  : project.id
+            }
             onValueChange={loadExistingProject}
           >
             <SelectTrigger className="h-7 w-[240px] border-zinc-700/80 bg-zinc-900/90 text-xs text-zinc-100 font-medium">
               <SelectValue placeholder="Chọn dự án sản phẩm..." />
             </SelectTrigger>
-            <SelectContent className="border-zinc-800 bg-[#14161b] text-zinc-200">
+            <SelectContent className="border-zinc-800 bg-surface-3 text-zinc-200">
               <SelectGroup>
                 <SelectItem
                   value="__new_blank__"
@@ -1699,7 +1717,7 @@ function ProductStudioContent() {
           {!project.id.startsWith("demo-") && project.id !== "new-blank-product" && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
+                <button aria-label="Xóa dự án này khỏi hệ thống"
                   type="button"
                   onClick={() => handleDeleteCurrentProject(project.id, project.title)}
                   className="flex h-7 w-7 items-center justify-center rounded-md border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
@@ -1715,7 +1733,7 @@ function ProductStudioContent() {
           <div className="hidden sm:flex items-center gap-0.5 rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5">
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
+                <button aria-label="Hoàn tác (Cmd+Z)"
                   type="button"
                   disabled={historyPast.length === 0}
                   onClick={handleUndo}
@@ -1728,7 +1746,7 @@ function ProductStudioContent() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
+                <button aria-label="Làm lại (Cmd+Shift+Z)"
                   type="button"
                   disabled={historyFuture.length === 0}
                   onClick={handleRedo}
@@ -1744,40 +1762,13 @@ function ProductStudioContent() {
 
         {/* Center: DaVinci Resolve Workspace Switcher (Edit vs Deliver) + Dual Monitor Mode */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-950/90 p-0.5">
-            <button
-              type="button"
-              onClick={() => setWorkspaceMode("edit")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-all",
-                workspaceMode === "edit"
-                  ? "bg-emerald-500 text-black shadow-sm font-bold"
-                  : "text-zinc-400 hover:text-zinc-200"
-              )}
-            >
-              <Sliders className="h-3.5 w-3.5" />
-              Biên tập (Edit)
-            </button>
-            <button
-              type="button"
-              onClick={() => setWorkspaceMode("deliver")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-all",
-                workspaceMode === "deliver"
-                  ? "bg-red-600 text-white shadow-sm font-bold"
-                  : "text-zinc-400 hover:text-zinc-200"
-              )}
-            >
-              <Rocket className="h-3.5 w-3.5" />
-              Deliver (Xuất Video)
-            </button>
-          </div>
+          <NleWorkspaceSwitcher mode={workspaceMode} onChange={setWorkspaceMode} accent="emerald" />
 
           {workspaceMode === "edit" && (
             <div className="hidden lg:flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5 text-[11px] gap-0.5">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Dual Monitor (Cảnh đang làm + Full Video)"
                     type="button"
                     onClick={() => setViewerMode("dual")}
                     className={cn(
@@ -1795,7 +1786,7 @@ function ProductStudioContent() {
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Single Monitor (Chỉ xem Cảnh đang làm)"
                     type="button"
                     onClick={() => setViewerMode("scene")}
                     className={cn(
@@ -1813,7 +1804,7 @@ function ProductStudioContent() {
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Single Monitor (Chỉ xem Full Video)"
                     type="button"
                     onClick={() => setViewerMode("program")}
                     className={cn(
@@ -1836,7 +1827,7 @@ function ProductStudioContent() {
         <div className="flex items-center gap-1.5">
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
+              <button aria-label="Đóng / Mở Timeline"
                 type="button"
                 onClick={() => setShowBottomPanel((v) => !v)}
                 className={cn(
@@ -1854,7 +1845,7 @@ function ProductStudioContent() {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
+              <button aria-label="Đóng / Mở Inspector"
                 type="button"
                 onClick={() => setShowRightPanel((v) => !v)}
                 className={cn(
@@ -1947,9 +1938,9 @@ function ProductStudioContent() {
                       defaultSize={viewerMode === "dual" ? "50%" : "100%"}
                       minSize="25%"
                     >
-                      <div className="flex h-full w-full flex-col min-w-0 bg-[#09090b] overflow-hidden">
+                      <div className="flex h-full w-full flex-col min-w-0 bg-background overflow-hidden">
                         {/* Program Monitor Compact Transport Bar */}
-                        <div className="flex h-8 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-[#111318] px-2.5 text-[11px]">
+                        <div className="flex h-8 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-surface-2 px-2.5 text-[11px]">
                           <button
                             type="button"
                             onClick={togglePlay}
@@ -1981,7 +1972,7 @@ function ProductStudioContent() {
                         {/* Remotion Full 9:16 Vertical Player Monitor */}
                         <div className="relative flex flex-1 min-h-0 items-center justify-center p-2.5 overflow-hidden">
                           {project.scenes.length === 0 ? (
-                            <div className="flex h-full w-full max-w-[280px] aspect-[9/16] flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-800 bg-[#121318] p-6 text-center shadow-xl">
+                            <div className="flex h-full w-full max-w-[280px] aspect-[9/16] flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-800 bg-surface-2 p-6 text-center shadow-xl">
                               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 mb-3 border border-emerald-500/20">
                                 <Sparkles className="h-6 w-6" />
                               </div>
@@ -1999,7 +1990,13 @@ function ProductStudioContent() {
                               </Button>
                             </div>
                           ) : (
-                            <ProductPlayer ref={playerRef} project={project} />
+                            <ProductPlayer
+                              ref={playerRef}
+                              project={project}
+                              bgmUrl={`${MEDIA_BASE}/football-assets/bgm.mp3`}
+                              bgmVolume={0.12}
+                              mix={audioMix ?? undefined}
+                            />
                           )}
                         </div>
                       </div>
@@ -2070,6 +2067,9 @@ function ProductStudioContent() {
                   canRedo={historyFuture.length > 0}
                   onUndo={handleUndo}
                   onRedo={handleRedo}
+                  onDeleteScene={handleDeleteScene}
+                  onAudioMixChange={setAudioMix}
+                  initialBgmVolume={0.12}
                 />
               </ResizablePanel>
             </>
@@ -2077,9 +2077,9 @@ function ProductStudioContent() {
         </ResizablePanelGroup>
       ) : (
         /* DELIVER WORKSPACE (Render MP4 & Upload YouTube) */
-        <div className="flex-1 overflow-y-auto bg-[#09090b] p-6">
+        <div className="flex-1 overflow-y-auto bg-background p-6">
           <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-12">
-            <div className="lg:col-span-7 rounded-xl bg-[#14161b] p-5 shadow-xl border border-zinc-800">
+            <div className="lg:col-span-7 rounded-xl bg-surface-3 p-5 shadow-xl border border-zinc-800">
               <div className="mb-4 flex items-center justify-between pb-3 border-b border-zinc-800">
                 <div>
                   <h2 className="flex items-center gap-2 text-base font-bold text-zinc-100">
@@ -2110,7 +2110,8 @@ function ProductStudioContent() {
                   words: project.words ?? [],
                   scenes: project.scenes ?? [],
                   bgmUrl: `${MEDIA_BASE}/football-assets/bgm.mp3`,
-                  bgmVolume: 0.12,
+                  bgmVolume: audioMix ? audioMix.bgm : 0.12,
+                  voiceVolume: audioMix ? audioMix.voice : 1,
                 }}
                 defaultTitle={`${project.title} #Shorts #Review`}
                 script={project.rawScript}
@@ -2119,7 +2120,7 @@ function ProductStudioContent() {
 
             {/* Quick Preview Specs & Remotion Props JSON */}
             <div className="lg:col-span-5 flex flex-col gap-4">
-              <div className="rounded-xl bg-[#14161b] p-5 shadow-xl border border-zinc-800 space-y-3">
+              <div className="rounded-xl bg-surface-3 p-5 shadow-xl border border-zinc-800 space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400">
                   Thông Số Kỹ Thuật Render
                 </h3>
@@ -2153,7 +2154,7 @@ function ProductStudioContent() {
                 </div>
               </div>
 
-              <details className="group rounded-xl bg-[#14161b] p-4 shadow-xl border border-zinc-800">
+              <details className="group rounded-xl bg-surface-3 p-4 shadow-xl border border-zinc-800">
                 <summary className="flex cursor-pointer list-none items-center justify-between">
                   <span className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200">
                     <Terminal className="h-3.5 w-3.5 text-emerald-400" />
@@ -2200,7 +2201,7 @@ export default function ProductStudioPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex h-screen w-full items-center justify-center bg-[#09090b] text-sm text-zinc-400">
+        <div className="flex h-screen w-full items-center justify-center bg-background text-sm text-zinc-400">
           <Loader2 className="mr-2 h-4 w-4 animate-spin text-amber-400" />
           Đang khởi động Product Studio...
         </div>

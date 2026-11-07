@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  ArrowRight,
   CheckCircle2,
   Clock,
   FileText,
@@ -46,6 +45,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AiPipelineFlow } from "@/components/ui/pipeline-flow";
+import { useConfirmDialog, deleteProjectConfirm } from "@/components/ui/confirm-dialog";
+import { ProjectThumbnail } from "@/components/ProjectThumbnail";
+import { PROJECT_KINDS, projectHref, projectKind } from "@/lib/project-kind";
+import { sceneModelLabel, useWorkerInfo } from "@/lib/system-info";
 
 const SAMPLE_SCRIPT = `Hai tuần trước, bạn và Mai Trang chia tay. Vì nó phát hiện bạn dùng chính bạn bè của nó để tiếp khách VIP. Mai Trang rời khỏi phòng trọ, chặn số và cắt liên lạc hoàn toàn. Từ hôm đấy, hai người không còn gặp lại.
 
@@ -70,6 +73,10 @@ export default function DashboardPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [confirm, confirmDialog] = useConfirmDialog();
+  const [kindFilter, setKindFilter] = useState<KindFilter>("all");
+  const { info: workerInfo } = useWorkerInfo();
+  const sceneModel = sceneModelLabel(workerInfo);
 
   useEffect(() => {
     api
@@ -94,13 +101,20 @@ export default function DashboardPage() {
   );
   const estimatedSec = Math.max(0, Math.round(wordCount / 2.8));
 
+  const kindCounts = useMemo(() => {
+    const counts = { storytoon: 0, football: 0, product: 0 };
+    for (const p of projects) counts[projectKind(p)] += 1;
+    return counts;
+  }, [projects]);
+
   const filteredProjects = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return projects;
     return projects.filter(
-      (p) => p.title.toLowerCase().includes(q) || p.status.toLowerCase().includes(q)
+      (p) =>
+        (kindFilter === "all" || projectKind(p) === kindFilter) &&
+        (!q || p.title.toLowerCase().includes(q))
     );
-  }, [projects, search]);
+  }, [projects, search, kindFilter]);
 
   const stats = useMemo(() => {
     const readyCount = projects.filter((p) => p.status === "ready").length;
@@ -149,7 +163,7 @@ export default function DashboardPage() {
   }
 
   async function handleDeleteProject(id: string, projectTitle: string) {
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn dự án "${projectTitle}" không?`)) {
+    if (!(await confirm(deleteProjectConfirm(projectTitle)))) {
       return;
     }
     setDeletingId(id);
@@ -213,99 +227,63 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      {/* Page Heading */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Bảng điều khiển Studio</h1>
+    <div className="mx-auto max-w-7xl space-y-5">
+      {confirmDialog}
+      {/* Page heading + compact stats */}
+      <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold tracking-tight">Bảng điều khiển</h1>
           <p className="text-sm text-muted-foreground">
-            Nhập kịch bản, tự động tạo giọng đọc VieNeu, tách phụ đề Whisper và chia phân cảnh bằng Groq AI.
+            Nhập kịch bản → giọng đọc AI → phụ đề từng từ → chia phân cảnh
+            {sceneModel ? ` (${sceneModel})` : ""} → dựng video.
           </p>
         </div>
-        <Button variant="secondary" size="sm" onClick={fillSample} className="gap-2 self-start border-0">
-          <Sparkles className="h-4 w-4 text-primary" />
-          Điền kịch bản mẫu
-        </Button>
+        <dl className="flex flex-wrap gap-2 text-xs" aria-label="Thống kê">
+          <StatChip icon={FolderKanban} label="Dự án" value={String(stats.total)} />
+          <StatChip
+            icon={CheckCircle2}
+            label="Sẵn sàng dựng"
+            value={String(stats.ready)}
+            valueClassName="text-emerald-400"
+          />
+          <StatChip icon={Clock} label="Tổng thời lượng" value={stats.totalDuration} />
+        </dl>
       </div>
 
-      {/* Top Metrics Row (Shadcn dashboard-01 block pattern) */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Tổng số dự án
-            </CardTitle>
-            <FolderKanban className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground">Lưu trữ trên PostgreSQL</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Đã phân cảnh xong
-            </CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-400">{stats.ready}</div>
-            <p className="text-xs text-muted-foreground">Sẵn sàng gắn ảnh & dựng video</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Tổng thời lượng Voice
-            </CardTitle>
-            <Clock className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalDuration}</div>
-            <p className="text-xs text-muted-foreground">Đồng bộ word-level timestamps</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Pipeline AI
-            </CardTitle>
-            <Wand2 className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold">Qwen 3.8 · 27B</div>
-            <p className="text-xs text-muted-foreground">VieNeu TTS + Faster-Whisper</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Interactive Node-Based AI Pipeline Visualizer (@xyflow/react) */}
       <AiPipelineFlow
         wordCount={wordCount}
         selectedVoice={selectedVoice}
         aspectRatio={ratio}
+        sceneModel={sceneModel ?? "AI"}
+        whisperModel={workerInfo?.whisperModel}
         busy={busy}
       />
 
-      {/* Main Workspace Grid */}
-      <div className="grid gap-6 lg:grid-cols-12">
-        {/* Left: Create New Project Form (7 cols) */}
+      {/* Main workspace: create form first, project list beside it */}
+      <div className="grid gap-5 lg:grid-cols-12">
         <Card className="lg:col-span-7">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
+          <CardHeader className="pb-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Plus className="h-5 w-5 text-primary" />
-                  Khởi tạo Dự án Video Mới
+                  <Plus className="h-5 w-5 text-primary" aria-hidden />
+                  Tạo dự án mới
                 </CardTitle>
                 <CardDescription>
-                  Hệ thống sẽ sinh 1 file voice liền mạch, xuất phụ đề .srt/.vtt và chia scene kèm Image Prompt.
+                  Tạo một file giọng đọc liền mạch, phụ đề .srt/.vtt và danh sách phân cảnh kèm gợi ý hình ảnh.
                 </CardDescription>
               </div>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={fillSample}
+                className="shrink-0 gap-1.5 border-0"
+              >
+                <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+                <span className="hidden sm:inline">Dùng kịch bản mẫu</span>
+                <span className="sm:hidden">Mẫu</span>
+              </Button>
             </div>
           </CardHeader>
 
@@ -322,34 +300,34 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Tỷ lệ khung hình</Label>
+                <Label htmlFor="project-ratio">Tỷ lệ khung hình</Label>
                 <Select value={ratio} onValueChange={setRatio}>
-                  <SelectTrigger>
+                  <SelectTrigger id="project-ratio">
                     <SelectValue placeholder="Chọn tỷ lệ" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="16:9">16:9 — YouTube Ngang</SelectItem>
+                    <SelectItem value="16:9">16:9 — YouTube ngang</SelectItem>
                     <SelectItem value="9:16">9:16 — TikTok / Shorts</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            {/* Voice Selector + Preview */}
+            {/* Voice selector + preview */}
             <div className="space-y-2 rounded-xl bg-muted/25 p-3.5">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-1.5 text-sm font-semibold">
-                  <Mic className="h-4 w-4 text-primary" />
-                  Chọn Giọng Đọc AI (VieNeu v3 Turbo & Edge Neural)
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="project-voice" className="flex items-center gap-1.5 text-sm font-semibold">
+                  <Mic className="h-4 w-4 text-primary" aria-hidden />
+                  Giọng đọc AI
                 </Label>
-                <Badge variant="secondary" className="text-[11px] border-0">
-                  {voices.length} giọng đọc
+                <Badge variant="secondary" className="border-0 text-[11px]">
+                  {voices.length} giọng
                 </Badge>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <div className="min-w-[240px] flex-1">
+                <div className="min-w-[200px] flex-1">
                   <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                    <SelectTrigger>
+                    <SelectTrigger id="project-voice">
                       <SelectValue placeholder="Chọn giọng đọc..." />
                     </SelectTrigger>
                     <SelectContent className="max-h-72">
@@ -371,17 +349,17 @@ export default function DashboardPage() {
                 >
                   {previewingVoice ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden />
                       Đang tạo mẫu...
                     </>
                   ) : isPlayingPreview ? (
                     <>
-                      <Square className="h-3.5 w-3.5 fill-current" />
+                      <Square className="h-3.5 w-3.5 fill-current" aria-hidden />
                       Dừng nghe
                     </>
                   ) : (
                     <>
-                      <Volume2 className="h-4 w-4 text-primary" />
+                      <Volume2 className="h-4 w-4 text-primary" aria-hidden />
                       Nghe thử
                     </>
                   )}
@@ -389,28 +367,15 @@ export default function DashboardPage() {
               </div>
 
               {previewAudioUrl && (
-                <audio
-                  src={previewAudioUrl}
-                  controls
-                  className="mt-1 h-8 w-full rounded"
-                />
+                <audio src={previewAudioUrl} controls className="mt-1 h-8 w-full rounded" />
               )}
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="project-script">Nội dung kịch bản (Script)</Label>
-                <button
-                  type="button"
-                  onClick={fillSample}
-                  className="text-xs font-medium text-primary hover:underline"
-                >
-                  + Chèn đoạn trích mẫu
-                </button>
-              </div>
+              <Label htmlFor="project-script">Nội dung kịch bản</Label>
               <Textarea
                 id="project-script"
-                rows={14}
+                rows={12}
                 value={script}
                 onChange={(e) => setScript(e.target.value)}
                 placeholder="Dán toàn bộ kịch bản câu chuyện vào đây..."
@@ -419,7 +384,10 @@ export default function DashboardPage() {
             </div>
 
             {error && (
-              <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+              <div
+                role="alert"
+                className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400"
+              >
                 {error}
               </div>
             )}
@@ -428,12 +396,12 @@ export default function DashboardPage() {
           <CardFooter className="flex flex-wrap items-center justify-between gap-4 rounded-b-xl bg-muted/20 px-6 py-4">
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <FileText className="h-3.5 w-3.5" />
+                <FileText className="h-3.5 w-3.5" aria-hidden />
                 <strong className="text-foreground">{wordCount}</strong> từ
               </span>
-              <span>·</span>
+              <span aria-hidden>·</span>
               <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
+                <Clock className="h-3.5 w-3.5" aria-hidden />
                 Ước tính ~<strong className="text-foreground">{estimatedSec}s</strong>
               </span>
             </div>
@@ -442,152 +410,197 @@ export default function DashboardPage() {
               size="lg"
               disabled={busy || !title.trim() || !script.trim()}
               onClick={handleCreate}
+              className="w-full sm:w-auto"
             >
               {busy ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Đang khởi tạo pipeline...
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  Đang khởi tạo...
                 </>
               ) : (
                 <>
-                  <Wand2 className="h-4 w-4" />
-                  Tạo Voice & Phân cảnh AI
+                  <Wand2 className="h-4 w-4" aria-hidden />
+                  Tạo giọng đọc & phân cảnh
                 </>
               )}
             </Button>
           </CardFooter>
         </Card>
 
-        {/* Right: Existing Projects List (5 cols) */}
+        {/* Project list */}
         <Card className="flex flex-col lg:col-span-5">
-          <CardHeader className="pb-3">
+          <CardHeader className="space-y-3 pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg">Danh sách Dự án</CardTitle>
-                <CardDescription>Bấm vào dự án để mở Studio chỉnh sửa cảnh</CardDescription>
+                <CardTitle className="text-lg">Dự án của bạn</CardTitle>
+                <CardDescription>Bấm vào dự án để mở trình dựng phim</CardDescription>
               </div>
-              <Badge variant="secondary" className="border-0">{projects.length} dự án</Badge>
+              <Badge variant="secondary" className="border-0">
+                {projects.length} dự án
+              </Badge>
             </div>
-            <div className="relative pt-2">
-              <Search className="absolute left-3 top-4.5 h-4 w-4 text-muted-foreground" />
+
+            <div role="tablist" aria-label="Lọc theo loại video" className="flex flex-wrap gap-1.5">
+              {KIND_FILTERS.map((k) => {
+                const count = k === "all" ? projects.length : kindCounts[k];
+                const selected = kindFilter === k;
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    onClick={() => setKindFilter(k)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      selected
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    {k === "all" ? "Tất cả" : PROJECT_KINDS[k].label}
+                    <span className={cn("font-mono text-[11px]", selected ? "opacity-80" : "opacity-60")}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="relative">
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden
+              />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Tìm theo tên hoặc trạng thái..."
+                placeholder="Tìm theo tên dự án..."
+                aria-label="Tìm dự án"
                 className="pl-9"
               />
             </div>
           </CardHeader>
 
-          <CardContent className="flex-1 space-y-3 overflow-y-auto max-h-[520px]">
+          <CardContent className="max-h-[620px] flex-1 space-y-2 overflow-y-auto">
             {loadingList && (
-              <div className="flex items-center justify-center py-12 text-sm text-muted-foreground">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Đang tải dự án...
+              <div role="status" className="flex items-center justify-center py-12 text-sm text-muted-foreground">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden /> Đang tải dự án...
               </div>
             )}
 
             {!loadingList && filteredProjects.length === 0 && (
               <div className="flex flex-col items-center justify-center rounded-xl bg-muted/20 py-12 text-center">
-                <Film className="mb-2 h-8 w-8 text-muted-foreground/50" />
-                <p className="text-sm font-medium">Chưa có dự án nào phù hợp</p>
+                <Film className="mb-2 h-8 w-8 text-muted-foreground/50" aria-hidden />
+                <p className="text-sm font-medium">
+                  {projects.length === 0 ? "Chưa có dự án nào" : "Không có dự án phù hợp"}
+                </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Hãy điền kịch bản ở cột bên trái để bắt đầu.
+                  {projects.length === 0
+                    ? "Điền kịch bản ở form bên cạnh để bắt đầu."
+                    : "Thử bỏ bộ lọc hoặc đổi từ khoá tìm kiếm."}
                 </p>
               </div>
             )}
 
             {filteredProjects.map((p) => {
-              const isProduct = p.videoType === "product";
-              const isFootball =
-                !isProduct && (p.videoType === "football" || p.aspectRatio === "9:16");
-              const targetHref = isProduct
-                ? `/product?id=${p.id}`
-                : isFootball
-                  ? `/football?id=${p.id}`
-                  : `/projects/${p.id}`;
+              const meta = PROJECT_KINDS[projectKind(p)];
+              const KindIcon = meta.icon;
+              const displayTitle = stripLeadingEmoji(p.title);
               return (
-                <Link
+                <div
                   key={p.id}
-                  href={targetHref}
-                  className="group block rounded-xl bg-muted/25 p-4 transition-all hover:bg-muted/40"
+                  className="group relative flex gap-3 rounded-xl bg-muted/25 p-3 transition-colors focus-within:ring-1 focus-within:ring-primary/50 hover:bg-muted/40"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "text-[10px] font-semibold py-0 px-1.5 border-0",
-                            isProduct
-                              ? "text-emerald-400 bg-emerald-500/15"
-                              : isFootball
-                                ? "text-amber-400 bg-amber-500/15"
-                                : "text-primary bg-primary/15"
-                          )}
-                        >
-                          {isProduct
-                            ? "🛍️ Video Sản Phẩm"
-                            : isFootball
-                              ? "⚽ Football Shorts"
-                              : "🎬 Storytoon 2D"}
-                        </Badge>
-                      </div>
-                      <h4
-                        className="mt-1 truncate font-semibold text-foreground group-hover:text-primary transition-colors"
-                        title={p.title}
-                      >
-                        {p.title}
-                      </h4>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <span className="inline-flex items-center gap-1 rounded bg-secondary px-1.5 py-0.5 text-[11px] font-medium text-secondary-foreground">
-                          {p.aspectRatio === "9:16" ? (
-                            <Smartphone className="h-3 w-3" />
-                          ) : (
-                            <Monitor className="h-3 w-3" />
-                          )}
-                          {p.aspectRatio}
-                        </span>
-                        <span>·</span>
-                        <span className="font-mono">{fmtMs(p.durationMs)}</span>
-                        <span>·</span>
-                        <span suppressHydrationWarning>
-                          {new Date(p.createdAt).toLocaleDateString("vi-VN")}
-                        </span>
-                      </div>
-                    </div>
+                  <ProjectThumbnail
+                    url={p.thumbnailUrl}
+                    className={p.aspectRatio === "9:16" ? "h-20 w-[45px]" : "h-[45px] w-20 self-center"}
+                  />
 
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-center gap-1.5">
-                      {statusBadge(p.status)}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleDeleteProject(p.id, p.title);
-                        }}
-                        disabled={deletingId === p.id}
-                        className="rounded p-1 text-muted-foreground transition-colors hover:bg-destructive/15 hover:text-destructive"
-                        title="Xóa dự án này"
+                  <div className="min-w-0 flex-1">
+                    <h4
+                      className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary"
+                      title={p.title}
+                    >
+                      {/* Stretched link: cả thẻ bấm được, nhưng nút Xoá không nằm trong <a> */}
+                      <Link
+                        href={projectHref(p)}
+                        className="outline-none after:absolute after:inset-0 after:rounded-xl"
                       >
-                        {deletingId === p.id ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin text-destructive" />
+                        {displayTitle}
+                      </Link>
+                    </h4>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                      <span className={cn("inline-flex items-center gap-1 font-medium", meta.tone)}>
+                        <KindIcon className="h-3 w-3" aria-hidden />
+                        {meta.label}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        {p.aspectRatio === "9:16" ? (
+                          <Smartphone className="h-3 w-3" aria-hidden />
                         ) : (
-                          <Trash2 className="h-3.5 w-3.5" />
+                          <Monitor className="h-3 w-3" aria-hidden />
                         )}
-                      </button>
+                        {p.aspectRatio}
+                      </span>
+                      <span className="font-mono">{fmtMs(p.durationMs)}</span>
+                      <span suppressHydrationWarning>
+                        {new Date(p.createdAt).toLocaleDateString("vi-VN")}
+                      </span>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground group-hover:text-primary">
-                      Mở Studio <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-                    </span>
+                  </div>
+
+                  <div className="flex shrink-0 flex-col items-end justify-between gap-2">
+                    {statusBadge(p.status)}
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteProject(p.id, p.title)}
+                      disabled={deletingId === p.id}
+                      className="relative z-10 rounded p-1 text-muted-foreground transition-colors hover:bg-destructive/15 hover:text-destructive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-destructive"
+                      title="Xoá dự án này"
+                      aria-label={`Xoá dự án ${displayTitle}`}
+                    >
+                      {deletingId === p.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-destructive" aria-hidden />
+                      ) : (
+                        <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                      )}
+                    </button>
                   </div>
                 </div>
-              </Link>
-            );
-          })}
+              );
+            })}
           </CardContent>
         </Card>
       </div>
+    </div>
+  );
+}
+
+const KIND_FILTERS = ["all", "storytoon", "football", "product"] as const;
+type KindFilter = (typeof KIND_FILTERS)[number];
+
+/** Titles often start with a decorative emoji; the kind label already says what it is. */
+function stripLeadingEmoji(title: string): string {
+  return title.replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u, "").trim() || title;
+}
+
+function StatChip({
+  icon: Icon,
+  label,
+  value,
+  valueClassName,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  valueClassName?: string;
+}) {
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2">
+      <Icon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className={cn("font-mono text-sm font-semibold text-foreground", valueClassName)}>{value}</dd>
     </div>
   );
 }
