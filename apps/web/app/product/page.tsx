@@ -37,7 +37,7 @@ import { API_URL, api, fmtMs, type ProjectSummary } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { ProductPlayer } from "@/components/ProductPlayer";
 import { RenderAndYoutubePanel } from "@/components/RenderAndYoutubePanel";
-import { NleTimeline } from "@/components/nle/NleTimeline";
+import { NleTimeline, type TimelineAudioMix } from "@/components/nle/NleTimeline";
 import { NleInspector } from "@/components/nle/NleInspector";
 import { NleMediaPool, type MediaPoolClip } from "@/components/nle/NleMediaPool";
 import { NleSceneViewer } from "@/components/nle/NleSceneViewer";
@@ -791,6 +791,9 @@ function ProductStudioContent() {
 
   // Frame aspect ratio cho scene crop (default: 3:4)
   const [frameAspectRatio, setFrameAspectRatio] = useState<MediaAspectRatio>("3:4");
+
+  // Track mixer (mute / volume) from the timeline, applied live to the Program Monitor
+  const [audioMix, setAudioMix] = useState<TimelineAudioMix | null>(null);
 
   const updateScenesWithHistory = useCallback((updater: (prev: Scene[]) => Scene[]) => {
     setProject((prev) => {
@@ -1987,7 +1990,13 @@ function ProductStudioContent() {
                               </Button>
                             </div>
                           ) : (
-                            <ProductPlayer ref={playerRef} project={project} />
+                            <ProductPlayer
+                              ref={playerRef}
+                              project={project}
+                              bgmUrl={`${MEDIA_BASE}/football-assets/bgm.mp3`}
+                              bgmVolume={0.12}
+                              mix={audioMix ?? undefined}
+                            />
                           )}
                         </div>
                       </div>
@@ -2058,6 +2067,9 @@ function ProductStudioContent() {
                   canRedo={historyFuture.length > 0}
                   onUndo={handleUndo}
                   onRedo={handleRedo}
+                  onDeleteScene={handleDeleteScene}
+                  onAudioMixChange={setAudioMix}
+                  initialBgmVolume={0.12}
                 />
               </ResizablePanel>
             </>
@@ -2098,7 +2110,8 @@ function ProductStudioContent() {
                   words: project.words ?? [],
                   scenes: project.scenes ?? [],
                   bgmUrl: `${MEDIA_BASE}/football-assets/bgm.mp3`,
-                  bgmVolume: 0.12,
+                  bgmVolume: audioMix ? audioMix.bgm : 0.12,
+                  voiceVolume: audioMix ? audioMix.voice : 1,
                 }}
                 defaultTitle={`${project.title} #Shorts #Review`}
                 script={project.rawScript}

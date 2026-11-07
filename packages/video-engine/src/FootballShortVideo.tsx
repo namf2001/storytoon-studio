@@ -200,6 +200,7 @@ export const FootballShortVideo: React.FC<FootballVideoProps> = ({
   words,
   scenes,
   config,
+  voiceVolume = 1,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -296,7 +297,7 @@ export const FootballShortVideo: React.FC<FootballVideoProps> = ({
       )}
 
       {/* 1. VOICEOVER, BGM & TRANSITION SFX */}
-      {audioUrl && <Audio src={audioUrl} />}
+      {audioUrl && <Audio src={audioUrl} volume={voiceVolume} />}
       {config.bgmUrl && (
         <Audio src={config.bgmUrl} volume={config.bgmVolume ?? 0.14} loop />
       )}

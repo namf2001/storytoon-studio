@@ -107,6 +107,7 @@ export const VtvNewsVideo: React.FC<FootballVideoProps> = ({
   words,
   scenes,
   config,
+  voiceVolume = 1,
 }) => {
   // 1. Map scenes to MediaClip[]
   const mediaClips: MediaClip[] = scenes.map((sc, idx) => {
@@ -186,6 +187,7 @@ export const VtvNewsVideo: React.FC<FootballVideoProps> = ({
   return (
     <VtvNewsTemplate
       audioSrc={audioUrl || undefined}
+      audioVolume={voiceVolume}
       bgmSrc={bgmUrl}
       bgmVolume={config.bgmVolume ?? 0.16}
       backgroundVideoUrl={bgVideo}

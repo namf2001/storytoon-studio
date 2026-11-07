@@ -33,7 +33,7 @@ import { API_URL, api, fmtMs, type ProjectSummary } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { FootballPlayer } from "@/components/FootballPlayer";
 import { RenderAndYoutubePanel } from "@/components/RenderAndYoutubePanel";
-import { NleTimeline } from "@/components/nle/NleTimeline";
+import { NleTimeline, type TimelineAudioMix } from "@/components/nle/NleTimeline";
 import { NleInspector } from "@/components/nle/NleInspector";
 import { NleMediaPool, type MediaPoolClip } from "@/components/nle/NleMediaPool";
 import { NleSceneViewer } from "@/components/nle/NleSceneViewer";
@@ -772,6 +772,8 @@ function FootballStudioContent() {
   const [copiedJson, setCopiedJson] = useState(false);
   const [nowMs, setNowMs] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  // Track mixer (mute / volume) from the timeline, applied live to the Program Monitor
+  const [audioMix, setAudioMix] = useState<TimelineAudioMix | null>(null);
 
   const updateScenesWithHistory = useCallback((updater: (prev: Scene[]) => Scene[]) => {
     setProject((prev) => {
@@ -1820,6 +1822,7 @@ function FootballStudioContent() {
                             ref={playerRef}
                             project={project}
                             config={broadcastConfig}
+                            mix={audioMix ?? undefined}
                           />
                         </div>
                       </div>
@@ -1883,6 +1886,9 @@ function FootballStudioContent() {
                   canRedo={historyFuture.length > 0}
                   onUndo={handleUndo}
                   onRedo={handleRedo}
+                  onDeleteScene={handleDeleteScene}
+                  onAudioMixChange={setAudioMix}
+                  initialBgmVolume={broadcastConfig.bgmVolume ?? 0.14}
                 />
               </ResizablePanel>
             </>
@@ -1922,7 +1928,8 @@ function FootballStudioContent() {
                   durationMs: Math.max(project.durationMs, 1000),
                   words: project.words ?? [],
                   scenes: project.scenes ?? [],
-                  config: broadcastConfig,
+                  config: audioMix ? { ...broadcastConfig, bgmVolume: audioMix.bgm } : broadcastConfig,
+                  voiceVolume: audioMix ? audioMix.voice : 1,
                 }}
                 defaultTitle={`${broadcastConfig.headlines.join(" ")} #Shorts`}
                 script={project.rawScript}

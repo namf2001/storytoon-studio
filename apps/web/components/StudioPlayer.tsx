@@ -6,10 +6,15 @@ import { MonitorBootPlaceholder, monitorPlayerStateProps } from "@/components/nl
 import type { Project, AspectRatio } from "@storytoon/shared-types";
 import { StoryVideo, FPS, dimensionsFor, msToFrames } from "@storytoon/video-engine";
 
-interface Props { project: Project; ratio: AspectRatio }
+interface Props {
+  project: Project;
+  ratio: AspectRatio;
+  /** Voice-over gain from the timeline mixer (0 = muted). */
+  voiceVolume?: number;
+}
 
 /** Live Remotion preview of the project. */
-export const StudioPlayer = forwardRef<PlayerRef, Props>(function StudioPlayer({ project, ratio }, ref) {
+export const StudioPlayer = forwardRef<PlayerRef, Props>(function StudioPlayer({ project, ratio, voiceVolume = 1 }, ref) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -42,6 +47,7 @@ export const StudioPlayer = forwardRef<PlayerRef, Props>(function StudioPlayer({
         aspectRatio: ratio,
         words: project.words,
         scenes: project.scenes,
+        voiceVolume,
       }}
       durationInFrames={msToFrames(Math.max(project.durationMs, 1000))}
       fps={FPS}

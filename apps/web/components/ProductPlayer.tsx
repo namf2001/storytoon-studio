@@ -6,15 +6,24 @@ import { MonitorBootPlaceholder, monitorPlayerStateProps } from "@/components/nl
 import type { Project } from "@storytoon/shared-types";
 import { ProductCommercialVideo, FPS, msToFrames } from "@storytoon/video-engine";
 
+interface AudioMix {
+  /** Voice-over gain, 0 = muted. */
+  voice: number;
+  /** Background-music gain, 0 = muted. */
+  bgm: number;
+}
+
 interface Props {
   project: Project;
   bgmUrl?: string | null;
   bgmVolume?: number;
+  /** Live track mix from the timeline (overrides bgmVolume). */
+  mix?: AudioMix;
 }
 
 /** Live Remotion 9:16 Program Monitor for Fullscreen Product Commercial. */
 export const ProductPlayer = forwardRef<PlayerRef, Props>(function ProductPlayer(
-  { project, bgmUrl, bgmVolume = 0.12 },
+  { project, bgmUrl, bgmVolume = 0.12, mix },
   ref
 ) {
   const [mounted, setMounted] = useState(false);
@@ -57,7 +66,8 @@ export const ProductPlayer = forwardRef<PlayerRef, Props>(function ProductPlayer
         words: project.words ?? [],
         scenes: project.scenes ?? [],
         bgmUrl,
-        bgmVolume,
+        bgmVolume: mix ? mix.bgm : bgmVolume,
+        voiceVolume: mix ? mix.voice : 1,
       }}
       durationInFrames={msToFrames(Math.max(project.durationMs, 1000))}
       fps={FPS}

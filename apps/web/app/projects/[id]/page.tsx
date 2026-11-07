@@ -47,7 +47,7 @@ import { API_URL, api, fmtMs } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { StudioPlayer } from "@/components/StudioPlayer";
 import { RenderAndYoutubePanel } from "@/components/RenderAndYoutubePanel";
-import { NleTimeline } from "@/components/nle/NleTimeline";
+import { NleTimeline, type TimelineAudioMix } from "@/components/nle/NleTimeline";
 import { NleInspector } from "@/components/nle/NleInspector";
 import { NleSceneViewer } from "@/components/nle/NleSceneViewer";
 import { NleWorkspaceSwitcher } from "@/components/nle/NleWorkspaceSwitcher";
@@ -98,6 +98,8 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
   const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  // Track mixer from the timeline (voice mute / volume) applied live to the player
+  const [audioMix, setAudioMix] = useState<TimelineAudioMix | null>(null);
   const [error, setError] = useState("");
   const [copiedChar, setCopiedChar] = useState<string | null>(null);
   const [reprocessing, setReprocessing] = useState(false);
@@ -1019,7 +1021,12 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                         </div>
 
                         <div className="relative flex flex-1 min-h-0 items-center justify-center p-3 overflow-hidden">
-                          <StudioPlayer ref={playerRef} project={project} ratio={ratio} />
+                          <StudioPlayer
+                            ref={playerRef}
+                            project={project}
+                            ratio={ratio}
+                            voiceVolume={audioMix?.voice ?? 1}
+                          />
                         </div>
 
                         {playingScene && (
@@ -1085,6 +1092,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                   canRedo={historyFuture.length > 0}
                   onUndo={handleUndo}
                   onRedo={handleRedo}
+                  onAudioMixChange={setAudioMix}
                 />
               </ResizablePanel>
             </>
@@ -1123,6 +1131,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                 aspectRatio: ratio,
                 words: project.words ?? [],
                 scenes: project.scenes ?? [],
+                voiceVolume: audioMix?.voice ?? 1,
               }}
               defaultTitle={project.title}
               script={project.rawScript}

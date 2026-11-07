@@ -306,6 +306,8 @@ export type StoryVideoProps = {
   aspectRatio: AspectRatio;
   words: CaptionWord[];
   scenes: Scene[];
+  /** Voice-over gain (0 = muted, 1 = original). Defaults to 1. */
+  voiceVolume?: number;
 };
 
 /** Configuration for a Football Broadcast Short (Bản tin truyền hình / Người Đá Bóng style). */
@@ -348,4 +350,6 @@ export type FootballVideoProps = {
   words: CaptionWord[];
   scenes: Scene[];
   config: FootballBroadcastConfig;
+  /** Voice-over gain (0 = muted, 1 = original). Defaults to 1. */
+  voiceVolume?: number;
 };

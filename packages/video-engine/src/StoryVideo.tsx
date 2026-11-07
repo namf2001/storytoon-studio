@@ -6,7 +6,7 @@ import { Captions } from "./Captions";
 import { msToFrames } from "./constants";
 
 /** Main composition: scene images + voiceover + kinetic captions. */
-export const StoryVideo: React.FC<StoryVideoProps> = ({ audioUrl, words, scenes }) => {
+export const StoryVideo: React.FC<StoryVideoProps> = ({ audioUrl, words, scenes, voiceVolume = 1 }) => {
   const sorted = [...scenes].sort((a, b) => a.sceneIndex - b.sceneIndex);
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
@@ -19,7 +19,7 @@ export const StoryVideo: React.FC<StoryVideoProps> = ({ audioUrl, words, scenes 
           </Sequence>
         );
       })}
-      {audioUrl ? <Audio src={audioUrl} /> : null}
+      {audioUrl ? <Audio src={audioUrl} volume={voiceVolume} /> : null}
       <Captions words={words} scenes={sorted} />
     </AbsoluteFill>
   );
