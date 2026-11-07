@@ -76,7 +76,7 @@ export function CommandPalette({
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <DialogPrimitive.Content className="fixed left-[50%] top-[18%] z-50 w-full max-w-xl translate-x-[-50%] overflow-hidden rounded-xl border border-zinc-800 bg-[#121217] text-zinc-100 shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+        <DialogPrimitive.Content className="fixed left-[50%] top-[12%] z-50 w-[calc(100%-2rem)] max-w-xl sm:top-[18%] translate-x-[-50%] overflow-hidden rounded-xl border border-zinc-800 bg-surface-2 text-zinc-100 shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
           <DialogPrimitive.Title className="sr-only">
             Bảng điều khiển nhanh Storytoon NLE (⌘K)
           </DialogPrimitive.Title>
@@ -87,7 +87,7 @@ export function CommandPalette({
                 placeholder="Tìm dự án, chuyển Studio, hoặc gọi lệnh NLE (gõ tên dự án, 'product', 'tách cảnh'...)..."
                 className="flex h-11 w-full bg-transparent py-3 text-xs text-zinc-100 placeholder:text-zinc-500 outline-none"
               />
-              <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">
+              <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400">
                 ESC
               </kbd>
             </div>
@@ -99,7 +99,7 @@ export function CommandPalette({
 
               <Command.Group
                 heading="Không gian làm việc (Studios & Tools)"
-                className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-zinc-500"
+                className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-zinc-500"
               >
                 <Command.Item
                   value="storytoon 2d studio trang chu dashboard"
@@ -110,7 +110,7 @@ export function CommandPalette({
                     <FolderKanban className="h-4 w-4 text-amber-400" />
                     <span>Storytoon 2D Studio (Dashboard & Tạo dự án)</span>
                   </div>
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-[11px]">
                     16:9 / 9:16
                   </Badge>
                 </Command.Item>
@@ -124,7 +124,7 @@ export function CommandPalette({
                     <ShoppingBag className="h-4 w-4 text-emerald-400" />
                     <span>Video Sản Phẩm TVC Studio (Smart Auto-Fit)</span>
                   </div>
-                  <Badge variant="outline" className="border-emerald-500/40 text-[10px] text-emerald-300">
+                  <Badge variant="outline" className="border-emerald-500/40 text-[11px] text-emerald-300">
                     9:16 TVC
                   </Badge>
                 </Command.Item>
@@ -138,7 +138,7 @@ export function CommandPalette({
                     <Trophy className="h-4 w-4 text-amber-400" />
                     <span>Football Shorts Broadcast Studio</span>
                   </div>
-                  <Badge variant="outline" className="border-amber-500/40 text-[10px] text-amber-300">
+                  <Badge variant="outline" className="border-amber-500/40 text-[11px] text-amber-300">
                     9:16 Sport
                   </Badge>
                 </Command.Item>
@@ -152,7 +152,7 @@ export function CommandPalette({
                     <UserRound className="h-4 w-4 text-cyan-400" />
                     <span>2D Character Rig & Lip-Sync Studio (SVG)</span>
                   </div>
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-[11px]">
                     Rigging
                   </Badge>
                 </Command.Item>
@@ -166,7 +166,7 @@ export function CommandPalette({
                     <SquareTerminal className="h-4 w-4 text-purple-400" />
                     <span>Rive Character Sandbox</span>
                   </div>
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-[11px]">
                     Rive
                   </Badge>
                 </Command.Item>
@@ -176,7 +176,7 @@ export function CommandPalette({
 
               <Command.Group
                 heading="Thao tác nhanh trên Timeline NLE"
-                className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-zinc-500"
+                className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-zinc-500"
               >
                 <Command.Item
                   value="tach canh tai playhead split scene"
@@ -187,7 +187,7 @@ export function CommandPalette({
                     <Scissors className="h-3.5 w-3.5 text-amber-400" />
                     <span>Tách phân cảnh tại vị trí Playhead</span>
                   </div>
-                  <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] text-zinc-300">
+                  <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] text-zinc-300">
                     S
                   </kbd>
                 </Command.Item>
@@ -201,7 +201,7 @@ export function CommandPalette({
                     <Combine className="h-3.5 w-3.5 text-cyan-400" />
                     <span>Gộp phân cảnh đang chọn với cảnh kế tiếp</span>
                   </div>
-                  <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] text-zinc-300">
+                  <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] text-zinc-300">
                     M
                   </kbd>
                 </Command.Item>
@@ -215,7 +215,7 @@ export function CommandPalette({
                     <Undo2 className="h-3.5 w-3.5 text-zinc-400" />
                     <span>Hoàn tác thay đổi (Undo)</span>
                   </div>
-                  <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] text-zinc-300">
+                  <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] text-zinc-300">
                     ⌘Z
                   </kbd>
                 </Command.Item>
@@ -231,7 +231,7 @@ export function CommandPalette({
                     <Redo2 className="h-3.5 w-3.5 text-zinc-400" />
                     <span>Làm lại thay đổi (Redo)</span>
                   </div>
-                  <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] text-zinc-300">
+                  <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-[11px] text-zinc-300">
                     ⌘⇧Z
                   </kbd>
                 </Command.Item>
@@ -242,7 +242,7 @@ export function CommandPalette({
                   <Command.Separator className="my-1.5 h-px bg-zinc-800/80" />
                   <Command.Group
                     heading={`Dự án gần đây (${projects.length})`}
-                    className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-zinc-500"
+                    className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-zinc-500"
                   >
                     {projects.slice(0, 15).map((p) => {
                       const href =
@@ -266,11 +266,11 @@ export function CommandPalette({
                           </div>
                           <div className="flex shrink-0 items-center gap-1.5">
                             {p.durationMs ? (
-                              <span className="font-mono text-[10px] text-zinc-400">
+                              <span className="font-mono text-[11px] text-zinc-400">
                                 {fmtMs(p.durationMs)}
                               </span>
                             ) : null}
-                            <Badge variant="outline" className="text-[9px]">
+                            <Badge variant="outline" className="text-[11px]">
                               {p.aspectRatio}
                             </Badge>
                           </div>
@@ -282,7 +282,7 @@ export function CommandPalette({
               )}
             </Command.List>
 
-            <div className="flex items-center justify-between border-t border-zinc-800 bg-[#0d0d11] px-3.5 py-2 text-[10px] text-zinc-500">
+            <div className="flex items-center justify-between border-t border-zinc-800 bg-surface-1 px-3.5 py-2 text-[11px] text-zinc-500">
               <span className="flex items-center gap-1.5">
                 <Keyboard className="h-3 w-3 text-amber-400" />
                 Dùng phím ↑↓ để di chuyển, Enter để chọn

@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@storytoon/video-engine", "@storytoon/shared-types"],
+  // Ẩn nút "N" của Next.js (đè lên chân thanh bên khi chạy dev)
+  devIndicators: false,
   async rewrites() {
     return [
       {

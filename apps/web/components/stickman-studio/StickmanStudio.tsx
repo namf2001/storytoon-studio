@@ -208,7 +208,7 @@ export const StickmanStudio: React.FC = () => {
         <div className="flex items-center gap-2">
           {/* Undo / Redo */}
           <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-900/60 p-0.5">
-            <Button
+            <Button aria-label="Undo (Ctrl+Z)"
               variant="ghost"
               size="icon"
               disabled={!canUndo}
@@ -218,7 +218,7 @@ export const StickmanStudio: React.FC = () => {
             >
               <Undo2 className="h-3.5 w-3.5" />
             </Button>
-            <Button
+            <Button aria-label="Redo (Ctrl+Shift+Z)"
               variant="ghost"
               size="icon"
               disabled={!canRedo}
