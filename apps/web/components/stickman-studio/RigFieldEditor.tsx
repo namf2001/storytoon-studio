@@ -196,7 +196,7 @@ export const RigFieldEditor: React.FC<RigFieldEditorProps> = ({
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[11px] font-bold text-zinc-200 truncate">{m.name}</span>
-                    <span className="text-[9px] text-zinc-400 truncate">{m.hint}</span>
+                    <span className="text-[10px] text-zinc-400 truncate">{m.hint}</span>
                   </div>
                 </div>
               ))}

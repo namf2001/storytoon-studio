@@ -12,13 +12,14 @@ import (
 )
 
 type summaryResponse struct {
-	ID          string    `json:"id"`
-	Title       string    `json:"title"`
-	Status      string    `json:"status"`
-	AspectRatio string    `json:"aspectRatio"`
-	VideoType   string    `json:"videoType"`
-	DurationMs  int       `json:"durationMs"`
-	CreatedAt   time.Time `json:"createdAt"`
+	ID           string    `json:"id"`
+	Title        string    `json:"title"`
+	Status       string    `json:"status"`
+	AspectRatio  string    `json:"aspectRatio"`
+	VideoType    string    `json:"videoType"`
+	DurationMs   int       `json:"durationMs"`
+	CreatedAt    time.Time `json:"createdAt"`
+	ThumbnailURL *string   `json:"thumbnailUrl"`
 }
 
 // List handles GET /projects.
@@ -34,6 +35,7 @@ func (h Handler) List(c *gin.Context) {
 		res = append(res, summaryResponse{
 			ID: p.ID, Title: p.Title, Status: p.Status, AspectRatio: p.AspectRatio,
 			VideoType: p.VideoType, DurationMs: p.DurationMs, CreatedAt: p.CreatedAt,
+			ThumbnailURL: p.ThumbnailURL,
 		})
 	}
 	logger.INFO.Printf("[ProjectList] returned %d projects", len(res))

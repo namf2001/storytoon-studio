@@ -2,6 +2,7 @@
 
 import { forwardRef, useEffect, useState } from "react";
 import { Player, type PlayerRef } from "@remotion/player";
+import { MonitorBootPlaceholder, monitorPlayerStateProps } from "@/components/nle/MonitorStates";
 import type { Project } from "@storytoon/shared-types";
 import { ProductCommercialVideo, FPS, msToFrames } from "@storytoon/video-engine";
 
@@ -35,18 +36,12 @@ export const ProductPlayer = forwardRef<PlayerRef, Props>(function ProductPlayer
 
   if (!mounted) {
     return (
-      <div
+      <MonitorBootPlaceholder
+        label="Đang khởi động Program Monitor…"
         style={{
           ...playerStyle,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#94a3b8",
-          fontSize: 12,
         }}
-      >
-        Đang khởi động Program Monitor...
-      </div>
+      />
     );
   }
 
@@ -69,6 +64,7 @@ export const ProductPlayer = forwardRef<PlayerRef, Props>(function ProductPlayer
       compositionWidth={1080}
       compositionHeight={1920}
       controls
+      {...monitorPlayerStateProps}
       style={playerStyle}
     />
   );

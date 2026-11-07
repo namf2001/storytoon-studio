@@ -2,6 +2,7 @@
 
 import { forwardRef, useEffect, useState } from "react";
 import { Player, type PlayerRef } from "@remotion/player";
+import { MonitorBootPlaceholder, monitorPlayerStateProps } from "@/components/nle/MonitorStates";
 import type { FootballBroadcastConfig, Project } from "@storytoon/shared-types";
 import { FootballShortVideo, VtvNewsVideo, FPS, msToFrames } from "@storytoon/video-engine";
 
@@ -34,18 +35,12 @@ export const FootballPlayer = forwardRef<PlayerRef, Props>(function FootballPlay
 
   if (!mounted) {
     return (
-      <div
+      <MonitorBootPlaceholder
+        label="Đang khởi động Program Monitor…"
         style={{
           ...playerStyle,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#94a3b8",
-          fontSize: 12,
         }}
-      >
-        Đang khởi động Program Monitor...
-      </div>
+      />
     );
   }
 
@@ -69,6 +64,7 @@ export const FootballPlayer = forwardRef<PlayerRef, Props>(function FootballPlay
       compositionWidth={1080}
       compositionHeight={1920}
       controls
+      {...monitorPlayerStateProps}
       style={playerStyle}
     />
   );

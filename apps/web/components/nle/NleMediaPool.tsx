@@ -250,9 +250,9 @@ export function NleMediaPool({
   });
 
   return (
-    <aside className="flex h-full w-full flex-col border-r border-zinc-800 bg-[#121216] select-none overflow-hidden">
+    <aside className="flex h-full w-full flex-col border-r border-zinc-800 bg-surface-2 select-none overflow-hidden">
       {/* Media Pool Header Tabs */}
-      <div className="flex h-9 shrink-0 items-center border-b border-zinc-800 bg-[#16161c] px-2 gap-1">
+      <div className="flex h-9 shrink-0 items-center border-b border-zinc-800 bg-surface-3 px-2 gap-1">
         <button
           type="button"
           onClick={() => setTab("media")}
@@ -282,7 +282,7 @@ export function NleMediaPool({
         </button>
 
         {onClose && (
-          <button
+          <button aria-label="Thu gọn Media Pool (Bên trái)"
             type="button"
             onClick={onClose}
             className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"
@@ -320,7 +320,7 @@ export function NleMediaPool({
                     : `Tải Video/Ảnh vào Cảnh #${sceneIdx}`}
                 </span>
               </div>
-              <span className="shrink-0 rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[9px] text-zinc-400">
+              <span className="shrink-0 rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">
                 MP4/PNG
               </span>
             </div>
@@ -466,18 +466,18 @@ export function NleMediaPool({
                             <GripHorizontal className="h-2.5 w-2.5" />
                           </span>
                           {isActiveInSelectedScene ? (
-                            <span className="absolute right-1 top-1 rounded bg-emerald-400 px-1 font-mono text-[8.5px] font-bold text-black shadow">
+                            <span className="absolute right-1 top-1 rounded bg-emerald-400 px-1 font-mono text-[10px] font-bold text-black shadow">
                               Đang dùng
                             </span>
                           ) : (
                             clip.badge && (
-                              <span className="absolute right-1 top-1 rounded bg-black/80 px-1 font-mono text-[9px] text-amber-300">
+                              <span className="absolute right-1 top-1 rounded bg-black/80 px-1 font-mono text-[10px] text-amber-300">
                                 {clip.badge}
                               </span>
                             )
                           )}
                           {isImage && slideIdx >= 0 && (
-                            <button
+                            <button aria-label="Phóng to xem chi tiết ảnh (Lightbox)"
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();

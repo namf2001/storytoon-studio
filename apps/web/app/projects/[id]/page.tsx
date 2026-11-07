@@ -27,8 +27,6 @@ import {
   Pause,
   Play,
   RefreshCw,
-  Rocket,
-  Sliders,
   Smartphone,
   Sparkles,
   Square,
@@ -52,12 +50,14 @@ import { RenderAndYoutubePanel } from "@/components/RenderAndYoutubePanel";
 import { NleTimeline } from "@/components/nle/NleTimeline";
 import { NleInspector } from "@/components/nle/NleInspector";
 import { NleSceneViewer } from "@/components/nle/NleSceneViewer";
+import { NleWorkspaceSwitcher } from "@/components/nle/NleWorkspaceSwitcher";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
+import { useConfirmDialog, deleteProjectConfirm } from "@/components/ui/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -111,6 +111,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const playerRef = useRef<PlayerRef>(null);
+  const [confirm, confirmDialog] = useConfirmDialog();
 
   const load = useCallback(async () => {
     try {
@@ -349,7 +350,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#0c0d10] p-6">
+      <div className="flex h-screen items-center justify-center bg-surface-1 p-6">
         <Card className="mx-auto max-w-xl border-0 bg-red-500/10">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-400">
@@ -364,7 +365,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
   if (!project) {
     return (
-      <div className="flex h-screen items-center justify-center gap-2 bg-[#0c0d10] text-sm text-zinc-400">
+      <div className="flex h-screen items-center justify-center gap-2 bg-surface-1 text-sm text-zinc-400">
         <Loader2 className="h-5 w-5 animate-spin text-amber-400" />
         Đang tải dữ liệu Bàn dựng NLE...
       </div>
@@ -376,7 +377,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
   async function handleDeleteProject() {
     if (!project) return;
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn dự án "${project.title}" không?`)) {
+    if (!(await confirm(deleteProjectConfirm(project.title)))) {
       return;
     }
     const toastId = toast.loading(`Đang xóa dự án "${project.title}"...`);
@@ -479,13 +480,14 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
   const totalScenes = project.scenes.length;
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-[#0c0d10] text-zinc-100 select-none">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-surface-1 text-zinc-100 select-none">
+      {confirmDialog}
       {/* 1. TOP NLE HEADER BAR */}
-      <header className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/90 bg-[#14161b] px-3">
+      <header className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/90 bg-surface-3 px-3">
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
+              <button aria-label="Media Pool (Thư viện media)"
                 type="button"
                 onClick={() => setShowLeftPanel((v) => !v)}
                 className={cn(
@@ -518,40 +520,13 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
         {/* Center Workspace Switcher + Dual Monitor Switcher */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-950/90 p-0.5">
-            <button
-              type="button"
-              onClick={() => setWorkspaceMode("edit")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-all",
-                workspaceMode === "edit"
-                  ? "bg-amber-500 text-black shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200"
-              )}
-            >
-              <Sliders className="h-3.5 w-3.5" />
-              Edit
-            </button>
-            <button
-              type="button"
-              onClick={() => setWorkspaceMode("deliver")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-all",
-                workspaceMode === "deliver"
-                  ? "bg-red-600 text-white shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200"
-              )}
-            >
-              <Rocket className="h-3.5 w-3.5" />
-              Deliver
-            </button>
-          </div>
+          <NleWorkspaceSwitcher mode={workspaceMode} onChange={setWorkspaceMode} />
 
           {workspaceMode === "edit" && (
             <div className="hidden lg:flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5 text-[11px] gap-0.5">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Dual Monitor (Cảnh đang làm + Full Video)"
                     type="button"
                     onClick={() => setViewerMode("dual")}
                     className={cn(
@@ -569,7 +544,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Single Monitor (Chỉ xem Cảnh đang làm)"
                     type="button"
                     onClick={() => setViewerMode("scene")}
                     className={cn(
@@ -587,7 +562,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Single Monitor (Chỉ xem Full Video)"
                     type="button"
                     onClick={() => setViewerMode("program")}
                     className={cn(
@@ -660,7 +635,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
+              <Button aria-label="Xóa dự án này"
                 variant="outline"
                 size="sm"
                 onClick={handleDeleteProject}
@@ -674,7 +649,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
+              <button aria-label="Đóng / Mở Timeline"
                 type="button"
                 onClick={() => setShowBottomPanel((v) => !v)}
                 className={cn(
@@ -692,7 +667,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
+              <button aria-label="Đóng / Mở Inspector"
                 type="button"
                 onClick={() => setShowRightPanel((v) => !v)}
                 className={cn(
@@ -719,7 +694,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
               {showLeftPanel && (
                 <>
                   <ResizablePanel defaultSize="20%" minSize="14%" maxSize="35%">
-                    <div className="flex h-full w-full flex-col border-r border-zinc-800/90 bg-[#14161b] text-zinc-200 overflow-hidden">
+                    <div className="flex h-full w-full flex-col border-r border-zinc-800/90 bg-surface-3 text-zinc-200 overflow-hidden">
                       <div className="flex items-center border-b border-zinc-800 bg-zinc-900/90 px-1.5 pt-1.5">
                         <button
                           type="button"
@@ -757,7 +732,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                         >
                           <Subtitles className="h-3.5 w-3.5" /> Từ
                         </button>
-                        <button
+                        <button aria-label="Thu gọn Media Pool"
                           type="button"
                           onClick={() => setShowLeftPanel(false)}
                           className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white ml-1"
@@ -856,7 +831,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                                           <GripHorizontal className="h-3 w-3 shrink-0 text-zinc-500" />
                                           <span className="truncate">{label}</span>
                                         </span>
-                                        <span className="text-[9px] text-emerald-400 font-bold ml-1">
+                                        <span className="text-[10px] text-emerald-400 font-bold ml-1">
                                           +Gắn
                                         </span>
                                       </button>
@@ -1000,8 +975,8 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                       defaultSize={viewerMode === "dual" ? "50%" : "100%"}
                       minSize="25%"
                     >
-                      <div className="flex h-full w-full flex-col min-w-0 bg-[#09090b] overflow-hidden">
-                        <div className="flex h-9 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-[#111318] px-3 text-[11px]">
+                      <div className="flex h-full w-full flex-col min-w-0 bg-background overflow-hidden">
+                        <div className="flex h-9 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-surface-2 px-3 text-[11px]">
                           <div className="flex items-center gap-2 min-w-0">
                             <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-red-500 animate-pulse" />
                             <span className="truncate font-semibold uppercase tracking-wider text-zinc-300">
@@ -1048,7 +1023,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                         </div>
 
                         {playingScene && (
-                          <div className="flex h-8 shrink-0 items-center justify-between border-t border-zinc-800/80 bg-[#111318] px-3 text-[11px] text-zinc-400">
+                          <div className="flex h-8 shrink-0 items-center justify-between border-t border-zinc-800/80 bg-surface-2 px-3 text-[11px] text-zinc-400">
                             <p className="truncate">
                               <span className="font-semibold text-amber-400 mr-1.5">
                                 [Cảnh #{playingScene.sceneIndex}]
@@ -1117,8 +1092,8 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
         </ResizablePanelGroup>
       ) : (
         /* DELIVER WORKSPACE */
-        <div className="flex-1 overflow-y-auto bg-[#09090b] p-6">
-          <div className="mx-auto max-w-2xl rounded-xl bg-[#14161b] p-5 shadow-xl">
+        <div className="flex-1 overflow-y-auto bg-background p-6">
+          <div className="mx-auto max-w-2xl rounded-xl bg-surface-3 p-5 shadow-xl">
             <div className="mb-4 flex items-center justify-between pb-3">
               <div>
                 <h2 className="flex items-center gap-2 text-base font-bold text-zinc-100">

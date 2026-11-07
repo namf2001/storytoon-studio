@@ -572,9 +572,9 @@ export function NleTimeline({
     trackHeights.bgm !== DEFAULT_TRACK_HEIGHTS.bgm;
 
   return (
-    <div className="flex h-full w-full flex-col bg-[#111115] select-none overflow-hidden">
+    <div className="flex h-full w-full flex-col bg-surface-2 select-none overflow-hidden">
       {/* Timeline Top Transport, Tools & Shortcut Hints */}
-      <div className="flex h-7 shrink-0 items-center justify-between border-b border-zinc-800/90 bg-[#16161b] px-3 text-[11px]">
+      <div className="flex h-7 shrink-0 items-center justify-between border-b border-zinc-800/90 bg-surface-3 px-3 text-[11px]">
         <div className="flex items-center gap-2">
           <span className="font-mono font-bold text-amber-400">
             TIMELINE · {scenes.length} CLIPS
@@ -586,7 +586,7 @@ export function NleTimeline({
           <div className="flex items-center gap-0.5">
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
+                <button aria-label="Cảnh trước"
                   type="button"
                   onClick={() => stepScene(-1)}
                   className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"
@@ -599,7 +599,7 @@ export function NleTimeline({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
+                <button aria-label="Cảnh tiếp theo"
                   type="button"
                   onClick={() => stepScene(1)}
                   className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"
@@ -615,7 +615,7 @@ export function NleTimeline({
           {onSplitAtPlayhead && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
+                <button aria-label="Tách cảnh tại Playhead (Phím tắt: S)"
                   type="button"
                   onClick={onSplitAtPlayhead}
                   className="flex h-5 w-6 items-center justify-center rounded border border-zinc-700/80 bg-zinc-800/90 text-zinc-200 hover:border-amber-400/60 hover:text-amber-300"
@@ -633,7 +633,7 @@ export function NleTimeline({
           {onMergeSelectedWithNext && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
+                <button aria-label="Gộp với cảnh kế tiếp (Phím tắt: M)"
                   type="button"
                   onClick={onMergeSelectedWithNext}
                   className="flex h-5 w-6 items-center justify-center rounded border border-zinc-700/80 bg-zinc-800/90 text-zinc-200 hover:border-cyan-400/60 hover:text-cyan-300"
@@ -651,7 +651,7 @@ export function NleTimeline({
           {onAddScene && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
+                <button aria-label="Thêm cảnh mới vào timeline"
                   type="button"
                   onClick={onAddScene}
                   className="flex h-5 w-6 items-center justify-center rounded border border-zinc-700/80 bg-zinc-800/90 text-zinc-200 hover:border-amber-400/60 hover:text-amber-300"
@@ -687,7 +687,7 @@ export function NleTimeline({
             <div className="flex items-center gap-0.5">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Hoàn tác (⌘Z / Ctrl+Z)"
                     type="button"
                     disabled={!canUndo}
                     onClick={onUndo}
@@ -703,7 +703,7 @@ export function NleTimeline({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <button aria-label="Làm lại (⌘⇧Z / Ctrl+Shift+Z)"
                     type="button"
                     disabled={!canRedo}
                     onClick={onRedo}
@@ -793,7 +793,7 @@ export function NleTimeline({
         <div className="flex items-center gap-3">
           {/* Timeline Horizontal Zoom Controls */}
           <div className="hidden sm:flex items-center gap-1 rounded border border-zinc-800 bg-zinc-900/80 px-1.5 py-0.5">
-            <button
+            <button aria-label="Thu nhỏ Timeline"
               type="button"
               onClick={() =>
                 setTimelineZoom((z) => Math.max(1, Number((z - 0.5).toFixed(1))))
@@ -814,7 +814,7 @@ export function NleTimeline({
               className="h-1 w-14 cursor-pointer accent-amber-400"
               title={`Thu phóng Timeline: ${timelineZoom}x`}
             />
-            <button
+            <button aria-label="Phóng to Timeline"
               type="button"
               onClick={() =>
                 setTimelineZoom((z) => Math.min(4, Number((z + 0.5).toFixed(1))))
@@ -828,7 +828,7 @@ export function NleTimeline({
             <button
               type="button"
               onClick={() => setTimelineZoom(1)}
-              className="ml-0.5 rounded bg-zinc-800 px-1 font-mono text-[9px] text-amber-300 hover:bg-zinc-700"
+              className="ml-0.5 rounded bg-zinc-800 px-1 font-mono text-[10px] text-amber-300 hover:bg-zinc-700"
               title="Đặt lại 1x (Fit)"
             >
               {timelineZoom}x
@@ -846,11 +846,11 @@ export function NleTimeline({
       {/* Main Multi-Track Area (Synchronized Vertical Scroll + Resizable Track Rows) */}
       <div className="flex flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
         {/* Left Track Headers Column (96px) */}
-        <div className="flex w-24 shrink-0 flex-col border-r border-zinc-800 bg-[#141419] text-[10px] font-mono text-zinc-400">
+        <div className="flex w-24 shrink-0 flex-col border-r border-zinc-800 bg-surface-3 text-[10px] font-mono text-zinc-400">
           {/* TC Header */}
-          <div className="sticky top-0 z-30 flex h-5 shrink-0 items-center justify-between border-b border-zinc-800/90 bg-[#141419] px-2 text-zinc-500">
+          <div className="sticky top-0 z-30 flex h-5 shrink-0 items-center justify-between border-b border-zinc-800/90 bg-surface-3 px-2 text-zinc-500">
             <span>TC</span>
-            <span className="text-[8px] text-zinc-600">5T</span>
+            <span className="text-[10px] text-zinc-600">5T</span>
           </div>
 
           {/* 1. V1 Header (Video) */}
@@ -862,7 +862,7 @@ export function NleTimeline({
               <Film className="h-3 w-3 shrink-0" />
               <span>V1</span>
             </span>
-            <span className="rounded bg-sky-500/15 px-1 text-[8px] text-sky-300">
+            <span className="rounded bg-sky-500/15 px-1 text-[10px] text-sky-300">
               {scenes.length}
             </span>
             {/* Bottom vertical resize handle */}
@@ -907,7 +907,7 @@ export function NleTimeline({
                   )
                 }
                 title="Đổi âm lượng Voiceover (50% / 75% / 100% / 120%)"
-                className="rounded bg-emerald-950/80 border border-emerald-700/40 px-1 text-[8px] text-emerald-300 hover:border-emerald-400"
+                className="rounded bg-emerald-950/80 border border-emerald-700/40 px-1 text-[10px] text-emerald-300 hover:border-emerald-400"
               >
                 {voMuted ? "0%" : `${voVolume}%`}
               </button>
@@ -950,7 +950,7 @@ export function NleTimeline({
                 type="button"
                 onClick={handleAddSfxAtPlayhead}
                 title="Thêm SFX tại Playhead"
-                className="rounded bg-purple-950/80 border border-purple-700/50 px-1 text-[8px] text-purple-200 hover:border-purple-400"
+                className="rounded bg-purple-950/80 border border-purple-700/50 px-1 text-[10px] text-purple-200 hover:border-purple-400"
               >
                 +SFX
               </button>
@@ -997,7 +997,7 @@ export function NleTimeline({
                   )
                 }
                 title="Đổi âm lượng nhạc nền BGM (8% / 15% / 30% / 50%)"
-                className="rounded bg-cyan-950/80 border border-cyan-700/50 px-1 text-[8px] text-cyan-200 hover:border-cyan-400"
+                className="rounded bg-cyan-950/80 border border-cyan-700/50 px-1 text-[10px] text-cyan-200 hover:border-cyan-400"
               >
                 {bgmMuted ? "0%" : `${bgmVolume}%`}
               </button>
@@ -1028,7 +1028,7 @@ export function NleTimeline({
         </div>
 
         {/* Right Interactive Scrollable Zoom Viewport */}
-        <div className="relative flex flex-1 min-h-0 overflow-x-auto overflow-y-visible bg-[#0c0c10]">
+        <div className="relative flex flex-1 min-h-0 overflow-x-auto overflow-y-visible bg-surface-1">
           <div
             ref={trackContainerRef}
             style={{ width: `${timelineZoom * 100}%`, minWidth: "100%" }}
@@ -1216,7 +1216,7 @@ export function NleTimeline({
                 draggingPlayheadRef.current = true;
                 seekFromClientX(e.clientX);
               }}
-              className="sticky top-0 z-30 h-5 shrink-0 cursor-ew-resize border-b border-zinc-800 bg-[#15151b]"
+              className="sticky top-0 z-30 h-5 shrink-0 cursor-ew-resize border-b border-zinc-800 bg-surface-3"
             >
               {ticks.map((t, idx) => (
                 <div
@@ -1225,7 +1225,7 @@ export function NleTimeline({
                   className="absolute top-0 bottom-0 flex items-center"
                 >
                   <div className="h-full w-px bg-zinc-700/70" />
-                  <span className="ml-1 font-mono text-[9px] text-zinc-400">
+                  <span className="ml-1 font-mono text-[10px] text-zinc-400">
                     {fmtMs(t.ms)}
                   </span>
                 </div>
@@ -1350,7 +1350,7 @@ export function NleTimeline({
                                 <ImageIcon className="h-2.5 w-2.5 text-sky-300" />
                               ))}
                           </span>
-                          <span className="rounded bg-black/75 px-1 font-mono text-[9px] text-zinc-200 border border-zinc-700/60">
+                          <span className="rounded bg-black/75 px-1 font-mono text-[10px] text-zinc-200 border border-zinc-700/60">
                             {durSec}s
                           </span>
                         </div>
@@ -1388,7 +1388,7 @@ export function NleTimeline({
             {/* 2. Track T1: Captions / Subtitle Blocks + Resize Handles */}
             <div
               style={{ height: trackHeights.t1 }}
-              className="relative shrink-0 w-full border-b border-zinc-800/80 bg-[#101016]"
+              className="relative shrink-0 w-full border-b border-zinc-800/80 bg-surface-2"
             >
               {scenes.map((sc, idx) => {
                 const leftPct = (sc.startMs / totalMs) * 100;
@@ -1483,7 +1483,7 @@ export function NleTimeline({
                         width: `calc(${widthPct}% - 2px)`,
                       }}
                       className={cn(
-                        "absolute top-1 bottom-1 z-20 flex cursor-pointer items-center justify-between overflow-hidden rounded border px-1.5 text-[9px] transition-colors",
+                        "absolute top-1 bottom-1 z-20 flex cursor-pointer items-center justify-between overflow-hidden rounded border px-1.5 text-[10px] transition-colors",
                         isSelected
                           ? "border-emerald-400 bg-emerald-900/35 text-emerald-100"
                           : "border-emerald-800/60 bg-emerald-950/35 text-emerald-300/90 hover:border-emerald-500/70"
@@ -1498,7 +1498,7 @@ export function NleTimeline({
                           · {sc.transcriptText}
                         </span>
                       </span>
-                      <span className="ml-1 shrink-0 rounded bg-black/50 px-1 font-mono text-[8px] text-emerald-300">
+                      <span className="ml-1 shrink-0 rounded bg-black/50 px-1 font-mono text-[10px] text-emerald-300">
                         {durSec}s
                       </span>
                     </div>
@@ -1532,7 +1532,7 @@ export function NleTimeline({
               )}
             >
               {sfxClips.length === 0 && (
-                <div className="pointer-events-none absolute inset-0 flex items-center px-3 text-[9px] font-mono text-purple-300/50">
+                <div className="pointer-events-none absolute inset-0 flex items-center px-3 text-[10px] font-mono text-purple-300/50">
                   Nhấn [+SFX] ở cột trái hoặc thanh công cụ để chèn hiệu ứng âm thanh
                   (Whoosh, Pop, Ding, Impact)...
                 </div>
@@ -1569,7 +1569,7 @@ export function NleTimeline({
                     }}
                     title="Kéo để di chuyển vị trí SFX · Kéo 2 mép trái/phải để resize độ dài · Nhấn vào chữ để đổi hiệu ứng"
                     className={cn(
-                      "group/sfx absolute top-1 bottom-1 z-20 flex cursor-grab active:cursor-grabbing items-center justify-between rounded border px-2 text-[9px] font-mono shadow-sm transition-colors",
+                      "group/sfx absolute top-1 bottom-1 z-20 flex cursor-grab active:cursor-grabbing items-center justify-between rounded border px-2 text-[10px] font-mono shadow-sm transition-colors",
                       presetStyle
                     )}
                   >
@@ -1604,7 +1604,7 @@ export function NleTimeline({
                       </span>
                     </button>
 
-                    <button
+                    <button aria-label="Xóa hiệu ứng SFX này"
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1707,14 +1707,14 @@ export function NleTimeline({
                   <span className="font-semibold text-cyan-100">
                     Nhạc nền (BGM)
                   </span>
-                  <span className="text-[9px] text-cyan-300/80">
+                  <span className="text-[10px] text-cyan-300/80">
                     · {((bgmRange.endMs - bgmRange.startMs) / 1000).toFixed(1)}s
                     ({fmtMs(bgmRange.startMs)} → {fmtMs(bgmRange.endMs)})
                   </span>
                 </div>
 
-                <div className="relative z-10 flex items-center gap-1.5 font-mono text-[9px] text-cyan-300 pointer-events-none">
-                  <span className="rounded bg-black/50 px-1.5 py-0.5 text-[8px]">
+                <div className="relative z-10 flex items-center gap-1.5 font-mono text-[10px] text-cyan-300 pointer-events-none">
+                  <span className="rounded bg-black/50 px-1.5 py-0.5 text-[10px]">
                     AUTO-DUCKING · VOL {bgmMuted ? "MUTE" : `${bgmVolume}%`}
                   </span>
                 </div>

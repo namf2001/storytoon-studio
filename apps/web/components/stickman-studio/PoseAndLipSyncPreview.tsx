@@ -154,7 +154,7 @@ export const PoseAndLipSyncPreview: React.FC<PoseAndLipSyncPreviewProps> = ({ ri
               ? "bg-[#ffffff]"
               : bg === "stage"
               ? "bg-gradient-to-b from-[#1e1b4b] via-[#0f172a] to-[#020617]"
-              : "bg-[#09090b]"
+              : "bg-background"
           }`}
         >
           {/* Active Speaking Subtitle Bubble */}
@@ -435,7 +435,7 @@ export const PoseAndLipSyncPreview: React.FC<PoseAndLipSyncPreviewProps> = ({ ri
                         className="max-h-full max-w-full object-contain"
                       />
                     </div>
-                    <span className="font-mono text-[9px] mt-0.5 font-bold uppercase">
+                    <span className="font-mono text-[10px] mt-0.5 font-bold uppercase">
                       {item.label}
                     </span>
                   </button>

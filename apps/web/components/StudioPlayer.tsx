@@ -2,6 +2,7 @@
 
 import { forwardRef, useEffect, useState } from "react";
 import { Player, type PlayerRef } from "@remotion/player";
+import { MonitorBootPlaceholder, monitorPlayerStateProps } from "@/components/nle/MonitorStates";
 import type { Project, AspectRatio } from "@storytoon/shared-types";
 import { StoryVideo, FPS, dimensionsFor, msToFrames } from "@storytoon/video-engine";
 
@@ -18,22 +19,16 @@ export const StudioPlayer = forwardRef<PlayerRef, Props>(function StudioPlayer({
 
   if (!mounted) {
     return (
-      <div
+      <MonitorBootPlaceholder
+        label="Đang khởi động Player…"
         style={{
           width: "100%",
           maxHeight: "70vh",
           aspectRatio: `${width}/${height}`,
           background: "#000",
           borderRadius: 12,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#777",
-          fontSize: 14,
         }}
-      >
-        Đang khởi động Player...
-      </div>
+      />
     );
   }
 
@@ -53,6 +48,7 @@ export const StudioPlayer = forwardRef<PlayerRef, Props>(function StudioPlayer({
       compositionWidth={width}
       compositionHeight={height}
       controls
+      {...monitorPlayerStateProps}
       style={{
         height: ratio === "9:16" ? "100%" : "auto",
         width: ratio === "9:16" ? "auto" : "100%",

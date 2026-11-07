@@ -387,7 +387,7 @@ export function SceneCard({
               </Button>
 
               {media.cleanUrl && (
-                <Button
+                <Button aria-label="Chỉnh vùng lấy hình từ video gốc"
                   type="button"
                   variant={showCropper ? "default" : "outline"}
                   size="sm"
@@ -481,7 +481,7 @@ export function SceneCard({
                         {p.label}
                       </button>
                     ))}
-                    <button
+                    <button aria-label="Đặt lại mặc định"
                       type="button"
                       onClick={() =>
                         applyCrop({ cropX: 50, cropY: 50, cropZoom: 1, trimStartSec: 0 })
