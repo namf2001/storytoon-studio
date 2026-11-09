@@ -22,7 +22,7 @@ export function MonitorBootPlaceholder({
       style={style}
       className="flex flex-col items-center justify-center gap-2 text-xs text-zinc-400"
     >
-      <Loader2 className="h-5 w-5 animate-spin text-amber-400" aria-hidden />
+      <Loader2 className="h-5 w-5 animate-spin text-primary-text" aria-hidden />
       <span>{label}</span>
     </div>
   );
@@ -35,7 +35,7 @@ export function renderMonitorLoading(): ReactNode {
       role="status"
       className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/70 text-xs text-zinc-300"
     >
-      <Loader2 className="h-5 w-5 animate-spin text-amber-400" aria-hidden />
+      <Loader2 className="h-5 w-5 animate-spin text-primary-text" aria-hidden />
       <span>Đang tải khung dựng…</span>
     </div>
   );
@@ -49,7 +49,7 @@ export function renderMonitorBufferingPoster({ isBuffering }: { isBuffering: boo
       role="status"
       className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/55 text-xs text-zinc-200 backdrop-blur-[1px]"
     >
-      <Loader2 className="h-5 w-5 animate-spin text-amber-400" aria-hidden />
+      <Loader2 className="h-5 w-5 animate-spin text-primary-text" aria-hidden />
       <span>Đang tải media…</span>
     </div>
   );
@@ -64,7 +64,7 @@ export function renderMonitorError({ error }: { error: Error }): ReactNode {
     >
       <AlertTriangle className="h-6 w-6 text-red-400" aria-hidden />
       <span className="font-semibold">Không thể dựng bản xem trước</span>
-      <span className="line-clamp-3 max-w-[90%] font-mono text-[11px] text-red-300/80">
+      <span className="line-clamp-3 max-w-[90%] font-mono text-xs text-red-300/80">
         {error.message}
       </span>
     </div>

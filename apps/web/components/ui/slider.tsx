@@ -27,12 +27,12 @@ const Slider = React.forwardRef<
       )}
     >
       <SliderPrimitive.Range
-        className={cn("absolute h-full bg-amber-400", rangeClassName)}
+        className={cn("absolute h-full bg-primary", rangeClassName)}
       />
     </SliderPrimitive.Track>
     <SliderPrimitive.Thumb
       className={cn(
-        "block h-3.5 w-3.5 rounded-full border border-amber-300/80 bg-amber-400 shadow transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 hover:scale-110 disabled:pointer-events-none disabled:opacity-50",
+        "block h-3.5 w-3.5 rounded-full border border-primary/60 bg-primary shadow transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-text/50 hover:scale-110 disabled:pointer-events-none disabled:opacity-50",
         thumbClassName
       )}
     />

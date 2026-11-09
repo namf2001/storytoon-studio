@@ -157,7 +157,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       id: "storytoon",
       label: "Storytoon 2D",
       icon: FolderKanban,
-      iconColor: "text-primary",
+      iconColor: "text-muted-foreground",
       badge: "2D",
       projects: storytoonProjects,
       getHref: (p: ProjectSummary) => `/projects/${p.id}`,
@@ -167,7 +167,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       id: "football",
       label: "Football Shorts",
       icon: Trophy,
-      iconColor: "text-amber-400",
+      iconColor: "text-muted-foreground",
       badge: "9:16",
       projects: footballProjects,
       getHref: (p: ProjectSummary) => `/football?id=${p.id}`,
@@ -177,7 +177,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       id: "product",
       label: "Video Sản Phẩm",
       icon: ShoppingBag,
-      iconColor: "text-emerald-400",
+      iconColor: "text-muted-foreground",
       badge: "9:16",
       projects: productProjects,
       getHref: (p: ProjectSummary) => `/product?id=${p.id}`,
@@ -227,7 +227,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {!railCollapsed && (
                 <div className="flex flex-col truncate">
                   <span className="truncate text-xs font-bold tracking-tight">Storytoon NLE</span>
-                  <span className="truncate text-[11px] text-muted-foreground">AI Video Studio</span>
+                  <span className="truncate text-xs text-muted-foreground">AI Video Studio</span>
                 </div>
               )}
             </Link>
@@ -255,16 +255,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     type="button"
                     onClick={() => setCommandOpen(true)}
                     className={cn(
-                      "mb-2 flex w-full items-center justify-between rounded-lg border border-zinc-800/90 bg-zinc-900/70 px-2.5 py-1.5 text-xs text-zinc-400 transition-colors hover:border-amber-500/40 hover:bg-zinc-800/80 hover:text-zinc-100",
+                      "mb-2 flex w-full items-center justify-between rounded-lg border border-zinc-800/90 bg-zinc-900/70 px-2.5 py-1.5 text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:bg-zinc-800/80 hover:text-zinc-100",
                       railCollapsed && "justify-center px-0"
                     )}
                   >
                     <span className="flex items-center gap-2 truncate">
-                      <Search className="h-3.5 w-3.5 shrink-0 text-amber-400" />
+                      <Search className="h-3.5 w-3.5 shrink-0" aria-hidden />
                       {!railCollapsed && <span className="truncate">Tìm nhanh / Lệnh...</span>}
                     </span>
                     {!railCollapsed && (
-                      <kbd className="rounded border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400">
+                      <kbd className="rounded border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 font-mono text-xs text-zinc-400">
                         ⌘K
                       </kbd>
                     )}
@@ -301,7 +301,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         className={cn(
                           "relative flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-colors",
                           item.active
-                            ? "bg-primary/15 text-primary ring-1 ring-primary/30"
+                            ? "bg-primary/15 text-primary-text ring-1 ring-primary/30"
                             : "text-muted-foreground hover:bg-zinc-800/60 hover:text-foreground"
                         )}
                       >
@@ -309,7 +309,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           href={item.href}
                           className="flex items-center gap-2.5 truncate after:absolute after:inset-0"
                         >
-                          <Icon className="h-4 w-4 shrink-0 text-primary" />
+                          <Icon className="h-4 w-4 shrink-0" aria-hidden />
                           {!railCollapsed && <span className="truncate">{item.title}</span>}
                         </Link>
                         {!railCollapsed && (
@@ -317,14 +317,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             {item.href === "/product" && (
                               <Link
                                 href="/product?new=1"
-                                className="relative z-10 rounded p-0.5 text-zinc-400 hover:bg-zinc-800 hover:text-emerald-400 transition-colors"
+                                className="relative z-10 rounded p-0.5 text-zinc-400 hover:bg-zinc-800 hover:text-foreground transition-colors"
                                 title="Tạo mới dự án sản phẩm trắng"
                               >
                                 <Plus className="h-3 w-3 stroke-[2.5]" />
                               </Link>
                             )}
                             {item.badge && (
-                              <Badge variant="secondary" className="h-4 px-1.5 text-[11px]">
+                              <Badge variant="secondary" className="h-4 px-1.5 text-xs">
                                 {item.badge}
                               </Badge>
                             )}
@@ -343,7 +343,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {/* Platform / Tools Section */}
             <div className="space-y-1">
               {!railCollapsed && (
-                <p className="px-2 pt-1 pb-1 text-[11px] font-medium text-muted-foreground/70">
+                <p className="px-2 pt-1 pb-1 text-xs font-medium text-muted-foreground/70">
                   Công cụ thử nghiệm
                 </p>
               )}
@@ -360,12 +360,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     className={cn(
                       "flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-colors",
                       isToolsRoute
-                        ? "bg-primary/10 text-primary font-semibold"
+                        ? "bg-primary/10 text-primary-text font-semibold"
                         : "text-muted-foreground hover:bg-zinc-800/60 hover:text-foreground"
                     )}
                   >
                     <span className="flex items-center gap-2.5 truncate">
-                      <SquareTerminal className="h-4 w-4 shrink-0 text-primary" />
+                      <SquareTerminal className="h-4 w-4 shrink-0" aria-hidden />
                       {!railCollapsed && <span className="truncate">Avatar 2D</span>}
                     </span>
                     {!railCollapsed && (
@@ -400,7 +400,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       className={cn(
                         "flex items-center rounded-md px-2 py-1.5 text-xs transition-colors",
                         pathname === "/tools/avatar-svg"
-                          ? "bg-primary/15 font-semibold text-primary"
+                          ? "bg-primary/15 font-semibold text-primary-text"
                           : "text-muted-foreground hover:bg-zinc-800/50 hover:text-foreground"
                       )}
                     >
@@ -411,7 +411,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       className={cn(
                         "flex items-center rounded-md px-2 py-1.5 text-xs transition-colors",
                         pathname === "/tools/avatar-rive"
-                          ? "bg-primary/15 font-semibold text-primary"
+                          ? "bg-primary/15 font-semibold text-primary-text"
                           : "text-muted-foreground hover:bg-zinc-800/50 hover:text-foreground"
                       )}
                     >
@@ -427,7 +427,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {/* Recent Projects Grouped by Video Type */}
             <div className="space-y-3">
               {!railCollapsed && (
-                <p className="px-2 pb-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+                <p className="px-2 pb-0.5 text-xs font-bold uppercase tracking-wider text-muted-foreground/80">
                   Dự án gần đây
                 </p>
               )}
@@ -438,7 +438,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 return (
                   <div key={group.id} className="space-y-1">
                     {!railCollapsed && (
-                      <div className="flex items-center justify-between px-2 pt-1 pb-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                      <div className="flex items-center justify-between px-2 pt-1 pb-0.5 text-xs font-bold uppercase tracking-wider text-muted-foreground/70">
                         <span className="flex items-center gap-1.5 truncate">
                           <GroupIcon className={cn("h-3 w-3 shrink-0", group.iconColor)} />
                           <span className="truncate">{group.label}</span>
@@ -447,13 +447,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           {group.id === "product" && (
                             <Link
                               href="/product?new=1"
-                              className="rounded p-0.5 text-zinc-400 hover:bg-zinc-800 hover:text-emerald-400 transition-colors"
+                              className="rounded p-0.5 text-zinc-400 hover:bg-zinc-800 hover:text-foreground transition-colors"
                               title="Tạo mới dự án sản phẩm"
                             >
                               <Plus className="h-3 w-3 stroke-[2.5]" />
                             </Link>
                           )}
-                          <span className="rounded bg-zinc-800/80 px-1 font-mono text-[11px] text-zinc-400">
+                          <span className="rounded bg-zinc-800/80 px-1 font-mono text-xs text-zinc-400">
                             {group.projects.length}
                           </span>
                         </div>
@@ -487,7 +487,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                               className={cn(
                                 "group flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition-colors",
                                 active
-                                  ? "bg-primary/15 font-semibold text-primary ring-1 ring-primary/30"
+                                  ? "bg-primary/15 font-semibold text-primary-text ring-1 ring-primary/30"
                                   : "text-muted-foreground hover:bg-zinc-800/60 hover:text-foreground"
                               )}
                             >
@@ -503,7 +503,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                 )}
                               </span>
                               {!railCollapsed && (
-                                <span className="ml-1.5 shrink-0 font-mono text-[11px] opacity-60">
+                                <span className="ml-1.5 shrink-0 font-mono text-xs text-muted-foreground">
                                   {fmtMs(p.durationMs)}
                                 </span>
                               )}
@@ -511,7 +511,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           </TooltipTrigger>
                           <TooltipContent side="right" className="max-w-xs">
                             <p className="font-semibold text-xs text-foreground">{p.title}</p>
-                            <p className="text-[11px] text-muted-foreground">
+                            <p className="text-xs text-muted-foreground">
                               {group.label} · {fmtMs(p.durationMs)}
                             </p>
                           </TooltipContent>
@@ -565,12 +565,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 variant="outline"
                 size="sm"
                 onClick={() => setCommandOpen(true)}
-                className="h-8 shrink-0 gap-2 border-zinc-800 bg-zinc-900/80 text-xs text-zinc-300 hover:border-amber-500/40 hover:text-white"
+                className="h-8 shrink-0 gap-2 border-zinc-800 bg-zinc-900/80 text-xs text-zinc-300 hover:border-zinc-600 hover:text-white"
                 aria-label="Tìm dự án / Lệnh nhanh"
               >
-                <Search className="h-3.5 w-3.5 text-amber-400" />
+                <Search className="h-3.5 w-3.5" aria-hidden />
                 <span className="hidden sm:inline">Tìm dự án / Lệnh nhanh</span>
-                <kbd className="ml-1 hidden rounded sm:inline border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400">
+                <kbd className="ml-1 hidden rounded sm:inline border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 font-mono text-xs text-zinc-400">
                   ⌘K
                 </kbd>
               </Button>
@@ -584,7 +584,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {/* Trình dựng phim (NLE) cần màn hình rộng — báo rõ thay vì vỡ layout */}
           {isNleRoute && (
             <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-4 bg-background p-6 text-center lg:hidden">
-              <MonitorSmartphone className="h-10 w-10 text-amber-400" aria-hidden />
+              <MonitorSmartphone className="h-10 w-10 text-primary-text" aria-hidden />
               <div className="space-y-1">
                 <p className="text-base font-semibold text-zinc-100">Trình dựng phim cần màn hình rộng hơn</p>
                 <p className="text-sm text-zinc-400">
@@ -647,7 +647,7 @@ function SystemStatus({
             <Cpu className="h-3.5 w-3.5" />
           </div>
           {!collapsed && (
-            <span className="flex flex-1 items-center gap-1.5 truncate text-[11px] font-medium">
+            <span className="flex flex-1 items-center gap-1.5 truncate text-xs font-medium">
               <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", tone.dot)} />
               <span className="truncate">{label}</span>
             </span>

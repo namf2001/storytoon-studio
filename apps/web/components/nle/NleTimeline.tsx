@@ -152,28 +152,28 @@ const SFX_PRESETS: Array<{
 }> = [
   {
     preset: "whoosh",
-    label: "⚡ Whoosh",
-    badgeColor: "border-purple-400/70 bg-purple-950/75 text-purple-200",
+    label: "Whoosh",
+    badgeColor: "border-primary/60 bg-primary/25 text-primary-text",
   },
   {
     preset: "pop",
-    label: "✨ Pop",
-    badgeColor: "border-fuchsia-400/70 bg-fuchsia-950/75 text-fuchsia-200",
+    label: "Pop",
+    badgeColor: "border-primary/60 bg-primary/25 text-primary-text",
   },
   {
     preset: "ding",
-    label: "🔔 Ding",
-    badgeColor: "border-amber-400/70 bg-amber-950/75 text-amber-200",
+    label: "Ding",
+    badgeColor: "border-primary/60 bg-primary/25 text-primary-text",
   },
   {
     preset: "impact",
-    label: "💥 Impact",
+    label: "Impact",
     badgeColor: "border-rose-400/70 bg-rose-950/75 text-rose-200",
   },
   {
     preset: "swoosh",
-    label: "🎬 Swoosh",
-    badgeColor: "border-indigo-400/70 bg-indigo-950/75 text-indigo-200",
+    label: "Swoosh",
+    badgeColor: "border-primary/60 bg-primary/25 text-primary-text",
   },
 ];
 
@@ -306,7 +306,7 @@ export function NleTimeline({
       if (idx === 0) {
         generated.push({
           id: `sfx-hook-${sc.id}`,
-          label: "🔔 Hook Ding",
+          label: "Hook Ding",
           preset: "ding",
           startMs: Math.min(100, Math.max(0, sc.startMs)),
           durationMs: Math.min(1100, Math.max(500, sc.endMs - sc.startMs)),
@@ -325,14 +325,14 @@ export function NleTimeline({
                   : "impact";
         const label =
           trans === "slide"
-            ? "🎬 Slide Swoosh"
+            ? "Slide Swoosh"
             : trans === "fade"
-              ? "⚡ Fade Whoosh"
+              ? "Fade Whoosh"
               : trans === "flip"
-                ? "✨ Flip Pop"
+                ? "Flip Pop"
                 : trans === "wipe"
-                  ? "⚡ Wipe Whoosh"
-                  : "💥 Cut Impact";
+                  ? "Wipe Whoosh"
+                  : "Cut Impact";
         const startMs = Math.max(0, sc.startMs - 250);
         const durationMs = Math.min(1200, Math.max(600, totalMs - startMs));
         generated.push({
@@ -701,8 +701,8 @@ export function NleTimeline({
     const ws = WaveSurfer.create({
       container,
       height: Math.max(20, trackHeights.vo - 8),
-      waveColor: "#10b981",
-      progressColor: "#34d399",
+      waveColor: "#2f7d61",
+      progressColor: "#3f9b78",
       cursorWidth: 0,
       barWidth: 2,
       barGap: 1,
@@ -740,8 +740,8 @@ export function NleTimeline({
     const ws = WaveSurfer.create({
       container,
       height: Math.max(18, trackHeights.bgm - 8),
-      waveColor: "#06b6d4",
-      progressColor: "#22d3ee",
+      waveColor: "#2b6f7a",
+      progressColor: "#3b8f9c",
       cursorWidth: 0,
       barWidth: 2,
       barGap: 2,
@@ -844,7 +844,7 @@ export function NleTimeline({
     const durationMs = Math.min(1200, Math.max(500, totalMs - startMs));
     const newClip: TimelineSfxClip = {
       id: `sfx-custom-${Date.now()}`,
-      label: "⚡ Whoosh",
+      label: "Whoosh",
       preset: "whoosh",
       startMs,
       durationMs,
@@ -907,10 +907,10 @@ export function NleTimeline({
   return (
     <div className="flex h-full w-full flex-col bg-surface-2 select-none overflow-hidden">
       {/* Timeline Top Transport, Tools & Shortcut Hints */}
-      <div className="flex h-7 shrink-0 items-center justify-between border-b border-zinc-800/90 bg-surface-3 px-3 text-[11px]">
+      <div className="flex h-7 shrink-0 items-center justify-between border-b border-zinc-800/90 bg-surface-3 px-3 text-xs">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-zinc-300">
-            Timeline <span className="font-mono text-zinc-500">· {scenes.length} cảnh</span>
+            Timeline <span className="font-mono text-muted-foreground">· {scenes.length} cảnh</span>
           </span>
 
           <div className="h-3 w-px bg-zinc-800" />
@@ -951,9 +951,9 @@ export function NleTimeline({
                 <button aria-label="Tách cảnh tại Playhead (Phím tắt: S)"
                   type="button"
                   onClick={onSplitAtPlayhead}
-                  className="flex h-5 w-6 items-center justify-center rounded border border-zinc-700/80 bg-zinc-800/90 text-zinc-200 hover:border-amber-400/60 hover:text-amber-300"
+                  className="flex h-5 w-6 items-center justify-center rounded border border-zinc-700/80 bg-zinc-800/90 text-zinc-200 hover:border-primary/60 hover:text-primary-text"
                 >
-                  <Scissors className="h-3 w-3 text-amber-400" />
+                  <Scissors className="h-3 w-3 text-primary-text" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top">
@@ -969,9 +969,9 @@ export function NleTimeline({
                 <button aria-label="Gộp với cảnh kế tiếp (Phím tắt: M)"
                   type="button"
                   onClick={onMergeSelectedWithNext}
-                  className="flex h-5 w-6 items-center justify-center rounded border border-zinc-700/80 bg-zinc-800/90 text-zinc-200 hover:border-cyan-400/60 hover:text-cyan-300"
+                  className="flex h-5 w-6 items-center justify-center rounded border border-zinc-700/80 bg-zinc-800/90 text-zinc-200 hover:border-primary/60 hover:text-primary-text"
                 >
-                  <Combine className="h-3 w-3 text-cyan-400" />
+                  <Combine className="h-3 w-3 text-primary-text" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top">
@@ -987,9 +987,9 @@ export function NleTimeline({
                 <button aria-label="Thêm cảnh mới vào timeline"
                   type="button"
                   onClick={onAddScene}
-                  className="flex h-5 w-6 items-center justify-center rounded border border-zinc-700/80 bg-zinc-800/90 text-zinc-200 hover:border-amber-400/60 hover:text-amber-300"
+                  className="flex h-5 w-6 items-center justify-center rounded border border-zinc-700/80 bg-zinc-800/90 text-zinc-200 hover:border-primary/60 hover:text-primary-text"
                 >
-                  <Plus className="h-3 w-3 text-amber-400" />
+                  <Plus className="h-3 w-3 text-primary-text" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top">
@@ -1004,9 +1004,9 @@ export function NleTimeline({
               <button
                 type="button"
                 onClick={handleAddSfxAtPlayhead}
-                className="flex h-5 items-center gap-1 rounded border border-purple-500/40 bg-purple-950/50 px-1.5 text-[10px] font-medium text-purple-300 hover:border-purple-400 hover:bg-purple-900/60"
+                className="flex h-5 items-center gap-1 rounded border border-primary/40 bg-primary/25 px-1.5 text-xs font-medium text-primary-text hover:border-primary/60 hover:bg-primary/25"
               >
-                <Zap className="h-2.5 w-2.5 text-purple-400" />
+                <Zap className="h-2.5 w-2.5 text-primary-text" />
                 <span className="hidden md:inline">+SFX</span>
               </button>
             </TooltipTrigger>
@@ -1059,7 +1059,7 @@ export function NleTimeline({
                 <button
                   type="button"
                   onClick={() => setTrackHeights(DEFAULT_TRACK_HEIGHTS)}
-                  className="flex items-center gap-1 rounded border border-zinc-700 bg-zinc-800/80 px-1.5 py-0.5 text-[10px] text-amber-300 hover:border-amber-400/60"
+                  className="flex items-center gap-1 rounded border border-zinc-700 bg-zinc-800/80 px-1.5 py-0.5 text-xs text-primary-text hover:border-primary/60"
                 >
                   <Maximize2 className="h-2.5 w-2.5" />
                   <span>Reset cao độ</span>
@@ -1076,7 +1076,7 @@ export function NleTimeline({
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-1 rounded border border-zinc-800 bg-zinc-900/60 px-1.5 py-0.5 text-[10px] text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                className="flex items-center gap-1 rounded border border-zinc-800 bg-zinc-900/60 px-1.5 py-0.5 text-xs text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
               >
                 <Keyboard className="h-3 w-3 text-zinc-400" />
                 <span className="hidden xl:inline">Phím tắt & Mẹo</span>
@@ -1086,36 +1086,36 @@ export function NleTimeline({
               side="top"
               className="w-72 space-y-1.5 p-2.5 text-xs bg-zinc-900 border-zinc-800 shadow-xl"
             >
-              <div className="font-bold text-amber-400 border-b border-zinc-800 pb-1">
+              <div className="font-bold text-primary-text border-b border-zinc-800 pb-1">
                 Phím tắt & Thao tác Resize Timeline
               </div>
               <div className="flex justify-between items-center text-zinc-300">
                 <span>Phát / Tạm dừng:</span>
-                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-[10px] text-amber-300">
+                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-xs text-primary-text">
                   Space
                 </kbd>
               </div>
               <div className="flex justify-between items-center text-zinc-300">
                 <span>Kéo ranh giới 2 cảnh (V1/T1/VO):</span>
-                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-[10px] text-emerald-300">
+                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-xs text-primary-text">
                   Kéo vạch ‖
                 </kbd>
               </div>
               <div className="flex justify-between items-center text-zinc-300">
                 <span>Chỉnh độ cao từng Track:</span>
-                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-[10px] text-sky-300">
+                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-xs text-primary-text">
                   Kéo mép dưới Track
                 </kbd>
               </div>
               <div className="flex justify-between items-center text-zinc-300">
                 <span>Resize SFX / BGM:</span>
-                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-[10px] text-purple-300">
+                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-xs text-primary-text">
                   Kéo 2 đầu mút
                 </kbd>
               </div>
               <div className="flex justify-between items-center text-zinc-300">
                 <span>Tách / Gộp cảnh:</span>
-                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-[10px] text-amber-300">
+                <kbd className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded text-xs text-primary-text">
                   S / M
                 </kbd>
               </div>
@@ -1130,7 +1130,7 @@ export function NleTimeline({
               ].map(([label, key]) => (
                 <div key={label} className="flex items-center justify-between text-zinc-300">
                   <span>{label}:</span>
-                  <kbd className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] text-amber-300">
+                  <kbd className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-xs text-primary-text">
                     {key}
                   </kbd>
                 </div>
@@ -1149,10 +1149,10 @@ export function NleTimeline({
                 aria-pressed={snapEnabled}
                 onClick={() => setSnapEnabled((v) => !v)}
                 className={cn(
-                  "flex h-5 items-center gap-1 rounded border px-1.5 text-[10px] font-medium transition-colors",
+                  "flex h-5 items-center gap-1 rounded border px-1.5 text-xs font-medium transition-colors",
                   snapEnabled
-                    ? "border-yellow-400/60 bg-yellow-400/15 text-yellow-300"
-                    : "border-zinc-800 bg-zinc-900/80 text-zinc-500 hover:text-zinc-300"
+                    ? "border-primary/60 bg-primary/15 text-primary-text"
+                    : "border-zinc-800 bg-zinc-900/80 text-muted-foreground hover:text-zinc-300"
                 )}
               >
                 <Magnet className="h-3 w-3" />
@@ -1186,7 +1186,7 @@ export function NleTimeline({
                 applyZoom(MIN_ZOOM * Math.pow(MAX_ZOOM / MIN_ZOOM, Number(e.target.value) / 100))
               }
               aria-label="Mức thu phóng Timeline"
-              className="h-1 w-20 cursor-pointer accent-amber-400"
+              className="h-1 w-20 cursor-pointer accent-primary"
               title={`Thu phóng ${timelineZoom}x · ⌘/Ctrl + lăn chuột để zoom quanh con trỏ`}
             />
             <button
@@ -1203,7 +1203,7 @@ export function NleTimeline({
               type="button"
               onClick={() => applyZoom(1)}
               aria-label="Vừa khung (\)"
-              className="ml-0.5 flex items-center gap-0.5 rounded bg-zinc-800 px-1 font-mono text-[10px] text-amber-300 hover:bg-zinc-700"
+              className="ml-0.5 flex items-center gap-0.5 rounded bg-zinc-800 px-1 font-mono text-xs text-primary-text hover:bg-zinc-700"
               title="Vừa khung toàn bộ timeline (\)"
             >
               <MoveHorizontal className="h-2.5 w-2.5" />
@@ -1211,8 +1211,8 @@ export function NleTimeline({
             </button>
           </div>
 
-          <div className="flex items-center gap-1.5 font-mono text-[11px] tabular-nums">
-            <span className="text-zinc-500">Tổng</span>
+          <div className="flex items-center gap-1.5 font-mono text-xs tabular-nums">
+            <span className="text-muted-foreground">Tổng</span>
             <span className="text-zinc-300">{fmtTimecode(totalMs)}</span>
           </div>
         </div>
@@ -1221,7 +1221,7 @@ export function NleTimeline({
       {/* Main Multi-Track Area (Synchronized Vertical Scroll + Resizable Track Rows) */}
       <div className="flex flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
         {/* Left Track Headers Column (96px) */}
-        <div className="flex w-32 shrink-0 flex-col border-r border-zinc-800 bg-surface-3 text-[10px] font-mono text-zinc-400">
+        <div className="flex w-32 shrink-0 flex-col border-r border-zinc-800 bg-surface-3 text-xs font-mono text-zinc-400">
           {/* Current timecode (Premiere-style, above the track headers) */}
           <div
             style={{ height: RULER_H }}
@@ -1243,7 +1243,7 @@ export function NleTimeline({
               <span>V1</span>
             </span>
             <div className="flex items-center gap-1">
-              <span className="rounded bg-sky-500/15 px-1 text-[10px] text-sky-300">
+              <span className="rounded bg-sky-500/15 px-1 text-xs text-sky-300">
                 {scenes.length}
               </span>
               <button
@@ -1254,7 +1254,7 @@ export function NleTimeline({
                 title={isLocked("v1") ? "Mở khoá track" : "Khoá track (chặn chỉnh sửa)"}
                 className={cn(
                   "rounded p-0.5 transition-colors",
-                  isLocked("v1") ? "bg-zinc-200/15 text-zinc-100" : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200"
+                  isLocked("v1") ? "bg-zinc-200/15 text-zinc-100" : "text-muted-foreground hover:bg-zinc-800 hover:text-zinc-200"
                 )}
               >
                 {isLocked("v1") ? <Lock className="h-2.5 w-2.5" /> : <LockOpen className="h-2.5 w-2.5" />}
@@ -1285,7 +1285,7 @@ export function NleTimeline({
                 title={isLocked("t1") ? "Mở khoá track" : "Khoá track (chặn chỉnh sửa)"}
                 className={cn(
                   "rounded p-0.5 transition-colors",
-                  isLocked("t1") ? "bg-zinc-200/15 text-zinc-100" : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200"
+                  isLocked("t1") ? "bg-zinc-200/15 text-zinc-100" : "text-muted-foreground hover:bg-zinc-800 hover:text-zinc-200"
                 )}
               >
                 {isLocked("t1") ? <Lock className="h-2.5 w-2.5" /> : <LockOpen className="h-2.5 w-2.5" />}
@@ -1315,7 +1315,7 @@ export function NleTimeline({
                 title={isLocked("vo") ? "Mở khoá track" : "Khoá track (chặn chỉnh sửa)"}
                 className={cn(
                   "rounded p-0.5 transition-colors",
-                  isLocked("vo") ? "bg-zinc-200/15 text-zinc-100" : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200"
+                  isLocked("vo") ? "bg-zinc-200/15 text-zinc-100" : "text-muted-foreground hover:bg-zinc-800 hover:text-zinc-200"
                 )}
               >
                 {isLocked("vo") ? <Lock className="h-2.5 w-2.5" /> : <LockOpen className="h-2.5 w-2.5" />}
@@ -1324,7 +1324,7 @@ export function NleTimeline({
                 type="button"
                 onClick={() => setVoVolume((v) => nextPreset([50, 75, 100, 120], v))}
                 title="Đổi âm lượng Voiceover (50% / 75% / 100% / 120%)"
-                className="rounded bg-emerald-950/80 border border-emerald-700/40 px-1 text-[10px] text-emerald-300 hover:border-emerald-400"
+                className="rounded bg-emerald-950/80 border border-emerald-700/40 px-1 text-xs text-emerald-300 hover:border-emerald-400"
               >
                 {voMuted ? "0%" : `${voVolume}%`}
               </button>
@@ -1371,7 +1371,7 @@ export function NleTimeline({
                 title={isLocked("sfx") ? "Mở khoá track" : "Khoá track (chặn chỉnh sửa)"}
                 className={cn(
                   "rounded p-0.5 transition-colors",
-                  isLocked("sfx") ? "bg-zinc-200/15 text-zinc-100" : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200"
+                  isLocked("sfx") ? "bg-zinc-200/15 text-zinc-100" : "text-muted-foreground hover:bg-zinc-800 hover:text-zinc-200"
                 )}
               >
                 {isLocked("sfx") ? <Lock className="h-2.5 w-2.5" /> : <LockOpen className="h-2.5 w-2.5" />}
@@ -1380,7 +1380,7 @@ export function NleTimeline({
                 type="button"
                 onClick={handleAddSfxAtPlayhead}
                 title="Thêm SFX tại Playhead"
-                className="rounded bg-purple-950/80 border border-purple-700/50 px-1 text-[10px] text-purple-200 hover:border-purple-400"
+                className="rounded bg-purple-950/80 border border-purple-700/50 px-1 text-xs text-purple-200 hover:border-purple-400"
               >
                 +SFX
               </button>
@@ -1427,7 +1427,7 @@ export function NleTimeline({
                 title={isLocked("bgm") ? "Mở khoá track" : "Khoá track (chặn chỉnh sửa)"}
                 className={cn(
                   "rounded p-0.5 transition-colors",
-                  isLocked("bgm") ? "bg-zinc-200/15 text-zinc-100" : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200"
+                  isLocked("bgm") ? "bg-zinc-200/15 text-zinc-100" : "text-muted-foreground hover:bg-zinc-800 hover:text-zinc-200"
                 )}
               >
                 {isLocked("bgm") ? <Lock className="h-2.5 w-2.5" /> : <LockOpen className="h-2.5 w-2.5" />}
@@ -1436,7 +1436,7 @@ export function NleTimeline({
                 type="button"
                 onClick={() => setBgmVolume((v) => nextPreset([8, 12, 15, 30, 50], v))}
                 title="Đổi âm lượng nhạc nền BGM (8% / 12% / 15% / 30% / 50%)"
-                className="rounded bg-cyan-950/80 border border-cyan-700/50 px-1 text-[10px] text-cyan-200 hover:border-cyan-400"
+                className="rounded bg-cyan-950/80 border border-cyan-700/50 px-1 text-xs text-cyan-200 hover:border-cyan-400"
               >
                 {bgmMuted ? "0%" : `${bgmVolume}%`}
               </button>
@@ -1662,7 +1662,7 @@ export function NleTimeline({
             >
               <span
                 ref={hoverLabelRef}
-                className="absolute left-1 top-0 whitespace-nowrap rounded-sm bg-zinc-100 px-1 font-mono text-[10px] font-semibold leading-4 text-zinc-900"
+                className="absolute left-1 top-0 whitespace-nowrap rounded-sm bg-zinc-100 px-1 font-mono text-xs font-semibold leading-4 text-zinc-900"
               />
             </div>
 
@@ -1671,14 +1671,14 @@ export function NleTimeline({
               <div
                 aria-hidden
                 style={{ left: `${(snapLineMs / totalMs) * 100}%` }}
-                className="pointer-events-none absolute inset-y-0 z-[45] w-px bg-yellow-300 shadow-[0_0_6px_rgba(253,224,71,0.9)]"
+                className="pointer-events-none absolute inset-y-0 z-[45] w-px bg-primary"
               />
             )}
 
             {/* Playhead: line across all tracks + draggable head in the ruler */}
             <div
               style={{ left: `${playheadPct}%` }}
-              className="pointer-events-none absolute inset-y-0 z-40 w-px -translate-x-1/2 bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.8)]"
+              className="pointer-events-none absolute inset-y-0 z-40 w-px -translate-x-1/2 bg-red-500"
             >
               <div
                 role="slider"
@@ -1703,7 +1703,7 @@ export function NleTimeline({
                 style={{
                   left: `${Math.max(8, Math.min(92, resizeIndicator.pct))}%`,
                 }}
-                className="pointer-events-none absolute top-0.5 z-50 -translate-x-1/2 rounded border border-amber-400 bg-zinc-950/95 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300 shadow-lg"
+                className="pointer-events-none absolute top-0.5 z-50 -translate-x-1/2 rounded border border-primary/60 bg-zinc-950/95 px-2 py-0.5 font-mono text-xs font-bold text-primary-text shadow-lg"
               >
                 {resizeIndicator.text}
               </div>
@@ -1735,7 +1735,7 @@ export function NleTimeline({
                   className="pointer-events-none absolute inset-y-0 flex items-end"
                 >
                   <div className="h-3 w-px bg-zinc-500" />
-                  <span className="absolute left-1 top-1 whitespace-nowrap font-mono text-[10px] text-zinc-400">
+                  <span className="absolute left-1 top-1 whitespace-nowrap font-mono text-xs text-zinc-400">
                     {rulerLabel(t.ms, majorStepMs)}
                   </span>
                 </div>
@@ -1749,9 +1749,9 @@ export function NleTimeline({
             >
               {isLocked("v1") && <LockedOverlay />}
               {scenes.length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center text-[11px] text-zinc-500 font-medium select-none">
+                <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground font-medium select-none">
                   <span className="flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                    <Sparkles className="h-3.5 w-3.5 text-primary-text" />
                     Timeline trống · Nhập kịch bản ở Media Pool bên trái hoặc nhấn
                     nút [+] trên thanh công cụ để thêm cảnh.
                   </span>
@@ -1814,12 +1814,12 @@ export function NleTimeline({
                       className={cn(
                         "group absolute top-1 bottom-1 overflow-hidden rounded-md border text-left transition-all",
                         isDragOver
-                          ? "z-30 border-emerald-400 ring-2 ring-emerald-400 bg-emerald-950/80 scale-[1.01]"
+                          ? "z-30 border-primary/60 ring-2 ring-primary-text/60 bg-primary/25 scale-[1.01]"
                           : isSelected
-                            ? "z-20 border-amber-400 ring-2 ring-amber-400/70 bg-sky-950/80"
+                            ? "z-20 border-primary/60 ring-2 ring-primary-text/70 bg-primary/25"
                             : isCurrent
-                              ? "z-10 border-sky-400/80 bg-sky-950/50"
-                              : "border-sky-800/60 bg-sky-950/35 hover:border-sky-500/70"
+                              ? "z-10 border-primary/60 bg-primary/25"
+                              : "border-primary/60 bg-primary/25 hover:border-primary/60"
                       )}
                     >
                       {/* Clip Background Thumbnail */}
@@ -1851,26 +1851,26 @@ export function NleTimeline({
                         <div className="flex items-center justify-between gap-1">
                           <span
                             className={cn(
-                              "inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold",
+                              "inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-xs font-bold",
                               isSelected
-                                ? "bg-amber-400 text-black"
+                                ? "bg-primary text-primary-foreground"
                                 : "bg-black/75 text-white"
                             )}
                           >
                             #{sc.sceneIndex}
                             {media.cleanUrl &&
                               (media.isVideo ? (
-                                <Film className="h-2.5 w-2.5 text-amber-300" />
+                                <Film className="h-2.5 w-2.5 text-primary-text" />
                               ) : (
-                                <ImageIcon className="h-2.5 w-2.5 text-sky-300" />
+                                <ImageIcon className="h-2.5 w-2.5 text-primary-text" />
                               ))}
                           </span>
-                          <span className="rounded bg-black/75 px-1 font-mono text-[10px] text-zinc-200 border border-zinc-700/60">
+                          <span className="rounded bg-black/75 px-1 font-mono text-xs text-zinc-200 border border-zinc-700/60">
                             {durSec}s
                           </span>
                         </div>
 
-                        <div className="truncate text-[10px] font-medium text-zinc-100 drop-shadow">
+                        <div className="truncate text-xs font-medium text-zinc-100 drop-shadow">
                           {sc.setting
                             ? sc.setting.replace(/^\[(.*?)\].*$/, "$1")
                             : sc.transcriptText}
@@ -1890,7 +1890,7 @@ export function NleTimeline({
                         }
                         className="group/handle absolute top-0.5 bottom-0.5 z-30 flex w-3 cursor-col-resize items-center justify-center"
                       >
-                        <div className="flex h-6 w-1.5 items-center justify-center rounded-full border border-zinc-600/80 bg-zinc-900/90 shadow transition-all group-hover/handle:h-full group-hover/handle:w-2 group-hover/handle:border-amber-300 group-hover/handle:bg-amber-400">
+                        <div className="flex h-6 w-1.5 items-center justify-center rounded-full border border-zinc-600/80 bg-zinc-900/90 shadow transition-all group-hover/handle:h-full group-hover/handle:w-2 group-hover/handle:border-primary/60 group-hover/handle:bg-primary">
                           <GripVertical className="h-3 w-3 text-zinc-400 group-hover/handle:text-black" />
                         </div>
                       </div>
@@ -1928,7 +1928,7 @@ export function NleTimeline({
                         width: `calc(${widthPct}% - 2px)`,
                       }}
                       className={cn(
-                        "absolute top-1 bottom-1 flex items-center truncate rounded border px-1.5 text-left text-[10px] transition-colors",
+                        "absolute top-1 bottom-1 flex items-center truncate rounded border px-1.5 text-left text-xs transition-colors",
                         isSelected
                           ? "border-amber-400/90 bg-amber-500/20 text-amber-200 font-medium"
                           : "border-amber-900/50 bg-amber-950/30 text-amber-200/75 hover:bg-amber-900/30"
@@ -1999,25 +1999,16 @@ export function NleTimeline({
                         left: `${leftPct}%`,
                         width: `calc(${widthPct}% - 2px)`,
                       }}
+                      title={`Giọng đọc cảnh #${sc.sceneIndex} · ${durSec}s`}
+                      aria-label={`Giọng đọc cảnh #${sc.sceneIndex}, ${durSec} giây`}
                       className={cn(
-                        "absolute top-1 bottom-1 z-20 flex cursor-pointer items-center justify-between overflow-hidden rounded border px-1.5 text-[10px] transition-colors",
+                        "absolute top-1 bottom-1 z-20 cursor-pointer overflow-hidden rounded border transition-colors",
                         isSelected
                           ? "border-emerald-400 bg-emerald-900/35 text-emerald-100"
                           : "border-emerald-800/60 bg-emerald-950/35 text-emerald-300/90 hover:border-emerald-500/70"
                       )}
                     >
-                      <span className="flex items-center gap-1 truncate font-mono">
-                        <Mic className="h-2.5 w-2.5 shrink-0 text-emerald-400" />
-                        <strong className="text-emerald-200">
-                          VO #{sc.sceneIndex}
-                        </strong>
-                        <span className="truncate text-emerald-300/75 hidden sm:inline">
-                          · {sc.transcriptText}
-                        </span>
-                      </span>
-                      <span className="ml-1 shrink-0 rounded bg-black/50 px-1 font-mono text-[10px] text-emerald-300">
-                        {durSec}s
-                      </span>
+                      {/* Chỉ hiển thị sóng âm — không chồng chữ lên clip giọng đọc */}
                     </div>
 
                     {/* Boundary Resize Handle on VO Track */}
@@ -2050,7 +2041,7 @@ export function NleTimeline({
             >
               {isLocked("sfx") && <LockedOverlay />}
               {sfxClips.length === 0 && (
-                <div className="pointer-events-none absolute inset-0 flex items-center px-3 text-[10px] font-mono text-purple-300/50">
+                <div className="pointer-events-none absolute inset-0 flex items-center px-3 text-xs font-mono text-purple-300/50">
                   Nhấn [+SFX] ở cột trái hoặc thanh công cụ để chèn hiệu ứng âm thanh
                   (Whoosh, Pop, Ding, Impact)...
                 </div>
@@ -2088,7 +2079,7 @@ export function NleTimeline({
                     }}
                     title="Kéo để di chuyển vị trí SFX · Kéo 2 mép trái/phải để resize độ dài · Nhấn vào chữ để đổi hiệu ứng"
                     className={cn(
-                      "group/sfx absolute top-1 bottom-1 z-20 flex cursor-grab active:cursor-grabbing items-center justify-between rounded border px-2 text-[10px] font-mono shadow-sm transition-colors",
+                      "group/sfx absolute top-1 bottom-1 z-20 flex cursor-grab active:cursor-grabbing items-center justify-between rounded border px-2 text-xs font-mono shadow-sm transition-colors",
                       presetStyle,
                       selectedSfxId === sfx.id && "z-[25] ring-2 ring-amber-400"
                     )}
@@ -2184,7 +2175,7 @@ export function NleTimeline({
                   };
                 }}
                 title="Kéo 2 đầu trái/phải để cắt (Resize) điểm vào/ra của Nhạc nền (BGM)"
-                className="group/bgm absolute top-1 bottom-1 z-20 flex cursor-grab active:cursor-grabbing items-center justify-between overflow-hidden rounded border border-cyan-600/60 bg-cyan-950/50 px-3 text-[10px] text-cyan-200 shadow-inner"
+                className="group/bgm absolute top-1 bottom-1 z-20 flex cursor-grab active:cursor-grabbing items-center justify-between overflow-hidden rounded border border-cyan-600/60 bg-cyan-950/50 px-3 text-xs text-cyan-200 shadow-inner"
               >
                 {/* BGM WaveSurfer Canvas or Decorative Rhythm Bars */}
                 <div
@@ -2229,14 +2220,14 @@ export function NleTimeline({
                   <span className="font-semibold text-cyan-100">
                     Nhạc nền (BGM)
                   </span>
-                  <span className="text-[10px] text-cyan-300/80">
+                  <span className="text-xs text-cyan-300/80">
                     · {((bgmRange.endMs - bgmRange.startMs) / 1000).toFixed(1)}s
                     ({fmtMs(bgmRange.startMs)} → {fmtMs(bgmRange.endMs)})
                   </span>
                 </div>
 
-                <div className="relative z-10 flex items-center gap-1.5 font-mono text-[10px] text-cyan-300 pointer-events-none">
-                  <span className="rounded bg-black/50 px-1.5 py-0.5 text-[10px]">
+                <div className="relative z-10 flex items-center gap-1.5 font-mono text-xs text-cyan-300 pointer-events-none">
+                  <span className="rounded bg-black/50 px-1.5 py-0.5 text-xs">
                     VOL {bgmMuted ? "TẮT" : `${bgmVolume}%`}
                   </span>
                 </div>

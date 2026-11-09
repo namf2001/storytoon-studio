@@ -123,7 +123,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({
               onClick={() => setZoom(z)}
               className={`rounded px-1.5 py-0.5 font-mono text-[10px] border transition-colors ${
                 zoom === z
-                  ? "border-primary bg-primary/20 text-primary font-bold"
+                  ? "border-primary bg-primary/20 text-primary-text font-bold"
                   : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
               }`}
             >

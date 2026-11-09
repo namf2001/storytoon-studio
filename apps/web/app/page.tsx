@@ -32,7 +32,7 @@ import {
 } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -244,7 +244,7 @@ export default function DashboardPage() {
             icon={CheckCircle2}
             label="Sẵn sàng dựng"
             value={String(stats.ready)}
-            valueClassName="text-emerald-400"
+            valueClassName="text-primary-text"
           />
           <StatChip icon={Clock} label="Tổng thời lượng" value={stats.totalDuration} />
         </dl>
@@ -265,10 +265,10 @@ export default function DashboardPage() {
           <CardHeader className="pb-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Plus className="h-5 w-5 text-primary" aria-hidden />
+                <h2 className="flex items-center gap-2 text-lg font-semibold leading-none tracking-tight">
+                  <Plus className="h-5 w-5 text-primary-text" aria-hidden />
                   Tạo dự án mới
-                </CardTitle>
+                </h2>
                 <CardDescription>
                   Tạo một file giọng đọc liền mạch, phụ đề .srt/.vtt và danh sách phân cảnh kèm gợi ý hình ảnh.
                 </CardDescription>
@@ -280,7 +280,7 @@ export default function DashboardPage() {
                 onClick={fillSample}
                 className="shrink-0 gap-1.5 border-0"
               >
-                <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+                <Sparkles className="h-4 w-4 text-primary-text" aria-hidden />
                 <span className="hidden sm:inline">Dùng kịch bản mẫu</span>
                 <span className="sm:hidden">Mẫu</span>
               </Button>
@@ -317,10 +317,10 @@ export default function DashboardPage() {
             <div className="space-y-2 rounded-xl bg-muted/25 p-3.5">
               <div className="flex items-center justify-between gap-2">
                 <Label htmlFor="project-voice" className="flex items-center gap-1.5 text-sm font-semibold">
-                  <Mic className="h-4 w-4 text-primary" aria-hidden />
+                  <Mic className="h-4 w-4 text-primary-text" aria-hidden />
                   Giọng đọc AI
                 </Label>
-                <Badge variant="secondary" className="border-0 text-[11px]">
+                <Badge variant="secondary" className="border-0 text-xs">
                   {voices.length} giọng
                 </Badge>
               </div>
@@ -349,7 +349,7 @@ export default function DashboardPage() {
                 >
                   {previewingVoice ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden />
+                      <Loader2 className="h-4 w-4 animate-spin text-primary-text" aria-hidden />
                       Đang tạo mẫu...
                     </>
                   ) : isPlayingPreview ? (
@@ -359,7 +359,7 @@ export default function DashboardPage() {
                     </>
                   ) : (
                     <>
-                      <Volume2 className="h-4 w-4 text-primary" aria-hidden />
+                      <Volume2 className="h-4 w-4 text-primary-text" aria-hidden />
                       Nghe thử
                     </>
                   )}
@@ -432,7 +432,7 @@ export default function DashboardPage() {
           <CardHeader className="space-y-3 pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg">Dự án của bạn</CardTitle>
+                <h2 className="text-lg font-semibold leading-none tracking-tight">Dự án của bạn</h2>
                 <CardDescription>Bấm vào dự án để mở trình dựng phim</CardDescription>
               </div>
               <Badge variant="secondary" className="border-0">
@@ -459,7 +459,7 @@ export default function DashboardPage() {
                     )}
                   >
                     {k === "all" ? "Tất cả" : PROJECT_KINDS[k].label}
-                    <span className={cn("font-mono text-[11px]", selected ? "opacity-80" : "opacity-60")}>
+                    <span className={cn("font-mono text-xs", selected ? "opacity-80" : "opacity-60")}>
                       {count}
                     </span>
                   </button>
@@ -518,8 +518,8 @@ export default function DashboardPage() {
                   />
 
                   <div className="min-w-0 flex-1">
-                    <h4
-                      className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary"
+                    <h3
+                      className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary-text"
                       title={p.title}
                     >
                       {/* Stretched link: cả thẻ bấm được, nhưng nút Xoá không nằm trong <a> */}
@@ -529,7 +529,7 @@ export default function DashboardPage() {
                       >
                         {displayTitle}
                       </Link>
-                    </h4>
+                    </h3>
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                       <span className={cn("inline-flex items-center gap-1 font-medium", meta.tone)}>
                         <KindIcon className="h-3 w-3" aria-hidden />

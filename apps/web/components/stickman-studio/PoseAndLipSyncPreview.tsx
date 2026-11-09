@@ -473,7 +473,7 @@ export const PoseAndLipSyncPreview: React.FC<PoseAndLipSyncPreviewProps> = ({ ri
               value={sentence}
               onChange={(e) => setSentence(e.target.value)}
               rows={2}
-              className="w-full rounded-md border border-zinc-800 bg-zinc-950 p-2 text-[11px] text-zinc-200 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full rounded-md border border-zinc-800 bg-zinc-950 p-2 text-[11px] text-zinc-200 focus:outline-none focus:ring-1 focus:ring-primary-text"
               placeholder="Nhập câu thoại tiếng Việt..."
             />
 
@@ -507,7 +507,7 @@ export const PoseAndLipSyncPreview: React.FC<PoseAndLipSyncPreviewProps> = ({ ri
               onClick={handleDownloadJson}
               className="h-7 text-[11px] border-zinc-800 gap-1.5 flex-1"
             >
-              <Download className="h-3.5 w-3.5 text-primary" /> Tải về {rig.name}.rig.json
+              <Download className="h-3.5 w-3.5 text-primary-text" /> Tải về {rig.name}.rig.json
             </Button>
             <Button
               variant="outline"
@@ -515,7 +515,7 @@ export const PoseAndLipSyncPreview: React.FC<PoseAndLipSyncPreviewProps> = ({ ri
               onClick={handleCopyCode}
               className="h-7 text-[11px] border-zinc-800 gap-1.5 flex-1"
             >
-              {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5 text-primary" />}
+              {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5 text-primary-text" />}
               {copied ? "Đã copy!" : "Copy mã Remotion"}
             </Button>
           </div>

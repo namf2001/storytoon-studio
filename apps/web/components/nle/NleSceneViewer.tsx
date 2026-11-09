@@ -161,7 +161,7 @@ export function NleSceneViewer({
 
   if (!scene) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-background text-xs text-zinc-500">
+      <div className="flex h-full w-full flex-col items-center justify-center bg-background text-xs text-muted-foreground">
         Chọn một phân cảnh trên Timeline để xem trong Scene Monitor.
       </div>
     );
@@ -345,7 +345,7 @@ export function NleSceneViewer({
       className="flex h-full w-full flex-col min-w-0 bg-background overflow-hidden select-none"
     >
       {/* 1. Scene Monitor Compact Toolbar (No redundant title/scene badge) */}
-      <div className="flex h-8 shrink-0 items-center justify-between gap-2 whitespace-nowrap border-b border-zinc-800/80 bg-surface-2 px-2.5 text-[11px]">
+      <div className="flex h-8 shrink-0 items-center justify-between gap-2 whitespace-nowrap border-b border-zinc-800/80 bg-surface-2 px-2.5 text-xs">
         <div className="flex items-center gap-1 min-w-0 overflow-hidden">
           {/* Toggle Crop Frame Overlay ON / OFF */}
           <button
@@ -354,9 +354,9 @@ export function NleSceneViewer({
             aria-label={showCropFrame ? "Ẩn khung cắt" : "Bật khung cắt"}
             aria-pressed={showCropFrame}
             className={cn(
-              "flex shrink-0 items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] font-medium transition-colors",
+              "flex shrink-0 items-center gap-1 rounded border px-1.5 py-0.5 text-xs font-medium transition-colors",
               showCropFrame
-                ? "border-amber-400/70 bg-amber-500/20 text-amber-300"
+                ? "border-primary/60 bg-primary/20 text-primary-text"
                 : "border-zinc-800 bg-zinc-900/80 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
             )}
             title={
@@ -377,8 +377,8 @@ export function NleSceneViewer({
             className={cn(
               "shrink-0 rounded p-1 transition-colors",
               showGrid
-                ? "bg-amber-500/20 text-amber-300"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-primary/20 text-primary-text"
+                : "text-muted-foreground hover:text-zinc-300"
             )}
             title="Bật/tắt lưới bố cục 1/3 (Rule of Thirds)"
           >
@@ -394,9 +394,9 @@ export function NleSceneViewer({
                   type="button"
                   onClick={() => applyCrop({ cropZoom: z })}
                   className={cn(
-                    "rounded px-1.5 py-0.5 font-mono text-[11px] transition-colors",
+                    "rounded px-1.5 py-0.5 font-mono text-xs transition-colors",
                     Math.abs(cropZoom - z) < 0.05
-                      ? "bg-amber-400 text-black font-bold"
+                      ? "bg-primary/15 text-primary-text font-semibold"
                       : "bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700"
                   )}
                   title={`Thu phóng khung cắt ${z}x`}
@@ -411,7 +411,7 @@ export function NleSceneViewer({
                     applyCrop({ cropX: 50, cropY: 50, cropZoom: 1, trimStartSec: 0 });
                     toast.info("Đã đặt lại khung cắt mặc định");
                   }}
-                  className="flex items-center gap-0.5 rounded bg-zinc-800 px-1.5 py-0.5 text-[11px] text-zinc-300 hover:bg-zinc-700"
+                  className="flex items-center gap-0.5 rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-300 hover:bg-zinc-700"
                   title="Đặt lại khung cắt (Reset Crop)"
                   aria-label="Đặt lại khung cắt"
                 >
@@ -433,9 +433,9 @@ export function NleSceneViewer({
                   : "Bấm để tự động co giãn tốc độ video vừa khít thời lượng cảnh"
               }
               className={cn(
-                "flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-mono font-bold transition-all",
+                "flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-mono font-bold transition-all",
                 autoFitSpeed
-                  ? "bg-amber-400 text-black"
+                  ? "bg-primary/15 text-primary-text"
                   : "bg-zinc-800 text-zinc-400 hover:text-zinc-200"
               )}
             >
@@ -448,7 +448,7 @@ export function NleSceneViewer({
             <button
               type="button"
               onClick={() => onSeekToScene(activeScene.startMs)}
-              className="flex items-center gap-1 rounded bg-cyan-500/15 border border-cyan-500/40 px-1.5 py-0.5 text-[11px] font-semibold text-cyan-300 hover:bg-cyan-500/25"
+              className="flex items-center gap-1 rounded bg-primary/15 border border-primary/40 px-1.5 py-0.5 text-xs font-semibold text-primary-text hover:bg-primary/25"
               title="Đưa kim Playhead của Full Video tới đầu cảnh này"
               aria-label="Đồng bộ playhead tới đầu cảnh"
             >
@@ -506,7 +506,7 @@ export function NleSceneViewer({
             {isSplitCompare ? (
               <div className="absolute inset-0 flex h-full w-full pointer-events-none">
                 {/* Left Media (50%) */}
-                <div className="relative h-full w-1/2 overflow-hidden border-r-2 border-amber-400">
+                <div className="relative h-full w-1/2 overflow-hidden border-r-2 border-primary/60">
                   {leftParsed.isVideo ? (
                     <video
                       src={leftParsed.cleanUrl}
@@ -532,7 +532,7 @@ export function NleSceneViewer({
                       className="h-full w-full object-cover"
                     />
                   )}
-                  <div className="absolute top-2 left-2 rounded bg-black/70 px-1 py-0.5 text-[10px] font-mono font-bold text-amber-300">
+                  <div className="absolute top-2 left-2 rounded bg-black/70 px-1 py-0.5 text-xs font-mono font-bold text-primary-text">
                     TRÁI
                   </div>
                 </div>
@@ -564,14 +564,14 @@ export function NleSceneViewer({
                       className="h-full w-full object-cover"
                     />
                   )}
-                  <div className="absolute top-2 right-2 rounded bg-black/70 px-1 py-0.5 text-[10px] font-mono font-bold text-sky-300">
+                  <div className="absolute top-2 right-2 rounded bg-black/70 px-1 py-0.5 text-xs font-mono font-bold text-primary-text">
                     PHẢI
                   </div>
                 </div>
 
                 {/* Center Golden VS Badge */}
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 font-black text-black text-[11px] shadow-[0_0_15px_rgba(251,191,36,0.8)] border-2 border-black">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-primary to-primary font-black text-black text-xs border-2 border-black">
                     VS
                   </div>
                 </div>
@@ -654,7 +654,7 @@ export function NleSceneViewer({
                 }}
                 className={cn(
                   "transition-shadow",
-                  selectedLayerId === l.id && "ring-1 ring-cyan-400/80 rounded"
+                  selectedLayerId === l.id && "ring-1 ring-primary-text/80 rounded"
                 )}
               >
                 <img
@@ -751,7 +751,7 @@ export function NleSceneViewer({
                   }}
                   className={cn(
                     "transition-shadow",
-                    selectedLayerId === l.id && "ring-1 ring-amber-400 rounded"
+                    selectedLayerId === l.id && "ring-1 ring-primary-text/60 rounded"
                   )}
                 >
                   <div style={cardInline}>
@@ -849,7 +849,7 @@ export function NleSceneViewer({
             {!showCropFrame && showGrid && (
               <div className="pointer-events-none absolute inset-0 grid grid-cols-3 grid-rows-3 z-30">
                 {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="border-[0.5px] border-amber-300/25" />
+                  <div key={i} className="border-[0.5px] border-primary/25" />
                 ))}
               </div>
             )}
@@ -878,7 +878,7 @@ export function NleSceneViewer({
                     top: `${windowTopPct}%`,
                     height: `${windowHeightPct}%`,
                   }}
-                  className="pointer-events-none absolute inset-x-0 border-2 border-amber-400 shadow-[0_0_24px_rgba(251,191,36,0.45)] z-30"
+                  className="pointer-events-none absolute inset-x-0 border-2 border-primary/60 z-30"
                 >
                   {/* Rule of Thirds 3x3 Grid */}
                   {showGrid && (
@@ -886,7 +886,7 @@ export function NleSceneViewer({
                       {Array.from({ length: 9 }).map((_, i) => (
                         <div
                           key={i}
-                          className="border-[0.5px] border-amber-300/30"
+                          className="border-[0.5px] border-primary/30"
                         />
                       ))}
                     </div>
@@ -895,7 +895,7 @@ export function NleSceneViewer({
                   {/* Top HUD inside Crop Box */}
                   <div className="flex items-center justify-between p-2">
                     <div className="flex items-center gap-1">
-                      <span className="inline-flex items-center gap-1 rounded bg-amber-400 px-1.5 py-0.5 font-mono text-[10px] font-bold text-black shadow">
+                      <span className="inline-flex items-center gap-1 rounded bg-primary px-1.5 py-0.5 font-mono text-xs font-bold text-primary-foreground shadow">
                         <Crop className="h-2.5 w-2.5" />
                         {compact ? frameAspectRatio : `KHUNG ${frameAspectRatio}`}
                       </span>
@@ -908,7 +908,7 @@ export function NleSceneViewer({
                         }}
                         title="Ẩn khung lấy hình này"
                         aria-label="Ẩn khung lấy hình"
-                        className="pointer-events-auto inline-flex items-center gap-1 rounded bg-black/85 border border-zinc-700 px-1.5 py-0.5 text-[10px] font-medium text-zinc-200 hover:border-amber-400 hover:text-amber-300"
+                        className="pointer-events-auto inline-flex items-center gap-1 rounded bg-black/85 border border-zinc-700 px-1.5 py-0.5 text-xs font-medium text-zinc-200 hover:border-primary/60 hover:text-primary-text"
                       >
                         <EyeOff className="h-2.5 w-2.5" />
                         {!compact && "Ẩn"}
@@ -916,7 +916,7 @@ export function NleSceneViewer({
                     </div>
                     <span
                       className={cn(
-                        "rounded bg-black/80 px-1.5 py-0.5 font-mono text-[10px] text-amber-300",
+                        "rounded bg-black/80 px-1.5 py-0.5 font-mono text-xs text-primary-text",
                         compact && "hidden"
                       )}
                     >
@@ -935,11 +935,11 @@ export function NleSceneViewer({
                   {/* Bottom HUD inside Crop Box */}
                   <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-gradient-to-t from-black/80 to-transparent p-2">
                     {!compact && (
-                      <span className="truncate text-[10px] text-zinc-300">
+                      <span className="truncate text-xs text-zinc-300">
                         Kéo để chọn vùng · Lăn chuột để zoom
                       </span>
                     )}
-                    <span className="ml-auto shrink-0 rounded bg-black/80 px-1.5 py-0.5 font-mono text-[10px] text-cyan-300">
+                    <span className="ml-auto shrink-0 rounded bg-black/80 px-1.5 py-0.5 font-mono text-xs text-primary-text">
                       X:{cropX}% · Y:{cropY}%
                     </span>
                   </div>
@@ -950,12 +950,12 @@ export function NleSceneViewer({
         ) : (
           /* Empty Scene State inside Scene Monitor */
           <div className="flex h-full max-h-[440px] w-full max-w-[260px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-zinc-700 bg-zinc-900/40 p-5 text-center">
-            <Film className="h-8 w-8 text-amber-400/80" />
+            <Film className="h-8 w-8 text-primary-text/80" />
             <div>
               <p className="text-xs font-bold text-zinc-200">
                 Cảnh #{activeScene.sceneIndex} chưa có Media
               </p>
-              <p className="mt-1 text-[11px] text-zinc-400 line-clamp-3">
+              <p className="mt-1 text-xs text-zinc-400 line-clamp-3">
                 “{activeScene.transcriptText}”
               </p>
             </div>
@@ -970,7 +970,7 @@ export function NleSceneViewer({
               size="sm"
               disabled={busy}
               onClick={() => fileRef.current?.click()}
-              className="h-7 gap-1.5 bg-amber-500 text-black hover:bg-amber-400 text-xs font-semibold"
+              className="h-7 gap-1.5 bg-primary text-primary-foreground hover:bg-primary text-xs font-semibold"
             >
               <Upload className="h-3.5 w-3.5" />
               Chọn Video / Ảnh từ máy
@@ -981,9 +981,9 @@ export function NleSceneViewer({
 
       {/* 3. Scene Monitor Quick Crop & Trim Footer Bar (Only rendered when Crop Frame is ON) */}
       {showCropFrame && (
-        <div className="flex h-8 shrink-0 items-center justify-between gap-2 overflow-hidden whitespace-nowrap border-t border-zinc-800/80 bg-surface-2 px-2.5 text-[11px]">
+        <div className="flex h-8 shrink-0 items-center justify-between gap-2 overflow-hidden whitespace-nowrap border-t border-zinc-800/80 bg-surface-2 px-2.5 text-xs">
           <div className="flex min-w-0 items-center gap-1">
-            {!compact && <span className="mr-1 text-[11px] text-zinc-400">Vùng cắt:</span>}
+            {!compact && <span className="mr-1 text-xs text-zinc-400">Vùng cắt:</span>}
             {Y_PRESETS.map((p) => (
               <button
                 key={p.label}
@@ -991,9 +991,9 @@ export function NleSceneViewer({
                 disabled={!media.cleanUrl}
                 onClick={() => applyCrop({ cropY: p.y })}
                 className={cn(
-                  "shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium transition-colors disabled:opacity-30",
+                  "shrink-0 rounded px-1.5 py-0.5 text-xs font-medium transition-colors disabled:opacity-30",
                   Math.abs(cropY - p.y) <= 6
-                    ? "bg-amber-400 text-black font-bold"
+                    ? "bg-primary/15 text-primary-text font-semibold"
                     : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
                 )}
               >
@@ -1004,7 +1004,7 @@ export function NleSceneViewer({
 
           {media.isVideo && (
             <div className="flex shrink-0 items-center gap-1.5">
-              {!compact && <span className="text-[11px] text-zinc-400">Bắt đầu:</span>}
+              {!compact && <span className="text-xs text-zinc-400">Bắt đầu:</span>}
               <input
                 type="range"
                 min={0}
@@ -1013,9 +1013,9 @@ export function NleSceneViewer({
                 value={trimStartSec}
                 onChange={(e) => applyCrop({ trimStartSec: Number(e.target.value) })}
                 aria-label="Giây bắt đầu của clip"
-                className="h-1 w-14 accent-amber-400 cursor-pointer"
+                className="h-1 w-14 accent-primary cursor-pointer"
               />
-              <span className="font-mono text-[10px] text-amber-300 w-6">
+              <span className="font-mono text-xs text-primary-text w-6">
                 {trimStartSec}s
               </span>
             </div>

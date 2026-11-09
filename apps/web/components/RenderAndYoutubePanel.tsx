@@ -186,7 +186,7 @@ export function RenderAndYoutubePanel({
             {renderedVideoUrl && (
               <Button variant="outline" size="sm" asChild className="h-8 gap-1.5 text-xs">
                 <a href={renderedVideoUrl} download={`${projectId}.mp4`}>
-                  <Download className="h-3.5 w-3.5 text-emerald-400" />
+                  <Download className="h-3.5 w-3.5 text-primary-text" />
                   Tải MP4
                 </a>
               </Button>
@@ -216,17 +216,17 @@ export function RenderAndYoutubePanel({
         {rendering && (
           <div className="space-y-1">
             <progress className="h-1.5 w-full overflow-hidden rounded bg-muted accent-primary" />
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Đang ghép cảnh, hiệu ứng âm thanh, giọng đọc và xuất file MP4...
             </p>
           </div>
         )}
 
         {renderedVideoUrl && !rendering && (
-          <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300">
+          <div className="flex items-center justify-between rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs text-primary-text">
             <span className="flex items-center gap-1.5 font-medium">
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-              Đã xuất xong file MP4: <code className="text-[11px]">{renderedFilePath.split("/").pop()}</code>
+              <CheckCircle2 className="h-4 w-4 text-primary-text" />
+              Đã xuất xong file MP4: <code className="text-xs">{renderedFilePath.split("/").pop()}</code>
             </span>
             <a
               href={renderedVideoUrl}
@@ -256,12 +256,12 @@ export function RenderAndYoutubePanel({
             size="sm"
             disabled={generatingMeta}
             onClick={handleSuggestMeta}
-            className="h-7 gap-1 px-2.5 text-[11px]"
+            className="h-7 gap-1 px-2.5 text-xs"
           >
             {generatingMeta ? (
               <Loader2 className="h-3 w-3 animate-spin" />
             ) : (
-              <Wand2 className="h-3 w-3 text-primary" />
+              <Wand2 className="h-3 w-3 text-primary-text" />
             )}
             AI Tối ưu SEO & Hashtag
           </Button>
@@ -343,9 +343,9 @@ export function RenderAndYoutubePanel({
         </div>
 
         {uploadResult && (
-          <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/15 p-3 space-y-1.5 text-xs">
-            <div className="flex items-center gap-1.5 font-bold text-emerald-300">
-              <Sparkles className="h-4 w-4 text-emerald-400" />
+          <div className="rounded-lg border border-primary/40 bg-primary/15 p-3 space-y-1.5 text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-primary-text">
+              <Sparkles className="h-4 w-4 text-primary-text" />
               Đăng YouTube thành công! (ID: {uploadResult.videoId})
             </div>
             <div className="flex flex-wrap gap-3 pt-0.5">
@@ -353,7 +353,7 @@ export function RenderAndYoutubePanel({
                 href={uploadResult.shortsUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 font-semibold text-amber-300 underline hover:text-white"
+                className="flex items-center gap-1 font-semibold text-primary-text underline hover:text-white"
               >
                 Mở link YouTube Shorts <ExternalLink className="h-3 w-3" />
               </a>
@@ -361,7 +361,7 @@ export function RenderAndYoutubePanel({
                 href={uploadResult.watchUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 text-emerald-300 underline hover:text-white"
+                className="flex items-center gap-1 text-primary-text underline hover:text-white"
               >
                 Mở link YouTube Watch <ExternalLink className="h-3 w-3" />
               </a>

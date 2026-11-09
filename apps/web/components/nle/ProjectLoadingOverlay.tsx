@@ -19,7 +19,7 @@ export function ProjectLoadingOverlay({ label = "Đang tải dự án…" }: { l
         <Skeleton className="hidden w-[22%] rounded-lg bg-zinc-900 md:block" />
         <div className="relative flex flex-1 items-center justify-center rounded-lg bg-zinc-900/70">
           <div className="flex flex-col items-center gap-2 text-sm text-zinc-300">
-            <Loader2 className="h-6 w-6 animate-spin text-amber-400" aria-hidden />
+            <Loader2 className="h-6 w-6 animate-spin text-primary-text" aria-hidden />
             <span>{label}</span>
           </div>
         </div>

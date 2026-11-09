@@ -259,7 +259,7 @@ export function NleCaptionTrimmer({
 
   if (!scene) {
     return (
-      <div className="rounded-lg bg-surface-3 p-3 text-center text-xs text-zinc-500">
+      <div className="rounded-lg bg-surface-3 p-3 text-center text-xs text-muted-foreground">
         Chọn một cảnh trên Timeline để chỉnh sửa In/Out theo Caption.
       </div>
     );
@@ -301,14 +301,14 @@ export function NleCaptionTrimmer({
     >
       {/* 1. Header Toolbar */}
       <div className="mb-2 flex items-center justify-between border-b border-zinc-800/80 pb-2">
-        <div className="flex items-center gap-2">
-          <Badge className="bg-amber-400 font-mono text-[10px] font-bold text-black">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+          <Badge className="whitespace-nowrap border-0 bg-primary/15 font-mono text-xs font-semibold text-primary-text">
             CẢNH #{scene.sceneIndex}
           </Badge>
-          <span className="font-mono text-xs text-zinc-300">
+          <span className="whitespace-nowrap font-mono text-xs text-zinc-300">
             {fmtMs(scene.startMs)} – {fmtMs(scene.endMs)}
           </span>
-          <span className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] text-amber-300 font-semibold">
+          <span className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-xs text-primary-text font-semibold">
             {((scene.endMs - scene.startMs) / 1000).toFixed(2)}s
           </span>
         </div>
@@ -324,9 +324,9 @@ export function NleCaptionTrimmer({
                 className="h-6 w-6 p-0 text-zinc-300 hover:text-white"
               >
                 {isPlayingRange ? (
-                  <Pause className="h-3.5 w-3.5 text-amber-400" />
+                  <Pause className="h-3.5 w-3.5 text-primary-text" />
                 ) : (
-                  <Volume2 className="h-3.5 w-3.5 text-emerald-400" />
+                  <Volume2 className="h-3.5 w-3.5 text-primary-text" />
                 )}
               </Button>
             </TooltipTrigger>
@@ -343,9 +343,9 @@ export function NleCaptionTrimmer({
                 variant="ghost"
                 onClick={() => setExpanded((v) => !v)}
                 className={cn(
-                  "h-6 px-1.5 text-[10px] gap-1",
+                  "h-6 px-1.5 text-xs gap-1",
                   expanded
-                    ? "bg-amber-500/20 text-amber-300"
+                    ? "bg-primary/20 text-primary-text"
                     : "text-zinc-400 hover:text-white"
                 )}
               >
@@ -374,7 +374,7 @@ export function NleCaptionTrimmer({
         <div className="relative flex flex-col items-center rounded-lg bg-gradient-to-b from-zinc-950 via-surface-2 to-black p-3">
           {/* Caption Display */}
           <div className="mb-1.5 flex flex-col items-center text-center">
-            <span className="text-[10px] uppercase tracking-wider text-amber-500 font-bold flex items-center gap-1">
+            <span className="text-xs uppercase tracking-wider text-primary-text font-bold flex items-center gap-1">
               <Sparkles className="h-3 w-3" />
               Từ Caption đang trỏ vào
             </span>
@@ -384,20 +384,20 @@ export function NleCaptionTrimmer({
                   “{activeWord.text}”
                 </span>
               ) : (
-                <span className="text-xs font-semibold text-zinc-500 italic">
+                <span className="text-xs font-semibold text-muted-foreground italic">
                   (Khoảng lặng / Không có lời thoại)
                 </span>
               )}
             </div>
-            <span className="font-mono text-[11px] text-amber-400/90 font-bold">
+            <span className="font-mono text-xs text-primary-text/90 font-bold">
               {fmtMs(currentMs)}
             </span>
           </div>
 
           {/* Orange Center Needle Indicator */}
           <div className="relative z-20 flex flex-col items-center">
-            <div className="h-0 w-0 border-x-4 border-x-transparent border-t-[7px] border-t-amber-500 drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]" />
-            <div className="h-5 w-[2px] bg-gradient-to-b from-amber-500 to-transparent" />
+            <div className="h-0 w-0 border-x-4 border-x-transparent border-t-[7px] border-t-amber-500" />
+            <div className="h-5 w-[2px] bg-gradient-to-b from-primary to-transparent" />
           </div>
 
           {/* Tactile Curved Ruler Dial / Scrubber */}
@@ -416,7 +416,7 @@ export function NleCaptionTrimmer({
             {/* Active Range Glowing Track (between startMs and endMs) */}
             {hasRangeInView && (
               <div
-                className="absolute top-0 h-1 bg-amber-400 shadow-[0_0_10px_#f59e0b]"
+                className="absolute top-0 h-1 bg-primary"
                 style={{
                   left: `${inPct}%`,
                   width: `${Math.max(2, outPct - inPct)}%`,
@@ -443,11 +443,11 @@ export function NleCaptionTrimmer({
                           : t.isHalf
                             ? "h-4 bg-zinc-500"
                             : "h-2.5 bg-zinc-700/80",
-                        isCurrentWordStart && "bg-amber-400 shadow-[0_0_4px_#f59e0b]"
+                        isCurrentWordStart && "bg-primary"
                       )}
                     />
                     {t.isMajor && (
-                      <span className="font-mono text-[10px] text-zinc-400 select-none pb-0.5">
+                      <span className="font-mono text-xs text-zinc-400 select-none pb-0.5">
                         {(t.ms / 1000).toFixed(0)}s
                       </span>
                     )}
@@ -467,10 +467,10 @@ export function NleCaptionTrimmer({
                   }}
                   title={`Điểm Vào [IN]: ${fmtMs(scene.startMs)}`}
                 >
-                  <span className="rounded bg-emerald-500 px-1 py-0.2 font-mono text-[10px] font-bold text-black shadow">
+                  <span className="rounded bg-primary px-1 py-0.2 font-mono text-xs font-bold text-primary-foreground shadow">
                     IN
                   </span>
-                  <div className="h-6 w-[1.5px] bg-emerald-400" />
+                  <div className="h-6 w-[1.5px] bg-primary" />
                 </div>
               )}
 
@@ -486,7 +486,7 @@ export function NleCaptionTrimmer({
                   }}
                   title={`Điểm Ra [OUT]: ${fmtMs(scene.endMs)}`}
                 >
-                  <span className="rounded bg-rose-500 px-1 py-0.2 font-mono text-[10px] font-bold text-white shadow">
+                  <span className="rounded bg-rose-500 px-1 py-0.2 font-mono text-xs font-bold text-white shadow">
                     OUT
                   </span>
                   <div className="h-6 w-[1.5px] bg-rose-400" />
@@ -506,7 +506,7 @@ export function NleCaptionTrimmer({
                   type="button"
                   size="sm"
                   onClick={() => handleSetIn()}
-                  className="flex-1 h-7.5 gap-1.5 bg-zinc-800 text-xs text-emerald-400 hover:bg-zinc-700 hover:text-emerald-300 font-semibold"
+                  className="flex-1 h-7.5 gap-1.5 bg-zinc-800 text-xs text-primary-text hover:bg-zinc-700 hover:text-primary-text font-semibold"
                 >
                   <ArrowLeftToLine className="h-3.5 w-3.5" />
                   <span>[ Đặt IN</span>
@@ -523,7 +523,7 @@ export function NleCaptionTrimmer({
                     size="sm"
                     variant="outline"
                     onClick={handleSplitAtNeedle}
-                    className="h-7.5 px-3 text-xs text-amber-400 border-zinc-700 hover:border-amber-400 gap-1"
+                    className="h-7.5 px-3 text-xs text-primary-text border-zinc-700 hover:border-primary/60 gap-1"
                   >
                     <Scissors className="h-3.5 w-3.5" />
                     <span>Tách</span>
@@ -553,11 +553,11 @@ export function NleCaptionTrimmer({
 
       {/* 4. Interactive Word Cloud & Caption Sequence */}
       <div className="mt-2 space-y-1.5">
-        <div className="flex items-center justify-between text-[11px] text-zinc-400">
+        <div className="flex items-center justify-between text-xs text-zinc-400">
           <span className="font-semibold text-zinc-300">
             Lời thoại cảnh #{scene.sceneIndex}:
           </span>
-          <span className="font-mono text-[10px]">
+          <span className="font-mono text-xs">
             {effectiveWords.filter((w) => w.endMs >= scene.startMs && w.startMs <= scene.endMs).length}{" "}
             từ
           </span>
@@ -582,12 +582,12 @@ export function NleCaptionTrimmer({
                   onSeek?.(w.startMs);
                 }}
                 className={cn(
-                  "rounded px-1.5 py-0.5 text-[11px] transition-all font-medium",
+                  "rounded px-1.5 py-0.5 text-xs transition-all font-medium",
                   isTargeted
-                    ? "bg-amber-500 text-black font-bold ring-1 ring-amber-400 shadow-sm"
+                    ? "bg-primary/20 text-primary-text font-semibold ring-1 ring-primary-text/50"
                     : isInside
                       ? "bg-zinc-800 text-zinc-100 hover:bg-zinc-700"
-                      : "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-900"
+                      : "text-muted-foreground hover:text-zinc-400 hover:bg-zinc-900"
                 )}
                 title={`${w.text} (${fmtMs(w.startMs)} – ${fmtMs(w.endMs)})`}
               >
@@ -611,9 +611,9 @@ export function NleCaptionTrimmer({
                     variant="outline"
                     disabled={!prevScene}
                     onClick={() => onMergeScene(scene.id, "prev")}
-                    className="h-7 gap-1 text-[11px] border-zinc-800 hover:border-zinc-700 text-zinc-300"
+                    className="h-7 gap-1 text-xs border-zinc-800 hover:border-zinc-700 text-zinc-300"
                   >
-                    <Combine className="h-3 w-3 text-cyan-400" />
+                    <Combine className="h-3 w-3 text-primary-text" />
                     <span>Gộp #{prevScene?.sceneIndex ?? ""}</span>
                   </Button>
                 </TooltipTrigger>
@@ -630,9 +630,9 @@ export function NleCaptionTrimmer({
                     variant="outline"
                     disabled={!nextScene}
                     onClick={() => onMergeScene(scene.id, "next")}
-                    className="h-7 gap-1 text-[11px] border-zinc-800 hover:border-zinc-700 text-zinc-300"
+                    className="h-7 gap-1 text-xs border-zinc-800 hover:border-zinc-700 text-zinc-300"
                   >
-                    <Combine className="h-3 w-3 text-cyan-400" />
+                    <Combine className="h-3 w-3 text-primary-text" />
                     <span>Gộp #{nextScene?.sceneIndex ?? ""}</span>
                   </Button>
                 </TooltipTrigger>
@@ -653,7 +653,7 @@ export function NleCaptionTrimmer({
                   size="sm"
                   variant="secondary"
                   onClick={() => onAddSceneAfter(scene.id)}
-                  className="h-7 gap-1 text-[11px] text-amber-300 font-semibold"
+                  className="h-7 gap-1 text-xs text-primary-text font-semibold"
                 >
                   <Plus className="h-3 w-3" />
                   <span>Thêm cảnh</span>
@@ -671,7 +671,7 @@ export function NleCaptionTrimmer({
                   size="sm"
                   variant="ghost"
                   onClick={() => onDeleteScene(scene.id)}
-                  className="h-7 w-7 p-0 text-zinc-500 hover:text-red-400 hover:bg-red-500/10"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400 hover:bg-red-500/10"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>

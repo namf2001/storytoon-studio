@@ -18,22 +18,22 @@ export const PROJECT_KINDS: Record<ProjectKind, ProjectKindMeta> = {
     kind: "storytoon",
     label: "Storytoon 2D",
     icon: FolderKanban,
-    tone: "text-primary",
-    chip: "bg-primary/15 text-primary",
+    tone: "text-muted-foreground",
+    chip: "bg-muted text-muted-foreground",
   },
   football: {
     kind: "football",
     label: "Football Shorts",
     icon: Trophy,
-    tone: "text-amber-400",
-    chip: "bg-amber-500/15 text-amber-400",
+    tone: "text-muted-foreground",
+    chip: "bg-muted text-muted-foreground",
   },
   product: {
     kind: "product",
     label: "Video Sản Phẩm",
     icon: ShoppingBag,
-    tone: "text-emerald-400",
-    chip: "bg-emerald-500/15 text-emerald-400",
+    tone: "text-muted-foreground",
+    chip: "bg-muted text-muted-foreground",
   },
 };
 

@@ -368,7 +368,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
   if (!project) {
     return (
       <div className="flex h-screen items-center justify-center gap-2 bg-surface-1 text-sm text-zinc-400">
-        <Loader2 className="h-5 w-5 animate-spin text-amber-400" />
+        <Loader2 className="h-5 w-5 animate-spin text-primary-text" />
         Đang tải dữ liệu Bàn dựng NLE...
       </div>
     );
@@ -495,7 +495,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                 className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-md border transition-colors",
                   showLeftPanel
-                    ? "border-amber-500/50 bg-amber-500/15 text-amber-300"
+                    ? "border-primary/50 bg-primary/15 text-primary-text"
                     : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
                 )}
               >
@@ -514,7 +514,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
             {project.title}
           </h1>
           {project.status === "ready" && (
-            <Badge variant="success" className="hidden sm:inline-flex gap-1 text-[10px] py-0">
+            <Badge variant="success" className="hidden sm:inline-flex gap-1 text-xs py-0">
               <CheckCircle2 className="h-3 w-3" /> {doneCount}/{totalScenes}
             </Badge>
           )}
@@ -525,7 +525,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
           <NleWorkspaceSwitcher mode={workspaceMode} onChange={setWorkspaceMode} />
 
           {workspaceMode === "edit" && (
-            <div className="hidden lg:flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5 text-[11px] gap-0.5">
+            <div className="hidden lg:flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5 text-xs gap-0.5">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button aria-label="Dual Monitor (Cảnh đang làm + Full Video)"
@@ -534,7 +534,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                     className={cn(
                       "flex h-6 w-7 items-center justify-center rounded transition-colors",
                       viewerMode === "dual"
-                        ? "bg-cyan-500 text-black font-bold"
+                        ? "bg-primary text-primary-foreground font-bold"
                         : "text-zinc-400 hover:text-zinc-200"
                     )}
                   >
@@ -552,7 +552,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                     className={cn(
                       "flex h-6 w-7 items-center justify-center rounded transition-colors",
                       viewerMode === "scene"
-                        ? "bg-cyan-500 text-black font-bold"
+                        ? "bg-primary text-primary-foreground font-bold"
                         : "text-zinc-400 hover:text-zinc-200"
                     )}
                   >
@@ -570,7 +570,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                     className={cn(
                       "flex h-6 w-7 items-center justify-center rounded transition-colors",
                       viewerMode === "program"
-                        ? "bg-cyan-500 text-black font-bold"
+                        ? "bg-primary text-primary-foreground font-bold"
                         : "text-zinc-400 hover:text-zinc-200"
                     )}
                   >
@@ -592,8 +592,8 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                   type="button"
                   onClick={() => setRatio("16:9")}
                   className={cn(
-                    "flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium",
-                    ratio === "16:9" ? "bg-amber-500 text-black font-bold" : "text-zinc-400"
+                    "flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium",
+                    ratio === "16:9" ? "bg-primary text-primary-foreground font-bold" : "text-zinc-400"
                   )}
                 >
                   <Monitor className="h-3 w-3" /> 16:9
@@ -608,8 +608,8 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                   type="button"
                   onClick={() => setRatio("9:16")}
                   className={cn(
-                    "flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium",
-                    ratio === "9:16" ? "bg-amber-500 text-black font-bold" : "text-zinc-400"
+                    "flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium",
+                    ratio === "9:16" ? "bg-primary text-primary-foreground font-bold" : "text-zinc-400"
                   )}
                 >
                   <Smartphone className="h-3 w-3" /> 9:16
@@ -626,7 +626,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                 size="sm"
                 disabled={reprocessing}
                 onClick={handleReprocess}
-                className="hidden sm:inline-flex h-7 px-2 border-zinc-700 bg-zinc-900 text-[11px]"
+                className="hidden sm:inline-flex h-7 px-2 border-zinc-700 bg-zinc-900 text-xs"
               >
                 <RefreshCw className={cn("h-3 w-3", reprocessing && "animate-spin")} />
                 AI
@@ -657,7 +657,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                 className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-md border transition-colors",
                   showBottomPanel
-                    ? "border-amber-500/50 bg-amber-500/15 text-amber-300"
+                    ? "border-primary/50 bg-primary/15 text-primary-text"
                     : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
                 )}
               >
@@ -675,7 +675,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                 className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-md border transition-colors",
                   showRightPanel
-                    ? "border-amber-500/50 bg-amber-500/15 text-amber-300"
+                    ? "border-primary/50 bg-primary/15 text-primary-text"
                     : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
                 )}
               >
@@ -702,9 +702,9 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                           type="button"
                           onClick={() => setLeftTab("media")}
                           className={cn(
-                            "flex flex-1 items-center justify-center gap-1 border-b-2 py-2 text-[11px] font-semibold",
+                            "flex flex-1 items-center justify-center gap-1 border-b-2 py-2 text-xs font-semibold",
                             leftTab === "media"
-                              ? "border-amber-400 text-amber-300"
+                              ? "border-primary/60 text-primary-text"
                               : "border-transparent text-zinc-400"
                           )}
                         >
@@ -714,9 +714,9 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                           type="button"
                           onClick={() => setLeftTab("characters")}
                           className={cn(
-                            "flex flex-1 items-center justify-center gap-1 border-b-2 py-2 text-[11px] font-semibold",
+                            "flex flex-1 items-center justify-center gap-1 border-b-2 py-2 text-xs font-semibold",
                             leftTab === "characters"
-                              ? "border-amber-400 text-amber-300"
+                              ? "border-primary/60 text-primary-text"
                               : "border-transparent text-zinc-400"
                           )}
                         >
@@ -726,9 +726,9 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                           type="button"
                           onClick={() => setLeftTab("transcript")}
                           className={cn(
-                            "flex flex-1 items-center justify-center gap-1 border-b-2 py-2 text-[11px] font-semibold",
+                            "flex flex-1 items-center justify-center gap-1 border-b-2 py-2 text-xs font-semibold",
                             leftTab === "transcript"
-                              ? "border-amber-400 text-amber-300"
+                              ? "border-primary/60 text-primary-text"
                               : "border-transparent text-zinc-400"
                           )}
                         >
@@ -747,9 +747,9 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                       <div className="flex-1 overflow-y-auto p-3 space-y-3">
                         {leftTab === "media" && (
                           <>
-                            <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5">
-                              <span className="text-[11px] text-zinc-300">Đang chọn:</span>
-                              <Badge className="bg-amber-500 text-black font-bold text-[10px]">
+                            <div className="flex items-center justify-between rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1.5">
+                              <span className="text-xs text-zinc-300">Đang chọn:</span>
+                              <Badge className="bg-primary text-primary-foreground font-bold text-xs">
                                 {selectedScene ? `Cảnh #${selectedScene.sceneIndex}` : "Chưa chọn"}
                               </Badge>
                             </div>
@@ -765,7 +765,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                               type="button"
                               disabled={uploading || !selectedScene}
                               onClick={() => fileInputRef.current?.click()}
-                              className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-emerald-500/40 bg-emerald-500/10 px-3 py-2.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/15"
+                              className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-primary/40 bg-primary/10 px-3 py-2.5 text-xs font-semibold text-primary-text hover:bg-primary/15"
                             >
                               {uploading ? (
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -780,7 +780,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                                 size="sm"
                                 disabled={batchGenerating}
                                 onClick={handleGenerateAllMissing}
-                                className="w-full h-8 gap-1.5 text-xs bg-amber-500 text-black hover:bg-amber-400 font-semibold"
+                                className="w-full h-8 gap-1.5 text-xs bg-primary text-primary-foreground hover:bg-primary font-semibold"
                               >
                                 {batchGenerating ? (
                                   <>
@@ -797,11 +797,11 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                             )}
 
                             <div className="space-y-1.5 pt-1">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1">
-                                <Video className="h-3 w-3 text-emerald-400" /> Media Của Dự Án
+                              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1">
+                                <Video className="h-3 w-3 text-primary-text" /> Media Của Dự Án
                               </span>
                               {project.scenes.filter((s) => s.imageUrl).length === 0 ? (
-                                <p className="py-3 text-center text-[11px] text-zinc-500">
+                                <p className="py-3 text-center text-xs text-muted-foreground">
                                   Chưa có media nào trong dự án này.
                                 </p>
                               ) : (
@@ -827,13 +827,13 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                                           selectedScene &&
                                           handleAttachClipToScene(selectedScene.id, s.imageUrl!)
                                         }
-                                        className="flex w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-900/90 px-2.5 py-2 text-left text-[11px] hover:border-emerald-500/50 cursor-grab active:cursor-grabbing"
+                                        className="flex w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-900/90 px-2.5 py-2 text-left text-xs hover:border-primary/50 cursor-grab active:cursor-grabbing"
                                       >
                                         <span className="flex items-center gap-1.5 truncate">
-                                          <GripHorizontal className="h-3 w-3 shrink-0 text-zinc-500" />
+                                          <GripHorizontal className="h-3 w-3 shrink-0 text-muted-foreground" />
                                           <span className="truncate">{label}</span>
                                         </span>
-                                        <span className="text-[10px] text-emerald-400 font-bold ml-1">
+                                        <span className="text-xs text-primary-text font-bold ml-1">
                                           +Gắn
                                         </span>
                                       </button>
@@ -843,26 +843,26 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                             </div>
 
                             <div className="space-y-1.5 pt-2 border-t border-zinc-800">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                                 Tải tệp âm thanh & phụ đề
                               </span>
                               <div className="flex flex-wrap gap-1.5">
                                 {project.audioUrl && (
-                                  <Button variant="outline" size="sm" asChild className="h-7 text-[11px]">
+                                  <Button variant="outline" size="sm" asChild className="h-7 text-xs">
                                     <a href={project.audioUrl} download>
-                                      <FileAudio className="h-3 w-3 mr-1 text-amber-400" /> Voice.wav
+                                      <FileAudio className="h-3 w-3 mr-1 text-primary-text" /> Voice.wav
                                     </a>
                                   </Button>
                                 )}
                                 {project.captionSrtUrl && (
-                                  <Button variant="outline" size="sm" asChild className="h-7 text-[11px]">
+                                  <Button variant="outline" size="sm" asChild className="h-7 text-xs">
                                     <a href={project.captionSrtUrl} download>
-                                      <Subtitles className="h-3 w-3 mr-1 text-emerald-400" /> .SRT
+                                      <Subtitles className="h-3 w-3 mr-1 text-primary-text" /> .SRT
                                     </a>
                                   </Button>
                                 )}
                                 {project.captionVttUrl && (
-                                  <Button variant="outline" size="sm" asChild className="h-7 text-[11px]">
+                                  <Button variant="outline" size="sm" asChild className="h-7 text-xs">
                                     <a href={project.captionVttUrl} download>
                                       <FileText className="h-3 w-3 mr-1" /> .VTT
                                     </a>
@@ -876,7 +876,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                         {leftTab === "characters" && (
                           <div className="space-y-2.5">
                             {(!project.characters || project.characters.length === 0) && (
-                              <p className="py-6 text-center text-xs text-zinc-500">
+                              <p className="py-6 text-center text-xs text-muted-foreground">
                                 Không có hồ sơ nhân vật riêng.
                               </p>
                             )}
@@ -886,7 +886,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                                 className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-2.5 space-y-2"
                               >
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs font-bold text-amber-400">{c.name}</span>
+                                  <span className="text-xs font-bold text-primary-text">{c.name}</span>
                                   <button
                                     type="button"
                                     onClick={() => {
@@ -895,17 +895,17 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                                       toast.success(`Đã copy tạo hình ${c.name}`);
                                       setTimeout(() => setCopiedChar(null), 1400);
                                     }}
-                                    className="text-[10px] text-zinc-400 hover:text-white flex items-center gap-1"
+                                    className="text-xs text-zinc-400 hover:text-white flex items-center gap-1"
                                   >
                                     {copiedChar === c.name ? (
-                                      <Check className="h-3 w-3 text-emerald-400" />
+                                      <Check className="h-3 w-3 text-primary-text" />
                                     ) : (
                                       <Copy className="h-3 w-3" />
                                     )}
                                     Copy
                                   </button>
                                 </div>
-                                <p className="font-mono text-[10px] leading-relaxed text-zinc-400">
+                                <p className="font-mono text-xs leading-relaxed text-zinc-400">
                                   {c.description}
                                 </p>
                               </div>
@@ -925,7 +925,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                                   className={cn(
                                     "rounded px-1 py-0.5 text-xs transition-colors",
                                     isSpoken
-                                      ? "bg-amber-500 font-bold text-black"
+                                      ? "bg-primary font-bold text-primary-foreground"
                                       : "text-zinc-300 hover:bg-zinc-800"
                                   )}
                                 >
@@ -978,7 +978,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                       minSize="25%"
                     >
                       <div className="flex h-full w-full flex-col min-w-0 bg-background overflow-hidden">
-                        <div className="flex h-9 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-surface-2 px-3 text-[11px]">
+                        <div className="flex h-9 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-surface-2 px-3 text-xs">
                           <div className="flex items-center gap-2 min-w-0">
                             <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-red-500 animate-pulse" />
                             <span className="truncate font-semibold uppercase tracking-wider text-zinc-300">
@@ -987,7 +987,7 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                             {playingScene && (
                               <Badge
                                 variant="outline"
-                                className="border-amber-500/40 bg-amber-500/10 text-amber-300 text-[10px] py-0 h-4 shrink-0"
+                                className="border-primary/40 bg-primary/10 text-primary-text text-xs py-0 h-4 shrink-0"
                               >
                                 Cảnh #{playingScene.sceneIndex}
                               </Badge>
@@ -998,22 +998,22 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                             <button
                               type="button"
                               onClick={() => playerRef.current?.toggle()}
-                              className="flex items-center gap-1 rounded bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-200 hover:bg-zinc-700"
+                              className="flex items-center gap-1 rounded bg-zinc-800 px-2 py-0.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-700"
                             >
                               {isPlaying ? (
                                 <>
-                                  <Pause className="h-3 w-3 text-amber-400" /> Dừng
+                                  <Pause className="h-3 w-3 text-primary-text" /> Dừng
                                 </>
                               ) : (
                                 <>
-                                  <Play className="h-3 w-3 text-emerald-400" /> Phát
+                                  <Play className="h-3 w-3 text-primary-text" /> Phát
                                 </>
                               )}
                             </button>
-                            <span className="font-mono text-xs font-bold text-amber-400">
+                            <span className="font-mono text-xs font-bold text-primary-text">
                               {fmtMs(nowMs)}
                             </span>
-                            <span className="text-zinc-600">/</span>
+                            <span className="text-muted-foreground">/</span>
                             <span className="font-mono text-xs text-zinc-400">
                               {fmtMs(project.durationMs)}
                             </span>
@@ -1030,14 +1030,14 @@ export default function StudioPage({ params }: { params: Promise<{ id: string }>
                         </div>
 
                         {playingScene && (
-                          <div className="flex h-8 shrink-0 items-center justify-between border-t border-zinc-800/80 bg-surface-2 px-3 text-[11px] text-zinc-400">
+                          <div className="flex h-8 shrink-0 items-center justify-between border-t border-zinc-800/80 bg-surface-2 px-3 text-xs text-zinc-400">
                             <p className="truncate">
-                              <span className="font-semibold text-amber-400 mr-1.5">
+                              <span className="font-semibold text-primary-text mr-1.5">
                                 [Cảnh #{playingScene.sceneIndex}]
                               </span>
                               “{playingScene.transcriptText}”
                             </p>
-                            <span className="shrink-0 font-mono text-[10px] text-zinc-500 ml-2">
+                            <span className="shrink-0 font-mono text-xs text-muted-foreground ml-2">
                               Khung {ratio}
                             </span>
                           </div>

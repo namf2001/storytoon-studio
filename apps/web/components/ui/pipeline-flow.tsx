@@ -95,7 +95,7 @@ export function AiPipelineFlow({
                 <span className="block text-xs font-semibold text-foreground">
                   {i + 1}. {s.title}
                 </span>
-                <span className="block truncate text-[11px] text-muted-foreground" title={s.detail}>
+                <span className="block truncate text-xs text-muted-foreground" title={s.detail}>
                   {s.detail}
                 </span>
               </span>

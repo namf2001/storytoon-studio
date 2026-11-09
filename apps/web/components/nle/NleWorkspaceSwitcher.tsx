@@ -24,9 +24,9 @@ export function NleWorkspaceSwitcher({
       id: "edit",
       label: "Biên tập",
       icon: Sliders,
-      active: accent === "emerald" ? "bg-emerald-500 text-black" : "bg-amber-500 text-black",
+      active: "bg-primary/20 text-primary-text",
     },
-    { id: "deliver", label: "Xuất video", icon: Rocket, active: "bg-red-600 text-white" },
+    { id: "deliver", label: "Xuất video", icon: Rocket, active: "bg-primary text-primary-foreground" },
   ];
 
   return (
@@ -46,8 +46,8 @@ export function NleWorkspaceSwitcher({
             aria-selected={selected}
             onClick={() => onChange(t.id)}
             className={cn(
-              "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60",
-              selected ? cn(t.active, "shadow-sm") : "text-zinc-400 hover:text-zinc-200"
+              "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-text/60",
+              selected ? t.active : "text-zinc-400 hover:text-zinc-200"
             )}
           >
             <Icon className="h-3.5 w-3.5" aria-hidden />
