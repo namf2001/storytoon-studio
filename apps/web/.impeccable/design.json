@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-08T11:40:00+07:00",
+  "title": "Design System: Storytoon Studio",
+  "extensions": {
+    "colorMeta": {
+      "cut-blue": { "role": "primary", "displayName": "Cut Blue", "canonical": "hsl(221 83% 53%)", "tonalRamp": ["#0B1A3D", "#12295E", "#1A3A86", "#1F4FC0", "#2563EB", "#4E83F0", "#8FB1F6", "#D3E1FC"] },
+      "cut-blue-text": { "role": "primary", "displayName": "Cut Blue Text", "canonical": "hsl(213 94% 68%)", "tonalRamp": ["#0F2440", "#173A66", "#24578F", "#3B7FC6", "#60A5FA", "#86BCFB", "#B3D5FD", "#E1EEFE"] },
+      "graphite-ground": { "role": "neutral", "displayName": "Graphite Ground", "canonical": "hsl(228 8% 8%)", "tonalRamp": ["#0B0C0D", "#0F1012", "#131417", "#1A1B1F", "#303237", "#5A5D64", "#A9ADB4", "#E8E9EC"] },
+      "monitor-black": { "role": "neutral", "displayName": "Monitor Black", "canonical": "hsl(228 9% 6.5%)" },
+      "panel-graphite": { "role": "neutral", "displayName": "Panel Graphite", "canonical": "hsl(228 7% 11%)" },
+      "toolbar-graphite": { "role": "neutral", "displayName": "Toolbar Graphite", "canonical": "hsl(228 7% 10%)" },
+      "raised-graphite": { "role": "neutral", "displayName": "Raised Graphite", "canonical": "hsl(228 7% 12.5%)" },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "hsl(228 6% 20%)" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "hsl(220 9% 92%)" },
+      "ink-muted": { "role": "neutral", "displayName": "Ink Muted", "canonical": "hsl(220 6% 68%)" }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Dashboard page title only." },
+      "title": { "displayName": "Title", "purpose": "Section titles on the dashboard." },
+      "body": { "displayName": "Body", "purpose": "Forms, descriptions, list titles." },
+      "label": { "displayName": "Label", "purpose": "Every editor control, tab, chip and track header; the 12px floor." },
+      "timecode": { "displayName": "Timecode", "purpose": "Rulers, durations, in/out points; tabular figures." }
+    },
+    "shadows": [
+      { "name": "floating", "value": "0 10px 30px rgba(0,0,0,0.45)", "purpose": "Menus, dialogs, toasts, command palette only." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.2, 0, 0, 1)", "purpose": "State changes (150ms)." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action per view (Xuất video).",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z\"/><path d=\"m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z\"/></svg>Xuất video</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border:0;border-radius:6px;background:#2563EB;color:#fff;font:600 12px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:background .15s}.ds-btn-primary:hover{background:#2f6df0}.ds-btn-primary:focus-visible{outline:2px solid #60A5FA;outline-offset:1px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting actions (Tạo mới, Thêm cảnh).",
+      "html": "<button class=\"ds-btn-secondary\">+ Tạo mới</button>",
+      "css": ".ds-btn-secondary{height:28px;padding:0 10px;border:0;border-radius:6px;background:#26282D;color:#E8E9EC;font:600 12px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:background .15s}.ds-btn-secondary:hover{background:#2E3036}.ds-btn-secondary:focus-visible{outline:2px solid #60A5FA;outline-offset:1px}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "chip",
+      "refersTo": "chip-selected",
+      "description": "Zoom presets, aspect presets, workspace switch: selected is a blue tint, never solid.",
+      "html": "<div class=\"ds-seg\"><button class=\"ds-seg-on\">1x</button><button>1.25x</button><button>1.5x</button></div>",
+      "css": ".ds-seg{display:inline-flex;gap:2px;padding:2px;border:1px solid #303237;border-radius:6px;background:#17181B}.ds-seg button{border:0;background:transparent;color:#A9ADB4;font:500 12px/1 'JetBrains Mono',monospace;padding:4px 8px;border-radius:4px;cursor:pointer}.ds-seg button:hover{color:#E8E9EC}.ds-seg .ds-seg-on{background:rgba(37,99,235,.15);color:#60A5FA;font-weight:600}.ds-seg button:focus-visible{outline:2px solid #60A5FA}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form fields on graphite.",
+      "html": "<input class=\"ds-input\" placeholder=\"Tìm theo tên dự án…\">",
+      "css": ".ds-input{height:36px;width:260px;padding:0 12px;border:1px solid #34363C;border-radius:6px;background:#1A1B1F;color:#E8E9EC;font:400 14px Inter,system-ui,sans-serif}.ds-input::placeholder{color:#A9ADB4}.ds-input:focus-visible{outline:2px solid #60A5FA;outline-offset:0}"
+    },
+    {
+      "name": "Sidebar Nav Item",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Active item is a blue tint; others are muted.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-on\">Bảng điều khiển <span>17</span></a><a>Football Shorts <span>1</span></a></nav>",
+      "css": ".ds-nav{display:grid;gap:2px;width:220px;padding:8px;background:#17181B}.ds-nav a{display:flex;justify-content:space-between;padding:8px 10px;border-radius:8px;color:#A9ADB4;font:500 12px Inter,system-ui,sans-serif;cursor:pointer}.ds-nav a:hover{background:#26282D;color:#E8E9EC}.ds-nav .ds-nav-on{background:rgba(37,99,235,.15);color:#60A5FA}.ds-nav span{font-family:'JetBrains Mono',monospace}"
+    },
+    {
+      "name": "Timeline Clip",
+      "kind": "custom",
+      "refersTo": "chip-idle",
+      "description": "Video clip on V1; selected gains a blue ring and solid scene badge.",
+      "html": "<div class=\"ds-clip ds-clip-on\"><b>#3</b><span>Vân chống trượt &amp; rãnh khoá nước</span><i>6.9s</i></div>",
+      "css": ".ds-clip{display:flex;align-items:center;gap:6px;width:280px;height:44px;padding:0 8px;border:1px solid rgba(56,189,248,.45);border-radius:4px;background:rgba(56,189,248,.12);color:#E8E9EC;font:500 12px Inter,system-ui,sans-serif}.ds-clip b{padding:2px 6px;border-radius:4px;background:#000;font:600 12px 'JetBrains Mono',monospace}.ds-clip i{margin-left:auto;font:500 12px 'JetBrains Mono',monospace;font-style:normal;color:#A9ADB4}.ds-clip-on{box-shadow:0 0 0 2px #60A5FA}.ds-clip-on b{background:#2563EB;color:#fff}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Edit Bay",
+    "overview": "A darkened edit suite where only the picture is lit. Every panel around the monitors steps back into neutral graphite so the operator's eye stays on the frame they are cutting; the chrome speaks only when it has to, and then in one colour. The system follows the category standard on purpose, measured against CapCut Desktop and Descript: familiar NLE topology (media pool left, monitors centre, inspector right, multi-track timeline below), executed precisely rather than reinvented.",
+    "keyCharacteristics": [
+      "Neutral graphite ramp; the monitors sit on the darkest ground.",
+      "One accent blue: solid fill for the primary action, tinted fill for selection.",
+      "Track hues (video, captions, voice, effects, music) live on the timeline only.",
+      "Inter for UI, JetBrains Mono for timecodes and measurements.",
+      "Flat, hairline-separated surfaces; no glows, gradients-as-decoration or emoji icons."
+    ],
+    "rules": [
+      { "name": "The One Blue Rule", "body": "Solid Cut Blue appears once per view, on the primary action. Every other accent use is a 15% tint with Cut Blue Text.", "section": "colors" },
+      { "name": "The Track Hue Fence", "body": "Track hues never leave the timeline; panels, buttons and chips stay graphite and blue.", "section": "colors" },
+      { "name": "The 12px Floor", "body": "No functional text below 12px, anywhere.", "section": "typography" },
+      { "name": "The No-Glow Rule", "body": "No zero-offset coloured shadows or glowing text in chrome; caption styling inside the rendered video is content, not chrome.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the primary action solid Cut Blue (#2563EB) and everything else tinted.",
+      "Do set timecodes and durations in JetBrains Mono with tabular figures.",
+      "Do use Lucide icons at 14–16px with a consistent stroke.",
+      "Do keep secondary text at Ink Muted (#A9ADB4) or brighter."
+    ],
+    "donts": [
+      "Don't use emoji as icons in chrome (user-entered titles are content and stay as typed).",
+      "Don't introduce a second accent colour or reuse track hues outside the timeline.",
+      "Don't add coloured glows, gradient text or coloured side stripes.",
+      "Don't set functional text below 12px."
+    ]
+  }
+}

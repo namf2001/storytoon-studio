@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { buildMediaUrlWithCrop, type Scene } from "@storytoon/shared-types";
 import { api, DEFAULT_VOICE_CATALOG, type TtsVoice } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn, stripEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -250,16 +250,16 @@ export function NleMediaPool({
   });
 
   return (
-    <aside className="flex h-full w-full flex-col border-r border-zinc-800 bg-[#121216] select-none overflow-hidden">
+    <aside className="flex h-full w-full flex-col border-r border-zinc-800 bg-surface-2 select-none overflow-hidden">
       {/* Media Pool Header Tabs */}
-      <div className="flex h-9 shrink-0 items-center border-b border-zinc-800 bg-[#16161c] px-2 gap-1">
+      <div className="flex h-9 shrink-0 items-center border-b border-zinc-800 bg-surface-3 px-2 gap-1">
         <button
           type="button"
           onClick={() => setTab("media")}
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded py-1 text-xs font-semibold transition-colors",
             tab === "media"
-              ? "bg-zinc-800 text-amber-400 shadow-sm"
+              ? "bg-zinc-800 text-primary-text shadow-sm"
               : "text-zinc-400 hover:text-zinc-200"
           )}
         >
@@ -273,7 +273,7 @@ export function NleMediaPool({
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded py-1 text-xs font-semibold transition-colors",
             tab === "script"
-              ? "bg-zinc-800 text-amber-400 shadow-sm"
+              ? "bg-zinc-800 text-primary-text shadow-sm"
               : "text-zinc-400 hover:text-zinc-200"
           )}
         >
@@ -282,7 +282,7 @@ export function NleMediaPool({
         </button>
 
         {onClose && (
-          <button
+          <button aria-label="Thu gọn Media Pool (Bên trái)"
             type="button"
             onClick={onClose}
             className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"
@@ -302,25 +302,25 @@ export function NleMediaPool({
               className={cn(
                 "flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-dashed px-2.5 py-2 transition-all",
                 isDragActive
-                  ? "border-amber-400 bg-amber-500/15 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-                  : "border-zinc-700/80 bg-zinc-900/40 hover:border-amber-400/50 hover:bg-zinc-900"
+                  ? "border-primary/60 bg-primary/15"
+                  : "border-zinc-700/80 bg-zinc-900/40 hover:border-primary/50 hover:bg-zinc-900"
               )}
               title="Kéo thả hoặc nhấn để chọn MP4, MOV, JPG, PNG từ máy tính"
             >
               <input {...getInputProps()} />
               <div className="flex items-center gap-2 min-w-0">
                 {uploading ? (
-                  <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-amber-400" />
+                  <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-primary-text" />
                 ) : (
-                  <Upload className="h-3.5 w-3.5 shrink-0 text-amber-400" />
+                  <Upload className="h-3.5 w-3.5 shrink-0 text-primary-text" />
                 )}
-                <span className="truncate text-[11px] font-medium text-zinc-200">
+                <span className="truncate text-xs font-medium text-zinc-200">
                   {isDragActive
                     ? `Thả tệp vào Cảnh #${sceneIdx}`
                     : `Tải Video/Ảnh vào Cảnh #${sceneIdx}`}
                 </span>
               </div>
-              <span className="shrink-0 rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[9px] text-zinc-400">
+              <span className="shrink-0 rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-xs text-zinc-400">
                 MP4/PNG
               </span>
             </div>
@@ -352,14 +352,14 @@ export function NleMediaPool({
             <div className="space-y-2">
               {/* Filter Pills: All / Video / Image */}
               {videoClips.length > 0 && (
-                <div className="flex items-center gap-1 rounded-md border border-zinc-800 bg-zinc-950 p-0.5 text-[10px]">
+                <div className="flex items-center gap-1 rounded-md border border-zinc-800 bg-zinc-950 p-0.5 text-xs">
                   <button
                     type="button"
                     onClick={() => setMediaTypeFilter("all")}
                     className={cn(
                       "flex-1 rounded py-1 font-medium transition-colors",
                       mediaTypeFilter === "all"
-                        ? "bg-zinc-800 text-amber-300 font-bold"
+                        ? "bg-zinc-800 text-primary-text font-bold"
                         : "text-zinc-400 hover:text-zinc-200"
                     )}
                   >
@@ -371,11 +371,12 @@ export function NleMediaPool({
                     className={cn(
                       "flex-1 rounded py-1 font-medium transition-colors",
                       mediaTypeFilter === "video"
-                        ? "bg-zinc-800 text-amber-300 font-bold"
+                        ? "bg-zinc-800 text-primary-text font-bold"
                         : "text-zinc-400 hover:text-zinc-200"
                     )}
                   >
-                    🎬 Video ({videoCount})
+                    <Film className="mr-1 inline h-3.5 w-3.5" aria-hidden />
+                    Video ({videoCount})
                   </button>
                   <button
                     type="button"
@@ -383,29 +384,30 @@ export function NleMediaPool({
                     className={cn(
                       "flex-1 rounded py-1 font-medium transition-colors",
                       mediaTypeFilter === "image"
-                        ? "bg-zinc-800 text-cyan-300 font-bold"
+                        ? "bg-zinc-800 text-primary-text font-bold"
                         : "text-zinc-400 hover:text-zinc-200"
                     )}
                   >
-                    🖼️ Ảnh ({imageCount})
+                    <ImageIcon className="mr-1 inline h-3.5 w-3.5" aria-hidden />
+                    Ảnh ({imageCount})
                   </button>
                 </div>
               )}
 
               {videoClips.length > 4 && (
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-2.5 top-2 h-3.5 w-3.5 text-zinc-500" />
+                  <Search className="pointer-events-none absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
                   <Input
                     value={mediaSearch}
                     onChange={(e) => setMediaSearch(e.target.value)}
                     placeholder="Lọc nhanh clip / ảnh góc chụp..."
-                    className="h-7 border-zinc-800 bg-zinc-950 pl-8 text-[11px]"
+                    className="h-7 border-zinc-800 bg-zinc-950 pl-8 text-xs"
                   />
                 </div>
               )}
 
               {filteredClips.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-zinc-800 py-6 text-center text-[11px] text-zinc-500">
+                <div className="rounded-lg border border-dashed border-zinc-800 py-6 text-center text-xs text-muted-foreground">
                   Không có media nào trong mục này.
                 </div>
               ) : (
@@ -432,20 +434,20 @@ export function NleMediaPool({
                         }}
                         onClick={() => {
                           onAttachMedia(clip.url, true);
-                          toast.success(`Đã gắn "${clip.label}" vào Cảnh #${sceneIdx}`);
+                          toast.success(`Đã gắn "${stripEmoji(clip.label)}" vào Cảnh #${sceneIdx}`);
                         }}
                         className={cn(
                           "group relative flex flex-col overflow-hidden rounded-lg border bg-black text-left transition-all cursor-grab active:cursor-grabbing",
                           isActiveInSelectedScene
-                            ? "border-emerald-400 ring-1 ring-emerald-400/70 shadow-[0_0_12px_rgba(16,185,129,0.2)]"
-                            : "border-zinc-800/80 hover:border-amber-400/50"
+                            ? "border-primary/60 ring-1 ring-primary-text/70"
+                            : "border-zinc-800/80 hover:border-primary/50"
                         )}
                       >
                         <div className="relative aspect-[4/3] w-full overflow-hidden bg-zinc-900">
                           {isImage ? (
                             <img
                               src={cleanPreview}
-                              alt={clip.label}
+                              alt={stripEmoji(clip.label)}
                               loading="lazy"
                               className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
                             />
@@ -466,31 +468,31 @@ export function NleMediaPool({
                             <GripHorizontal className="h-2.5 w-2.5" />
                           </span>
                           {isActiveInSelectedScene ? (
-                            <span className="absolute right-1 top-1 rounded bg-emerald-400 px-1 font-mono text-[8.5px] font-bold text-black shadow">
+                            <span className="absolute right-1 top-1 rounded bg-primary px-1 font-mono text-xs font-bold text-primary-foreground shadow">
                               Đang dùng
                             </span>
                           ) : (
                             clip.badge && (
-                              <span className="absolute right-1 top-1 rounded bg-black/80 px-1 font-mono text-[9px] text-amber-300">
+                              <span className="absolute right-1 top-1 rounded bg-black/80 px-1 font-mono text-xs text-primary-text">
                                 {clip.badge}
                               </span>
                             )
                           )}
                           {isImage && slideIdx >= 0 && (
-                            <button
+                            <button aria-label="Phóng to xem chi tiết ảnh (Lightbox)"
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setLightboxIndex(slideIdx);
                               }}
-                              className="absolute bottom-1 right-1 z-10 rounded bg-black/80 p-1 text-zinc-300 opacity-0 transition-opacity hover:bg-amber-400 hover:text-black group-hover:opacity-100"
+                              className="absolute bottom-1 right-1 z-10 rounded bg-black/80 p-1 text-zinc-300 opacity-0 transition-opacity hover:bg-primary hover:text-black group-hover:opacity-100"
                               title="Phóng to xem chi tiết ảnh (Lightbox)"
                             >
                               <Maximize2 className="h-3 w-3" />
                             </button>
                           )}
                           <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity group-hover:opacity-100">
-                            <span className="flex items-center gap-0.5 rounded bg-amber-400 px-1.5 py-0.5 text-[10px] font-bold text-black">
+                            <span className="flex items-center gap-0.5 rounded bg-primary px-1.5 py-0.5 text-xs font-bold text-primary-foreground">
                               {isBusy ? (
                                 <Loader2 className="h-3 w-3 animate-spin" />
                               ) : (
@@ -501,13 +503,13 @@ export function NleMediaPool({
                             </span>
                           </div>
                         </div>
-                        <div className="truncate px-1.5 py-1 text-[10px] font-medium text-zinc-200">
+                        <div className="truncate px-1.5 py-1 text-xs font-medium text-zinc-200">
                           {isImage ? (
-                            <ImageIcon className="mr-1 inline h-2.5 w-2.5 text-cyan-400" />
+                            <ImageIcon className="mr-1 inline h-2.5 w-2.5 text-primary-text" />
                           ) : (
-                            <Film className="mr-1 inline h-2.5 w-2.5 text-amber-400" />
+                            <Film className="mr-1 inline h-2.5 w-2.5 text-primary-text" />
                           )}
-                          {clip.label}
+                          {stripEmoji(clip.label)}
                         </div>
                       </div>
                     );
@@ -527,7 +529,7 @@ export function NleMediaPool({
           /* TAB 2: SCRIPT & VOICEOVER GENERATOR */
           <div className="space-y-3 p-3 text-xs">
             <div className="space-y-1">
-              <span className="text-[11px] text-zinc-400">Tiêu đề dự án</span>
+              <span className="text-xs text-zinc-400">Tiêu đề dự án</span>
               <Input
                 placeholder={titlePlaceholder || "VD: Barca 1-2 Real Madrid"}
                 value={title}
@@ -539,11 +541,11 @@ export function NleMediaPool({
             {/* VOICE SELECTOR & PREVIEW PANEL */}
             <div className="space-y-2 rounded-lg bg-zinc-900/70 p-2.5">
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-400">
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-primary-text">
                   <Mic className="h-3.5 w-3.5" />
                   Chọn Giọng Đọc (Voice AI)
                 </span>
-                <div className="flex items-center rounded bg-zinc-950 p-0.5 text-[10px]">
+                <div className="flex items-center rounded bg-zinc-950 p-0.5 text-xs">
                   {(["all", "Nam", "Nữ"] as const).map((g) => (
                     <button
                       key={g}
@@ -552,7 +554,7 @@ export function NleMediaPool({
                       className={cn(
                         "rounded px-1.5 py-0.5 font-medium transition-colors",
                         genderFilter === g
-                          ? "bg-amber-500 text-black font-bold"
+                          ? "bg-primary/15 text-primary-text font-semibold"
                           : "text-zinc-400 hover:text-zinc-200"
                       )}
                     >
@@ -586,7 +588,7 @@ export function NleMediaPool({
                   title="Nghe thử giọng đọc đã chọn"
                 >
                   {previewingVoice ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-400" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-primary-text" />
                   ) : isPlayingPreview ? (
                     <>
                       <Square className="h-3 w-3 fill-current" />
@@ -594,7 +596,7 @@ export function NleMediaPool({
                     </>
                   ) : (
                     <>
-                      <Volume2 className="h-3.5 w-3.5 text-amber-400" />
+                      <Volume2 className="h-3.5 w-3.5 text-primary-text" />
                       Nghe thử
                     </>
                   )}
@@ -611,7 +613,7 @@ export function NleMediaPool({
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between text-[11px] text-zinc-400">
+              <div className="flex justify-between text-xs text-zinc-400">
                 <span>Lời bình (Voiceover)</span>
                 <span>
                   {script.trim() ? `${script.trim().split(/\s+/).length} từ` : "110-150 từ"}

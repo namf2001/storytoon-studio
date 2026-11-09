@@ -14,6 +14,8 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
 
 export interface ProjectSummary {
   id: string; title: string; status: string; aspectRatio: string; videoType?: string; durationMs: number; createdAt: string;
+  /** First scene media (image or video clip URL, may carry a #crop fragment). */
+  thumbnailUrl?: string | null;
 }
 
 export interface FootballPackageResponse {

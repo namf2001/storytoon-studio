@@ -30,4 +30,7 @@ type Project struct {
 	Words          json.RawMessage
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
+
+	// ThumbnailPath is the first scene's media path; only populated by listings.
+	ThumbnailPath *string
 }

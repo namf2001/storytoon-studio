@@ -1,40 +1,49 @@
+/* Theme: graphite editor (see PRODUCT.md / .impeccable). Tailwind tokens live in tailwind.config.ts. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
+    /* Graphite editor palette (category standard, quality bar: CapCut Desktop / Descript).
+       One accent blue for selection, focus and the primary action; red only for playhead + destructive. */
     color-scheme: dark;
-    --brand-color: #f59e0b;
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 6%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 5%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 47.9 95.8% 53.1%;
-    --primary-foreground: 26 83.3% 8.1%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 14%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 16.5%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 50.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 16.5%;
-    --input: 240 3.7% 15.9%;
-    --ring: 47.9 95.8% 53.1%;
-    --radius: 0.65rem;
+    --brand-color: #2563eb;
+    --background: 228 8% 8%;          /* #131417 app ground */
+    --foreground: 220 9% 92%;         /* #E8E9EC */
+    --card: 228 7% 11%;               /* #1A1B1F panels */
+    --card-foreground: 220 9% 92%;
+    --popover: 228 7% 12.5%;
+    --popover-foreground: 220 9% 92%;
+    --primary: 221 83% 53%;           /* #2563EB fills, white text ≥ 5:1 */
+    --primary-foreground: 0 0% 100%;
+    --primary-text: 213 94% 68%;      /* #60A5FA accent text on graphite ≥ 6:1 */
+    --secondary: 228 6% 18%;
+    --secondary-foreground: 220 9% 92%;
+    --muted: 228 6% 15%;
+    --muted-foreground: 220 6% 68%;   /* #A9ADB4 secondary text ≥ 7:1 on panels */
+    --accent: 228 6% 18%;
+    --accent-foreground: 220 9% 92%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 228 6% 20%;             /* hairlines */
+    --input: 228 6% 22%;
+    --ring: 213 94% 68%;
+    --radius: 0.5rem;
 
-    --sidebar-background: 240 10% 5%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 47.9 95.8% 53.1%;
-    --sidebar-primary-foreground: 26 83.3% 8.1%;
-    --sidebar-accent: 240 3.7% 13.5%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 14%;
-    --sidebar-ring: 47.9 95.8% 53.1%;
+    --sidebar-background: 228 8% 9.5%;
+    --sidebar-foreground: 220 9% 92%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 228 6% 15%;
+    --sidebar-accent-foreground: 220 9% 92%;
+    --sidebar-border: 228 6% 17%;
+    --sidebar-ring: 213 94% 68%;
+
+    /* Editor surfaces (darkest → raised). */
+    --surface-1: 228 9% 6.5%;   /* monitors / video ground */
+    --surface-2: 228 7% 10%;    /* panels, toolbars */
+    --surface-3: 228 7% 12.5%;  /* top bar, raised */
   }
 }
 
@@ -43,8 +52,46 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
     accent-color: var(--brand-color);
+    caret-color: hsl(var(--primary-text));
+  }
+  ::selection {
+    background: hsl(var(--primary) / 0.35);
+    color: hsl(var(--foreground));
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 1px;
+  }
+  /* Timecodes and durations never jitter */
+  .font-mono {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  }
+  .font-mono,
+  [class*="tabular"] {
+    font-variant-numeric: tabular-nums;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(228 6% 26%) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(228 6% 26%);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(228 6% 34%);
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
   }
 }
 
@@ -67,7 +114,7 @@
     height: 14px;
     width: 14px;
     border-radius: 50%;
-    background: var(--brand-color, #f59e0b);
+    background: var(--brand-color, #2563eb);
     cursor: pointer;
     margin-top: -4px;
   }
@@ -81,11 +128,11 @@
     height: 14px;
     width: 14px;
     border-radius: 50%;
-    background: var(--brand-color, #f59e0b);
+    background: var(--brand-color, #2563eb);
     cursor: pointer;
   }
   input[type="range"]::-moz-range-progress {
-    background-color: var(--brand-color, #f59e0b);
+    background-color: var(--brand-color, #2563eb);
     height: 6px;
     border-radius: 4px;
   }

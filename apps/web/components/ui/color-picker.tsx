@@ -54,7 +54,7 @@ export function ColorPickerPopover({
         <button
           type="button"
           className={cn(
-            "group inline-flex items-center gap-2 rounded-md border border-zinc-700/80 bg-zinc-900/90 px-2 py-1 text-[11px] font-medium text-zinc-200 shadow-sm transition-colors hover:border-amber-400/60 hover:bg-zinc-800/90",
+            "group inline-flex items-center gap-2 rounded-md border border-zinc-700/80 bg-zinc-900/90 px-2 py-1 text-xs font-medium text-zinc-200 shadow-sm transition-colors hover:border-primary/60 hover:bg-zinc-800/90",
             compact && "px-1.5 py-0.5",
             className
           )}
@@ -65,24 +65,24 @@ export function ColorPickerPopover({
             style={{ backgroundColor: safeHex }}
           />
           {!compact && (
-            <span className="font-mono text-[10px] uppercase text-zinc-300">
+            <span className="font-mono text-xs uppercase text-zinc-300">
               {safeHex}
             </span>
           )}
           {label && (
-            <span className="truncate text-[10px] text-zinc-400 group-hover:text-zinc-200">
+            <span className="truncate text-xs text-zinc-400 group-hover:text-zinc-200">
               {label}
             </span>
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-60 space-y-3 border-zinc-800 bg-[#141419] p-3 shadow-2xl" align="end">
+      <PopoverContent className="w-60 space-y-3 border-zinc-800 bg-surface-3 p-3 shadow-2xl" align="end">
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-200">
-            <Pipette className="h-3.5 w-3.5 text-amber-400" />
+          <span className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200">
+            <Pipette className="h-3.5 w-3.5 text-primary-text" />
             {label || "Bảng màu Studio"}
           </span>
-          <span className="font-mono text-[10px] uppercase text-amber-400">
+          <span className="font-mono text-xs uppercase text-primary-text">
             {safeHex}
           </span>
         </div>
@@ -92,9 +92,9 @@ export function ColorPickerPopover({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-zinc-400">HEX</span>
-          <div className="flex flex-1 items-center rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-mono text-zinc-100 focus-within:border-amber-400">
-            <span className="mr-1 text-zinc-500">#</span>
+          <span className="text-xs font-mono text-zinc-400">HEX</span>
+          <div className="flex flex-1 items-center rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-mono text-zinc-100 focus-within:border-primary/60">
+            <span className="mr-1 text-muted-foreground">#</span>
             <HexColorInput
               color={safeHex}
               onChange={onChange}
@@ -105,7 +105,7 @@ export function ColorPickerPopover({
         </div>
 
         <div className="space-y-1">
-          <div className="text-[10px] text-zinc-400">Màu dùng nhanh</div>
+          <div className="text-xs text-zinc-400">Màu dùng nhanh</div>
           <div className="grid grid-cols-6 gap-1.5">
             {presets.map((sw) => (
               <button
@@ -115,7 +115,7 @@ export function ColorPickerPopover({
                 className={cn(
                   "h-5 w-full rounded border transition-transform hover:scale-110",
                   safeHex.toLowerCase() === sw.toLowerCase()
-                    ? "border-amber-400 ring-1 ring-amber-400"
+                    ? "border-primary/60 ring-1 ring-primary-text/60"
                     : "border-white/15"
                 )}
                 style={{ backgroundColor: sw }}

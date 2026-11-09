@@ -14,6 +14,8 @@ type Summary struct {
 	VideoType   string
 	DurationMs  int
 	CreatedAt   time.Time
+	// ThumbnailURL is the first scene's media URL (image or video clip), if any.
+	ThumbnailURL *string
 }
 
 // List returns summaries of all projects.
@@ -27,6 +29,7 @@ func (i impl) List(ctx context.Context) ([]Summary, error) {
 		out = append(out, Summary{
 			ID: p.ID, Title: p.Title, Status: p.Status, AspectRatio: p.AspectRatio,
 			VideoType: p.VideoType, DurationMs: p.DurationMs, CreatedAt: p.CreatedAt,
+			ThumbnailURL: i.mediaURL(p.ThumbnailPath),
 		})
 	}
 	return out, nil

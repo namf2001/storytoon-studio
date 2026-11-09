@@ -83,6 +83,7 @@ export interface VtvNewsTemplateProps {
   mediaHeight?: number;
   topHeaderHeight?: number;
   audioSrc?: string;
+  audioVolume?: number;
   bgmSrc?: string;
   bgmVolume?: number;
 }

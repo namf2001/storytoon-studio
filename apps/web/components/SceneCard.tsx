@@ -333,7 +333,7 @@ export function SceneCard({
               ) : (
                 <div className="flex h-full flex-col items-center justify-center p-3 text-center">
                   {busy ? (
-                    <Loader2 className="mb-1 h-5 w-5 animate-spin text-primary" />
+                    <Loader2 className="mb-1 h-5 w-5 animate-spin text-primary-text" />
                   ) : (
                     <Upload className="mb-1 h-5 w-5 text-muted-foreground" />
                   )}
@@ -366,7 +366,7 @@ export function SceneCard({
                 className="h-7 flex-1 gap-1 px-2 text-[11px]"
                 title="Tải Video MP4 hoặc Ảnh từ máy"
               >
-                <Film className="h-3 w-3 text-primary" />
+                <Film className="h-3 w-3 text-primary-text" />
                 Tải Video/Ảnh
               </Button>
 
@@ -387,7 +387,7 @@ export function SceneCard({
               </Button>
 
               {media.cleanUrl && (
-                <Button
+                <Button aria-label="Chỉnh vùng lấy hình từ video gốc"
                   type="button"
                   variant={showCropper ? "default" : "outline"}
                   size="sm"
@@ -420,7 +420,7 @@ export function SceneCard({
                   variant="ghost"
                   size="sm"
                   onClick={() => onSeek(scene.startMs)}
-                  className="h-6 gap-1 px-1.5 font-mono text-xs text-muted-foreground hover:text-primary"
+                  className="h-6 gap-1 px-1.5 font-mono text-xs text-muted-foreground hover:text-primary-text"
                 >
                   <Play className="h-3 w-3 fill-current" />
                   {fmtMs(scene.startMs)}–{fmtMs(scene.endMs)} ({durationSec}s)
@@ -461,7 +461,7 @@ export function SceneCard({
             {showCropper && media.cleanUrl && (
               <div className="rounded-lg bg-primary/[0.04] p-2.5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-[11px] font-semibold text-primary">
+                  <span className="flex items-center gap-1.5 text-[11px] font-semibold text-primary-text">
                     <Crop className="h-3.5 w-3.5" />
                     Chọn vùng lấy hình ({frameAspectRatio} từ gốc 9:16)
                   </span>
@@ -481,7 +481,7 @@ export function SceneCard({
                         {p.label}
                       </button>
                     ))}
-                    <button
+                    <button aria-label="Đặt lại mặc định"
                       type="button"
                       onClick={() =>
                         applyCrop({ cropX: 50, cropY: 50, cropZoom: 1, trimStartSec: 0 })
@@ -595,7 +595,7 @@ export function SceneCard({
                       setCopied(true);
                       setTimeout(() => setCopied(false), 1500);
                     }}
-                    className="flex items-center gap-1 text-[10px] text-primary hover:underline"
+                    className="flex items-center gap-1 text-[10px] text-primary-text hover:underline"
                   >
                     {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                     {copied ? "Đã copy" : "Copy"}

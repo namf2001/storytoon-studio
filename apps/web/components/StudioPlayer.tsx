@@ -2,13 +2,19 @@
 
 import { forwardRef, useEffect, useState } from "react";
 import { Player, type PlayerRef } from "@remotion/player";
+import { MonitorBootPlaceholder, monitorPlayerStateProps } from "@/components/nle/MonitorStates";
 import type { Project, AspectRatio } from "@storytoon/shared-types";
 import { StoryVideo, FPS, dimensionsFor, msToFrames } from "@storytoon/video-engine";
 
-interface Props { project: Project; ratio: AspectRatio }
+interface Props {
+  project: Project;
+  ratio: AspectRatio;
+  /** Voice-over gain from the timeline mixer (0 = muted). */
+  voiceVolume?: number;
+}
 
 /** Live Remotion preview of the project. */
-export const StudioPlayer = forwardRef<PlayerRef, Props>(function StudioPlayer({ project, ratio }, ref) {
+export const StudioPlayer = forwardRef<PlayerRef, Props>(function StudioPlayer({ project, ratio, voiceVolume = 1 }, ref) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -18,22 +24,16 @@ export const StudioPlayer = forwardRef<PlayerRef, Props>(function StudioPlayer({
 
   if (!mounted) {
     return (
-      <div
+      <MonitorBootPlaceholder
+        label="Đang khởi động Player…"
         style={{
           width: "100%",
           maxHeight: "70vh",
           aspectRatio: `${width}/${height}`,
           background: "#000",
           borderRadius: 12,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#777",
-          fontSize: 14,
         }}
-      >
-        Đang khởi động Player...
-      </div>
+      />
     );
   }
 
@@ -47,12 +47,14 @@ export const StudioPlayer = forwardRef<PlayerRef, Props>(function StudioPlayer({
         aspectRatio: ratio,
         words: project.words,
         scenes: project.scenes,
+        voiceVolume,
       }}
       durationInFrames={msToFrames(Math.max(project.durationMs, 1000))}
       fps={FPS}
       compositionWidth={width}
       compositionHeight={height}
       controls
+      {...monitorPlayerStateProps}
       style={{
         height: ratio === "9:16" ? "100%" : "auto",
         width: ratio === "9:16" ? "auto" : "100%",

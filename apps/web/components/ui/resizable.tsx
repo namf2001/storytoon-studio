@@ -41,7 +41,7 @@ function ResizableHandle({
   return (
     <Separator
       className={cn(
-        "relative flex shrink-0 items-center justify-center bg-zinc-800/90 transition-colors hover:bg-amber-500/80 active:bg-amber-400 focus-visible:outline-none z-30",
+        "relative flex shrink-0 items-center justify-center bg-zinc-800/90 transition-colors hover:bg-primary/80 active:bg-primary focus-visible:outline-none z-30",
         isVerticalStack
           ? "h-2 w-full cursor-row-resize border-y border-zinc-800"
           : "w-1.5 h-full cursor-col-resize border-x border-zinc-800",

@@ -144,7 +144,7 @@ export const StickmanStudio: React.FC = () => {
             type="text"
             value={rig.name}
             onChange={(e) => updateRig(setPath(rig, "name", e.target.value), false)}
-            className="h-8 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 font-bold text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary w-44"
+            className="h-8 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 font-bold text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary-text w-44"
             title="Tên nhân vật"
           />
 
@@ -208,7 +208,7 @@ export const StickmanStudio: React.FC = () => {
         <div className="flex items-center gap-2">
           {/* Undo / Redo */}
           <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-900/60 p-0.5">
-            <Button
+            <Button aria-label="Undo (Ctrl+Z)"
               variant="ghost"
               size="icon"
               disabled={!canUndo}
@@ -218,7 +218,7 @@ export const StickmanStudio: React.FC = () => {
             >
               <Undo2 className="h-3.5 w-3.5" />
             </Button>
-            <Button
+            <Button aria-label="Redo (Ctrl+Shift+Z)"
               variant="ghost"
               size="icon"
               disabled={!canRedo}
@@ -237,12 +237,12 @@ export const StickmanStudio: React.FC = () => {
             onClick={handleSaveToLibrary}
             className="h-8 border-zinc-800 gap-1.5 text-xs text-foreground"
           >
-            <Save className="h-3.5 w-3.5 text-primary" /> Lưu nhân vật
+            <Save className="h-3.5 w-3.5 text-primary-text" /> Lưu nhân vật
           </Button>
 
           {/* Import Rig JSON */}
           <label className="flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-zinc-800 bg-zinc-900 px-2.5 text-xs text-zinc-300 hover:bg-zinc-800 transition-colors">
-            <Upload className="h-3.5 w-3.5 text-primary" /> Import JSON
+            <Upload className="h-3.5 w-3.5 text-primary-text" /> Import JSON
             <input
               type="file"
               accept=".json"
@@ -306,7 +306,7 @@ export const StickmanStudio: React.FC = () => {
             {/* Canvas Options */}
             <div className="flex items-center justify-between text-xs border-b border-zinc-800 pb-2">
               <span className="font-semibold text-foreground flex items-center gap-1.5">
-                <Layers className="h-3.5 w-3.5 text-primary" />
+                <Layers className="h-3.5 w-3.5 text-primary-text" />
                 Vùng kéo thả (Editor Canvas)
               </span>
 

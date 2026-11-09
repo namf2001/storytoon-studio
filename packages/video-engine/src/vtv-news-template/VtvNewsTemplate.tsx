@@ -78,6 +78,7 @@ export const VtvNewsTemplate: React.FC<VtvNewsTemplateProps> = ({
   mediaHeight,
   topHeaderHeight,
   audioSrc,
+  audioVolume = 1,
   bgmSrc,
   bgmVolume = 0.15,
 }) => {
@@ -98,6 +99,7 @@ export const VtvNewsTemplate: React.FC<VtvNewsTemplateProps> = ({
       {audioSrc && (
         <Audio
           src={resolveUrl(audioSrc)}
+          volume={audioVolume}
         />
       )}
       {bgmSrc && (

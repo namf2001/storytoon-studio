@@ -18,6 +18,7 @@ export const ProductCommercialVideo: React.FC<ProductCommercialVideoProps> = ({
   audioUrl,
   bgmUrl,
   bgmVolume = 0.12,
+  voiceVolume = 1,
   words = [],
   scenes = [],
 }) => {
@@ -40,6 +41,7 @@ export const ProductCommercialVideo: React.FC<ProductCommercialVideoProps> = ({
       {audioUrl ? (
         <Audio
           src={audioUrl}
+          volume={voiceVolume}
           onError={(e) => console.warn("Voice-over audio error:", e)}
         />
       ) : null}

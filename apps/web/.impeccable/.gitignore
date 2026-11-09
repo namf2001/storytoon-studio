@@ -1,0 +1,5 @@
+# Impeccable runtime artifacts (decision sketches, review captures, question state)
+mocks/
+review/
+questions/
+config.local.json

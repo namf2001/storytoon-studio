@@ -12,6 +12,7 @@ import {
   Film,
   Grid,
   Hash,
+  Image as ImageIcon,
   Info,
   Layers,
   Loader2,
@@ -160,6 +161,31 @@ const BG_VIDEO_PRESETS = [
 ];
 
 /** DaVinci Resolve style right-hand Inspector for the selected timeline clip and broadcast graphics. */
+/** Older projects stored long Title-Case layer names; show the short ones instead. */
+const LEGACY_LAYER_NAMES: Record<string, string> = {
+  "Media Nền Toàn Khung": "Media nền",
+  "Ảnh / Video Trái": "Ảnh/video trái",
+  "Ảnh / Video Phải": "Ảnh/video phải",
+  "Nhãn VS Đối Đầu": "Nhãn VS",
+  "Nền Mờ Hậu Cảnh": "Nền mờ",
+  "Khung Trích Dẫn Phát Biểu": "Khung trích dẫn",
+  "Nền Sân Bóng": "Nền sân bóng",
+  "Thẻ Điểm Nhấn Cầu Thủ": "Thẻ cầu thủ",
+  "Video / Ảnh Nền Hành Động": "Video/ảnh nền",
+  "Băng Rôn Điểm Nhấn Nổi Bật": "Băng rôn điểm nhấn",
+  "Chữ Callout": "Chữ",
+  "Ảnh nổi / Cutout": "Ảnh nổi",
+};
+
+const LAYER_TYPE_LABEL: Record<SceneLayer["type"], string> = {
+  media: "Nền video / ảnh",
+  text: "Chữ",
+  image: "Ảnh nổi",
+};
+
+/** Pseudo-layer id for the scene's built-in 2-line callout (calloutTag / calloutText). */
+const CALLOUT_ID = "__callout__";
+
 export function NleInspector({
   scene,
   frameAspectRatio,
@@ -272,7 +298,7 @@ export function NleInspector({
       {
         id: "media-default",
         type: "media",
-        name: "Media Nền Toàn Khung",
+        name: "Media nền",
         mediaUrl: scene.imageUrl || "",
         motion: scene.cameraEffect || "zoom_in",
         visible: true,
@@ -280,17 +306,22 @@ export function NleInspector({
     ];
   }, [scene?.id, scene?.layers, scene?.imageUrl, scene?.cameraEffect]);
 
+  const hasCallout = !!(scene?.calloutTag?.trim() || scene?.calloutText?.trim());
   const effectiveSelectedLayerId =
-    selectedLayerId && activeLayers.some((l) => l.id === selectedLayerId)
-      ? selectedLayerId
-      : activeLayers[0]?.id ?? "media-default";
+    selectedLayerId === CALLOUT_ID && hasCallout
+      ? CALLOUT_ID
+      : selectedLayerId && activeLayers.some((l) => l.id === selectedLayerId)
+        ? selectedLayerId
+        : activeLayers[0]?.id ?? "media-default";
+  const calloutSelected = effectiveSelectedLayerId === CALLOUT_ID;
 
-  const selectedLayer =
-    activeLayers.find((l) => l.id === effectiveSelectedLayerId) ?? activeLayers[0] ?? null;
+  const selectedLayer = calloutSelected
+    ? null
+    : activeLayers.find((l) => l.id === effectiveSelectedLayerId) ?? activeLayers[0] ?? null;
 
   if (!scene) {
     return (
-      <aside className="flex h-full w-full flex-col border-l border-zinc-800 bg-[#121216] p-4 text-xs text-zinc-500">
+      <aside className="flex h-full w-full flex-col border-l border-zinc-800 bg-surface-2 p-4 text-xs text-muted-foreground">
         Chọn một phân cảnh trên Timeline để chỉnh sửa.
       </aside>
     );
@@ -379,7 +410,7 @@ export function NleInspector({
         {
           id: `media-${Date.now()}`,
           type: "media",
-          name: "Media Nền Toàn Khung",
+          name: "Media nền",
           mediaUrl: baseMedia,
           motion: baseMotion,
           visible: true,
@@ -390,7 +421,7 @@ export function NleInspector({
         {
           id: `left-${Date.now()}`,
           type: "media",
-          name: "Ảnh / Video Trái",
+          name: "Ảnh/video trái",
           mediaUrl: baseMedia,
           motion: "zoom_in",
           visible: true,
@@ -398,7 +429,7 @@ export function NleInspector({
         {
           id: `right-${Date.now() + 1}`,
           type: "media",
-          name: "Ảnh / Video Phải",
+          name: "Ảnh/video phải",
           mediaUrl: baseMedia,
           motion: "zoom_in",
           visible: true,
@@ -406,7 +437,7 @@ export function NleInspector({
         {
           id: `text-vs-${Date.now() + 2}`,
           type: "text",
-          name: "Nhãn VS Đối Đầu",
+          name: "Nhãn VS",
           text: "SIÊU KINH ĐIỂN",
           subtitle: "ĐẠI CHIẾN ĐỈNH CAO",
           stylePreset: "headline_box",
@@ -421,7 +452,7 @@ export function NleInspector({
         {
           id: `bg-${Date.now()}`,
           type: "media",
-          name: "Nền Mờ Hậu Cảnh",
+          name: "Nền mờ",
           mediaUrl: baseMedia,
           blur: 8,
           motion: baseMotion,
@@ -430,7 +461,7 @@ export function NleInspector({
         {
           id: `quote-${Date.now() + 1}`,
           type: "text",
-          name: "Khung Trích Dẫn Phát Biểu",
+          name: "Khung trích dẫn",
           text: `“${activeScene.transcriptText || "Chiến thắng này là của toàn đội!"}”`,
           subtitle: activeScene.characters?.[0] ? `— ${activeScene.characters[0]}` : "— PHÁT BIỂU SAU TRẬN",
           stylePreset: "quote_card",
@@ -445,7 +476,7 @@ export function NleInspector({
         {
           id: `bg-${Date.now()}`,
           type: "media",
-          name: "Nền Sân Bóng",
+          name: "Nền sân bóng",
           mediaUrl: baseMedia,
           motion: baseMotion,
           visible: true,
@@ -453,7 +484,7 @@ export function NleInspector({
         {
           id: `badge-${Date.now() + 1}`,
           type: "text",
-          name: "Thẻ Điểm Nhấn Cầu Thủ",
+          name: "Thẻ cầu thủ",
           text: "⚽ BÀN THẮNG QUYẾT ĐỊNH",
           subtitle: activeScene.characters?.[0]
             ? `${activeScene.characters[0].toUpperCase()} • PHÚT 87'`
@@ -470,7 +501,7 @@ export function NleInspector({
         {
           id: `bg-${Date.now()}`,
           type: "media",
-          name: "Video / Ảnh Nền Hành Động",
+          name: "Video/ảnh nền",
           mediaUrl: baseMedia,
           motion: baseMotion,
           visible: true,
@@ -478,7 +509,7 @@ export function NleInspector({
         {
           id: `badge-${Date.now() + 1}`,
           type: "text",
-          name: "Băng Rôn Điểm Nhấn Nổi Bật",
+          name: "Băng rôn điểm nhấn",
           text: "🚨 ĐỊA CHẤN BÓNG ĐÁ",
           subtitle: "KẾT QUẢ NGOÀI MỌI DỰ ĐOÁN",
           stylePreset: "neon_tag",
@@ -637,16 +668,16 @@ export function NleInspector({
   const durSec = ((activeScene.endMs - activeScene.startMs) / 1000).toFixed(1);
 
   return (
-    <aside className="flex h-full w-full flex-col border-l border-zinc-800 bg-[#121216] select-none overflow-hidden">
+    <aside className="flex h-full w-full flex-col border-l border-zinc-800 bg-surface-2 select-none overflow-hidden">
       {/* Inspector Header Tabs */}
-      <div className="flex h-9 shrink-0 items-center border-b border-zinc-800 bg-[#16161c] px-1.5 gap-1 overflow-x-auto scrollbar-none">
+      <div className="flex h-9 shrink-0 items-center border-b border-zinc-800 bg-surface-3 px-1.5 gap-1 overflow-x-auto scrollbar-none">
         <button
           type="button"
           onClick={() => setTab("clip")}
           className={cn(
-            "flex flex-1 min-w-0 items-center justify-center gap-1 rounded py-1 px-1.5 text-[11px] font-semibold transition-colors",
+            "flex flex-1 min-w-0 items-center justify-center gap-1 rounded py-1 px-1.5 text-xs font-semibold transition-colors",
             tab === "clip"
-              ? "bg-zinc-800 text-amber-400 shadow-sm"
+              ? "bg-zinc-800 text-primary-text shadow-sm"
               : "text-zinc-400 hover:text-zinc-200"
           )}
           title={`Chỉnh sửa Cắt/Zoom/Motion của Cảnh #${activeScene.sceneIndex}`}
@@ -667,14 +698,14 @@ export function NleInspector({
                 }));
               }}
               className={cn(
-                "flex flex-1 min-w-0 items-center justify-center gap-1 rounded py-1 px-1.5 text-[11px] font-semibold transition-colors",
+                "flex flex-1 min-w-0 items-center justify-center gap-1 rounded py-1 px-1.5 text-xs font-semibold transition-colors",
                 tab === "broadcast_stripes"
-                  ? "bg-zinc-800 text-amber-400 shadow-sm"
+                  ? "bg-zinc-800 text-primary-text shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200"
               )}
               title="Đồ họa Bản tin Thể thao truyền thống (Kẻ sọc & Ticker)"
             >
-              <Tv className="h-3 w-3 shrink-0 text-sky-400" />
+              <Tv className="h-3 w-3 shrink-0 text-primary-text" />
               <span className="truncate">Bản tin Đồ họa</span>
             </button>
 
@@ -688,21 +719,21 @@ export function NleInspector({
                 }));
               }}
               className={cn(
-                "flex flex-1 min-w-0 items-center justify-center gap-1 rounded py-1 px-1.5 text-[11px] font-semibold transition-colors",
+                "flex flex-1 min-w-0 items-center justify-center gap-1 rounded py-1 px-1.5 text-xs font-semibold transition-colors",
                 tab === "vtv_news_template"
-                  ? "bg-zinc-800 text-amber-400 shadow-sm"
+                  ? "bg-zinc-800 text-primary-text shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200"
               )}
               title="Mẫu video ngắn Editorial VTV News Reel (Liquid Glass & Video Loop)"
             >
-              <Sparkles className="h-3 w-3 shrink-0 text-amber-400" />
+              <Sparkles className="h-3 w-3 shrink-0 text-primary-text" />
               <span className="truncate">VTV News Reel</span>
             </button>
           </>
         )}
 
         {onClose && (
-          <button
+          <button aria-label="Thu gọn Inspector (Bên phải)"
             type="button"
             onClick={onClose}
             className="shrink-0 rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"
@@ -750,14 +781,34 @@ export function NleInspector({
               onChange={handleLayerImageUpload}
             />
 
-            {/* 1. LAYERS MANAGER (DANH SÁCH LAYER TRONG CẢNH) */}
-            <div className="space-y-2 rounded-lg bg-[#17171d] p-3 border border-zinc-800/80">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 font-semibold text-zinc-200">
-                  <SlidersHorizontal className="h-3.5 w-3.5 text-sky-400" />
-                  Danh sách Layer ({activeLayers.length})
+            {/* 1. LAYERS — mọi thứ hiển thị trong cảnh (nền, chữ, ảnh nổi, callout) */}
+            <div className="space-y-2 rounded-lg bg-surface-3 p-3 border border-zinc-800/80">
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-zinc-200">
+                  <Layers className="h-3.5 w-3.5 shrink-0 text-primary-text" aria-hidden />
+                  Layer
+                  <span className="rounded bg-zinc-800 px-1.5 font-mono text-xs font-medium text-zinc-400">
+                    {activeLayers.length + (hasCallout ? 1 : 0)}
+                  </span>
                 </span>
-                <div className="flex items-center gap-1">
+                <div className="flex shrink-0 items-center gap-1">
+                  {!hasCallout && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        onSceneChange({ ...activeScene, calloutTag: "Tính năng", calloutText: "Ý chính nổi bật" });
+                        patchScene({ calloutTag: "Tính năng", calloutText: "Ý chính nổi bật" });
+                        setSelectedLayerId(CALLOUT_ID);
+                      }}
+                      className="h-6 gap-1 whitespace-nowrap px-1.5 text-xs text-primary-text hover:bg-zinc-800"
+                      title="Thêm callout 2 dòng (nhãn + ý chính) ở đầu khung hình"
+                    >
+                      <Plus className="h-3 w-3" aria-hidden />
+                      Callout
+                    </Button>
+                  )}
                   <Button
                     type="button"
                     variant="ghost"
@@ -766,7 +817,7 @@ export function NleInspector({
                       addLayer({
                         id: `text-${Date.now()}`,
                         type: "text",
-                        name: "Chữ Callout",
+                        name: "Chữ",
                         text: "TIÊU ĐỀ ĐIỂM NHẤN",
                         subtitle: "Mô tả ngắn bổ sung",
                         stylePreset: "headline_box",
@@ -776,10 +827,11 @@ export function NleInspector({
                         visible: true,
                       })
                     }
-                    className="h-6 px-1.5 text-[10px] text-amber-400 hover:bg-zinc-800"
-                    title="Thêm layer chữ / callout"
+                    className="h-6 gap-1 whitespace-nowrap px-1.5 text-xs text-primary-text hover:bg-zinc-800"
+                    title="Thêm layer chữ đặt tự do trên khung hình"
                   >
-                    <Plus className="h-3 w-3 mr-0.5" /> + Chữ
+                    <Plus className="h-3 w-3" aria-hidden />
+                    Chữ
                   </Button>
                   <Button
                     type="button"
@@ -789,7 +841,7 @@ export function NleInspector({
                       addLayer({
                         id: `img-${Date.now()}`,
                         type: "image",
-                        name: "Ảnh nổi / Cutout",
+                        name: "Ảnh nổi",
                         imageUrl: activeScene.imageUrl || "/media/football-assets/nguoi_da_bong_logo.png",
                         position: { x: 50, y: 45 },
                         size: { width: 35 },
@@ -798,43 +850,87 @@ export function NleInspector({
                         visible: true,
                       })
                     }
-                    className="h-6 px-1.5 text-[10px] text-sky-400 hover:bg-zinc-800"
-                    title="Thêm layer ảnh nổi / cutout / sticker"
+                    className="h-6 gap-1 whitespace-nowrap px-1.5 text-xs text-primary-text hover:bg-zinc-800"
+                    title="Thêm ảnh nổi / cutout / sticker"
                   >
-                    <Plus className="h-3 w-3 mr-0.5" /> + Ảnh nổi
+                    <Plus className="h-3 w-3" aria-hidden />
+                    Ảnh
                   </Button>
                 </div>
               </div>
 
               {/* Layer Items */}
               <div className="space-y-1">
-                {activeLayers.map((l, idx) => {
+                {hasCallout && (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={calloutSelected}
+                    onClick={() => setSelectedLayerId(CALLOUT_ID)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") setSelectedLayerId(CALLOUT_ID);
+                    }}
+                    className={cn(
+                      "flex items-center justify-between gap-2 rounded px-2 py-1.5 text-xs transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-text/60",
+                      calloutSelected
+                        ? "bg-primary/15 text-primary-text"
+                        : "text-zinc-300 hover:bg-zinc-800/70"
+                    )}
+                  >
+                    <div className="flex min-w-0 flex-1 items-center gap-2">
+                      <Type className="h-3.5 w-3.5 shrink-0 text-primary-text" aria-hidden />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium">
+                          {activeScene.calloutText || activeScene.calloutTag}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">Callout 2 dòng · đầu khung</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="Xoá callout"
+                      title="Xoá callout"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSceneChange({ ...activeScene, calloutTag: "", calloutText: "" });
+                        patchScene({ calloutTag: "", calloutText: "" });
+                        setSelectedLayerId(null);
+                      }}
+                      className="rounded p-1 text-muted-foreground hover:bg-zinc-700/50 hover:text-red-400"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                )}
+                {activeLayers.map((l) => {
                   const isSelected = effectiveSelectedLayerId === l.id;
-                  const icon = l.type === "media" ? "🎬" : l.type === "text" ? "🔤" : "🖼️";
+                  const LayerIcon = l.type === "media" ? Film : l.type === "text" ? Type : ImageIcon;
+                  const iconTone =
+                    l.type === "media" ? "text-primary-text" : l.type === "text" ? "text-primary-text" : "text-primary-text";
+                  const rawName = l.name ? LEGACY_LAYER_NAMES[l.name] ?? l.name : "";
+                  // Text layers are easiest to recognise by what they say
                   const title =
-                    l.name ||
-                    (l.type === "media"
-                      ? "Media Nền"
-                      : l.type === "text"
-                        ? (l as TextLayer).text
-                        : "Ảnh nổi");
+                    l.type === "text"
+                      ? (l as TextLayer).text || rawName || "Chữ"
+                      : rawName || LAYER_TYPE_LABEL[l.type];
                   return (
                     <div
                       key={l.id}
                       onClick={() => setSelectedLayerId(l.id)}
                       className={cn(
-                        "flex items-center justify-between rounded p-1.5 text-[11px] transition-all cursor-pointer",
+                        "flex items-center justify-between gap-2 rounded px-2 py-1.5 text-xs transition-all cursor-pointer",
                         isSelected
-                          ? "bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/60 font-semibold"
-                          : "bg-zinc-800/50 text-zinc-300 hover:bg-zinc-800"
+                          ? "bg-primary/15 text-primary-text"
+                          : "text-zinc-300 hover:bg-zinc-800/70",
+                        l.visible === false && "opacity-60"
                       )}
                     >
                       <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <span className="text-xs">{icon}</span>
+                        <LayerIcon className={cn("h-3.5 w-3.5 shrink-0", iconTone)} aria-hidden />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium">{title}</p>
-                          <p className="truncate text-[9px] text-zinc-500">
-                            Layer #{idx + 1} • {l.type.toUpperCase()}
+                          <p className="truncate text-xs text-muted-foreground">
+                            {l.type === "text" && rawName && rawName !== "Chữ" ? rawName : LAYER_TYPE_LABEL[l.type]}
                           </p>
                         </div>
                       </div>
@@ -845,17 +941,18 @@ export function NleInspector({
                           onClick={() => toggleLayerVisible(l.id)}
                           className={cn(
                             "rounded p-1 transition-colors",
-                            l.visible !== false ? "text-zinc-400 hover:text-white" : "text-zinc-600"
+                            l.visible !== false ? "text-zinc-400 hover:text-white" : "text-muted-foreground"
                           )}
                           title={l.visible !== false ? "Ẩn layer" : "Hiện layer"}
+                          aria-label={l.visible !== false ? `Ẩn layer ${title}` : `Hiện layer ${title}`}
                         >
                           {l.visible !== false ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                         </button>
                         {activeLayers.length > 1 && (
-                          <button
+                          <button aria-label="Xóa layer này"
                             type="button"
                             onClick={() => deleteLayer(l.id)}
-                            className="rounded p-1 text-zinc-500 hover:text-red-400 hover:bg-zinc-700/50"
+                            className="rounded p-1 text-muted-foreground hover:text-red-400 hover:bg-zinc-700/50"
                             title="Xóa layer này"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -870,17 +967,17 @@ export function NleInspector({
 
             {/* 2. ACTIVE LAYER INSPECTOR (Media & Speed) */}
             {selectedLayer && selectedLayer.type === "media" && (
-            <div className="space-y-2 rounded-lg bg-[#17171d] p-2.5 border border-zinc-800/80">
+            <div className="space-y-2 rounded-lg bg-surface-3 p-2.5 border border-zinc-800/80">
               {/* ⚡ Video Speed & Auto-Fit Controller */}
               {media.isVideo && (
-                <div className="rounded-md border border-amber-500/25 bg-amber-500/5 p-2 space-y-1.5">
+                <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 font-semibold text-xs text-amber-300">
-                      <Zap className="h-3.5 w-3.5 text-amber-400" />
+                    <div className="flex items-center gap-1.5 font-semibold text-xs text-primary-text">
+                      <Zap className="h-3.5 w-3.5 text-primary-text" />
                       Tốc độ Video &amp; Auto-fit
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-medium text-zinc-300">
+                      <span className="text-xs font-medium text-zinc-300">
                         {autoFitSpeed ? "Tự động" : "Thủ công"}
                       </span>
                       <Switch
@@ -891,19 +988,19 @@ export function NleInspector({
                   </div>
 
                   {autoFitSpeed ? (
-                    <div className="flex items-center justify-between rounded bg-black/50 px-2 py-1 border border-amber-500/20 text-[10.5px] font-mono">
+                    <div className="flex items-center justify-between rounded bg-black/50 px-2 py-1 border border-primary/20 text-xs font-mono">
                       <span className="text-zinc-400">
                         Gốc {sourceDurSec.toFixed(1)}s → Cảnh {sceneDurSec.toFixed(1)}s
                       </span>
-                      <Badge className="bg-amber-400 text-black font-mono font-bold text-[10px] px-1.5 py-0 h-4">
+                      <Badge className="bg-primary/15 text-primary-text font-mono font-semibold text-xs px-1.5 py-0 h-4">
                         {effectivePlaybackRate.toFixed(2)}×
                       </Badge>
                     </div>
                   ) : (
-                    <div className="space-y-1.5 rounded bg-black/40 p-2 border border-zinc-800">
-                      <div className="flex items-center justify-between text-[11px]">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
                         <span className="text-zinc-400">Tốc độ tuỳ chỉnh:</span>
-                        <span className="font-mono font-bold text-amber-300">
+                        <span className="font-mono font-bold text-primary-text">
                           {manualSpeed.toFixed(2)}×
                         </span>
                       </div>
@@ -914,7 +1011,7 @@ export function NleInspector({
                         step={0.05}
                         value={manualSpeed}
                         onChange={(e) => applyCrop({ playbackRate: parseFloat(e.target.value) })}
-                        className="h-1.5 w-full accent-amber-400 cursor-pointer"
+                        className="h-1.5 w-full accent-primary cursor-pointer"
                       />
                       <div className="flex items-center gap-1 pt-0.5">
                         {[0.75, 1.0, 1.25, 1.43, 1.5, 2.0].map((spd) => (
@@ -923,9 +1020,9 @@ export function NleInspector({
                             type="button"
                             onClick={() => applyCrop({ playbackRate: spd })}
                             className={cn(
-                              "flex-1 rounded py-0.5 text-[10px] font-mono font-medium transition-colors",
+                              "flex-1 rounded py-0.5 text-xs font-mono font-medium transition-colors",
                               Math.abs(manualSpeed - spd) < 0.04
-                                ? "bg-amber-400 text-black font-bold"
+                                ? "bg-primary/15 text-primary-text font-semibold"
                                 : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
                             )}
                           >
@@ -971,9 +1068,9 @@ export function NleInspector({
                         });
                         toast.success("Đã bật Auto-Fit cho tất cả phân cảnh video!");
                       }}
-                      className="w-full h-6 text-[10px] bg-zinc-900 border-zinc-700 text-amber-300 hover:bg-zinc-800 hover:text-amber-200"
+                      className="w-full h-6 text-xs bg-zinc-900 border-zinc-700 text-primary-text hover:bg-zinc-800 hover:text-primary-text"
                     >
-                      <Zap className="h-2.5 w-2.5 mr-1 text-amber-400" />
+                      <Zap className="h-2.5 w-2.5 mr-1 text-primary-text" />
                       Đồng bộ Auto-fit cả {allScenes.length} cảnh
                     </Button>
                   )}
@@ -995,12 +1092,12 @@ export function NleInspector({
                   size="sm"
                   disabled={busy || generatingImg}
                   onClick={() => fileRef.current?.click()}
-                  className="h-7 gap-1.5 text-[11px]"
+                  className="h-7 gap-1.5 text-xs"
                 >
                   {busy ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
                   ) : (
-                    <Upload className="h-3 w-3 text-sky-400" />
+                    <Upload className="h-3 w-3 text-primary-text" />
                   )}
                   Đổi Video / Ảnh
                 </Button>
@@ -1009,7 +1106,7 @@ export function NleInspector({
                   size="sm"
                   disabled={generatingImg || busy}
                   onClick={handleGenerateAI}
-                  className="h-7 gap-1.5 text-[11px]"
+                  className="h-7 gap-1.5 text-xs"
                 >
                   {generatingImg ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
@@ -1026,20 +1123,20 @@ export function NleInspector({
             {selectedLayer && selectedLayer.type === "text" && (() => {
               const textLayer = selectedLayer as TextLayer;
               return (
-                <div className="space-y-3 rounded-lg bg-[#17171d] p-3 border border-zinc-800">
+                <div className="space-y-3 rounded-lg bg-surface-3 p-3 border border-zinc-800">
                   <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
                     <span className="flex items-center gap-1.5 font-semibold text-zinc-200">
-                      <Type className="h-3.5 w-3.5 text-amber-400" />
+                      <Type className="h-3.5 w-3.5 text-primary-text" />
                       Cài đặt Chữ & Nhãn Điểm Nhấn
                     </span>
-                    <span className="text-[10px] text-zinc-400 font-mono bg-zinc-800 px-1.5 py-0.5 rounded">
+                    <span className="text-xs text-zinc-400 font-mono bg-zinc-800 px-1.5 py-0.5 rounded">
                       {textLayer.stylePreset || "headline_box"}
                     </span>
                   </div>
 
                   {/* Preset Style */}
                   <div className="space-y-1">
-                    <Label className="text-[11px] text-zinc-400">Kiểu hiển thị</Label>
+                    <Label className="text-xs text-zinc-400">Kiểu hiển thị</Label>
                     <div className="grid grid-cols-3 gap-1">
                       {[
                         { id: "headline_box", label: "Tiêu đề hộp", icon: "🏷️" },
@@ -1053,13 +1150,12 @@ export function NleInspector({
                           type="button"
                           onClick={() => updateLayer(textLayer.id, { stylePreset: st.id as any })}
                           className={cn(
-                            "flex items-center justify-center gap-1 rounded py-1 px-1.5 text-[10px] transition-all",
+                            "flex items-center justify-center gap-1 rounded py-1 px-1.5 text-xs transition-all",
                             (textLayer.stylePreset || "headline_box") === st.id
-                              ? "bg-amber-500/20 text-amber-300 ring-1 ring-amber-400 font-semibold"
+                              ? "bg-primary/20 text-primary-text ring-1 ring-primary-text/60 font-semibold"
                               : "bg-zinc-800/60 text-zinc-400 hover:text-white"
                           )}
                         >
-                          <span>{st.icon}</span>
                           <span>{st.label}</span>
                         </button>
                       ))}
@@ -1068,7 +1164,7 @@ export function NleInspector({
 
                   {/* Main Text */}
                   <div className="space-y-1">
-                    <Label className="text-[11px] text-zinc-400">Nội dung chữ chính</Label>
+                    <Label className="text-xs text-zinc-400">Nội dung chữ chính</Label>
                     <Input
                       value={textLayer.text}
                       onChange={(e) => updateLayer(textLayer.id, { text: e.target.value })}
@@ -1079,7 +1175,7 @@ export function NleInspector({
 
                   {/* Subtitle / Description */}
                   <div className="space-y-1">
-                    <Label className="text-[11px] text-zinc-400">Phụ đề / Tên nhân vật (tuỳ chọn)</Label>
+                    <Label className="text-xs text-zinc-400">Phụ đề / Tên nhân vật (tuỳ chọn)</Label>
                     <Input
                       value={textLayer.subtitle || ""}
                       onChange={(e) => updateLayer(textLayer.id, { subtitle: e.target.value })}
@@ -1090,7 +1186,7 @@ export function NleInspector({
 
                   {/* Color chips + Studio ColorPickerPopover (react-colorful) */}
                   <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400">
+                    <div className="flex items-center justify-between text-xs text-zinc-400">
                       <span>Màu chủ đạo</span>
                       <ColorPickerPopover
                         color={textLayer.color || "#FFD600"}
@@ -1117,9 +1213,9 @@ export function NleInspector({
                   {/* Position sliders */}
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <label className="block space-y-0.5">
-                      <div className="flex justify-between text-[10px] text-zinc-400">
+                      <div className="flex justify-between text-xs text-zinc-400">
                         <span>Vị trí X</span>
-                        <span className="font-mono text-amber-300">{textLayer.position?.x ?? 50}%</span>
+                        <span className="font-mono text-primary-text">{textLayer.position?.x ?? 50}%</span>
                       </div>
                       <input
                         type="range"
@@ -1131,13 +1227,13 @@ export function NleInspector({
                             position: { ...(textLayer.position || { x: 50, y: 50 }), x: Number(e.target.value) },
                           })
                         }
-                        className="h-1.5 w-full accent-amber-400 cursor-pointer"
+                        className="h-1.5 w-full accent-primary cursor-pointer"
                       />
                     </label>
                     <label className="block space-y-0.5">
-                      <div className="flex justify-between text-[10px] text-zinc-400">
+                      <div className="flex justify-between text-xs text-zinc-400">
                         <span>Vị trí Y</span>
-                        <span className="font-mono text-amber-300">{textLayer.position?.y ?? 75}%</span>
+                        <span className="font-mono text-primary-text">{textLayer.position?.y ?? 75}%</span>
                       </div>
                       <input
                         type="range"
@@ -1149,7 +1245,7 @@ export function NleInspector({
                             position: { ...(textLayer.position || { x: 50, y: 50 }), y: Number(e.target.value) },
                           })
                         }
-                        className="h-1.5 w-full accent-amber-400 cursor-pointer"
+                        className="h-1.5 w-full accent-primary cursor-pointer"
                       />
                     </label>
                   </div>
@@ -1157,12 +1253,12 @@ export function NleInspector({
                   {/* Animation & Font Size */}
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
-                      <Label className="text-[10px] text-zinc-400">Hiệu ứng xuất hiện</Label>
+                      <Label className="text-xs text-zinc-400">Hiệu ứng xuất hiện</Label>
                       <Select
                         value={textLayer.animation || "slide_up"}
                         onValueChange={(val) => updateLayer(textLayer.id, { animation: val as any })}
                       >
-                        <SelectTrigger className="h-7 text-[11px]">
+                        <SelectTrigger className="h-7 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1177,7 +1273,7 @@ export function NleInspector({
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="text-[10px] text-zinc-400">Cỡ chữ (Font size)</Label>
+                      <Label className="text-xs text-zinc-400">Cỡ chữ (Font size)</Label>
                       <div className="flex items-center gap-1.5 pt-1">
                         <input
                           type="range"
@@ -1185,9 +1281,9 @@ export function NleInspector({
                           max={64}
                           value={textLayer.fontSize || 36}
                           onChange={(e) => updateLayer(textLayer.id, { fontSize: Number(e.target.value) })}
-                          className="h-1.5 w-full accent-amber-400 cursor-pointer"
+                          className="h-1.5 w-full accent-primary cursor-pointer"
                         />
-                        <span className="font-mono text-[10px] text-zinc-400 w-7 text-right">
+                        <span className="font-mono text-xs text-zinc-400 w-7 text-right">
                           {textLayer.fontSize || 36}px
                         </span>
                       </div>
@@ -1201,13 +1297,13 @@ export function NleInspector({
             {selectedLayer && selectedLayer.type === "image" && (() => {
               const imgLayer = selectedLayer as ImageLayer;
               return (
-                <div className="space-y-3 rounded-lg bg-[#17171d] p-3 border border-zinc-800">
+                <div className="space-y-3 rounded-lg bg-surface-3 p-3 border border-zinc-800">
                   <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
                     <span className="flex items-center gap-1.5 font-semibold text-zinc-200">
-                      <Film className="h-3.5 w-3.5 text-sky-400" />
+                      <Film className="h-3.5 w-3.5 text-primary-text" />
                       Layer Ảnh Nổi / Cutout PNG
                     </span>
-                    <span className="text-[10px] text-zinc-400 font-mono bg-zinc-800 px-1.5 py-0.5 rounded">
+                    <span className="text-xs text-zinc-400 font-mono bg-zinc-800 px-1.5 py-0.5 rounded">
                       {imgLayer.name || "Ảnh nổi"}
                     </span>
                   </div>
@@ -1222,7 +1318,7 @@ export function NleInspector({
                           className="h-full w-full object-contain"
                         />
                       ) : (
-                        <span className="text-[10px] text-zinc-500">Chưa có ảnh</span>
+                        <span className="text-xs text-muted-foreground">Chưa có ảnh</span>
                       )}
                     </div>
                     <div className="flex-1 space-y-1.5">
@@ -1234,16 +1330,16 @@ export function NleInspector({
                           setUploadingLayerTargetId(imgLayer.id);
                           layerImgInputRef.current?.click();
                         }}
-                        className="h-7 w-full gap-1.5 text-[11px]"
+                        className="h-7 w-full gap-1.5 text-xs"
                       >
-                        <Upload className="h-3 w-3 text-sky-400" />
+                        <Upload className="h-3 w-3 text-primary-text" />
                         Đổi Ảnh Cutout / Logo
                       </Button>
                       <Input
                         value={imgLayer.imageUrl || ""}
                         onChange={(e) => updateLayer(imgLayer.id, { imageUrl: e.target.value })}
                         placeholder="Hoặc dán URL ảnh..."
-                        className="h-6 text-[10px]"
+                        className="h-6 text-xs"
                       />
                     </div>
                   </div>
@@ -1251,9 +1347,9 @@ export function NleInspector({
                   {/* Position sliders */}
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <label className="block space-y-0.5">
-                      <div className="flex justify-between text-[10px] text-zinc-400">
+                      <div className="flex justify-between text-xs text-zinc-400">
                         <span>Tọa độ X</span>
-                        <span className="font-mono text-sky-300">{imgLayer.position?.x ?? 50}%</span>
+                        <span className="font-mono text-primary-text">{imgLayer.position?.x ?? 50}%</span>
                       </div>
                       <input
                         type="range"
@@ -1265,13 +1361,13 @@ export function NleInspector({
                             position: { ...(imgLayer.position || { x: 50, y: 50 }), x: Number(e.target.value) },
                           })
                         }
-                        className="h-1.5 w-full accent-sky-400 cursor-pointer"
+                        className="h-1.5 w-full accent-primary cursor-pointer"
                       />
                     </label>
                     <label className="block space-y-0.5">
-                      <div className="flex justify-between text-[10px] text-zinc-400">
+                      <div className="flex justify-between text-xs text-zinc-400">
                         <span>Tọa độ Y</span>
-                        <span className="font-mono text-sky-300">{imgLayer.position?.y ?? 50}%</span>
+                        <span className="font-mono text-primary-text">{imgLayer.position?.y ?? 50}%</span>
                       </div>
                       <input
                         type="range"
@@ -1283,7 +1379,7 @@ export function NleInspector({
                             position: { ...(imgLayer.position || { x: 50, y: 50 }), y: Number(e.target.value) },
                           })
                         }
-                        className="h-1.5 w-full accent-sky-400 cursor-pointer"
+                        className="h-1.5 w-full accent-primary cursor-pointer"
                       />
                     </label>
                   </div>
@@ -1291,9 +1387,9 @@ export function NleInspector({
                   {/* Size slider & Animation */}
                   <div className="grid grid-cols-2 gap-2">
                     <label className="block space-y-0.5">
-                      <div className="flex justify-between text-[10px] text-zinc-400">
+                      <div className="flex justify-between text-xs text-zinc-400">
                         <span>Kích thước</span>
-                        <span className="font-mono text-sky-300">{imgLayer.size?.width ?? 40}%</span>
+                        <span className="font-mono text-primary-text">{imgLayer.size?.width ?? 40}%</span>
                       </div>
                       <input
                         type="range"
@@ -1305,17 +1401,17 @@ export function NleInspector({
                             size: { width: Number(e.target.value) },
                           })
                         }
-                        className="h-1.5 w-full accent-sky-400 cursor-pointer"
+                        className="h-1.5 w-full accent-primary cursor-pointer"
                       />
                     </label>
 
                     <div className="space-y-1">
-                      <Label className="text-[10px] text-zinc-400">Hiệu ứng xuất hiện</Label>
+                      <Label className="text-xs text-zinc-400">Hiệu ứng xuất hiện</Label>
                       <Select
                         value={imgLayer.animation || "pop_in"}
                         onValueChange={(val) => updateLayer(imgLayer.id, { animation: val as any })}
                       >
-                        <SelectTrigger className="h-7 text-[11px]">
+                        <SelectTrigger className="h-7 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1338,22 +1434,22 @@ export function NleInspector({
                         onCheckedChange={(checked) => updateLayer(imgLayer.id, { shadow: checked })}
                         id={`shadow-${imgLayer.id}`}
                       />
-                      <Label htmlFor={`shadow-${imgLayer.id}`} className="text-[11px] text-zinc-300 cursor-pointer">
+                      <Label htmlFor={`shadow-${imgLayer.id}`} className="text-xs text-zinc-300 cursor-pointer">
                         Đổ bóng nổi 3D
                       </Label>
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-zinc-400">Góc xoay</span>
+                      <span className="text-xs text-zinc-400">Góc xoay</span>
                       <input
                         type="range"
                         min={-30}
                         max={30}
                         value={imgLayer.rotation ?? 0}
                         onChange={(e) => updateLayer(imgLayer.id, { rotation: Number(e.target.value) })}
-                        className="h-1.5 w-16 accent-sky-400 cursor-pointer"
+                        className="h-1.5 w-16 accent-primary cursor-pointer"
                       />
-                      <span className="font-mono text-[10px] text-zinc-400 w-6 text-right">
+                      <span className="font-mono text-xs text-zinc-400 w-6 text-right">
                         {imgLayer.rotation ?? 0}°
                       </span>
                     </div>
@@ -1362,28 +1458,19 @@ export function NleInspector({
               );
             })()}
 
-            {/* Collapsible Accordion for Callout & Camera Motion (Radix Accordion) */}
-            <Accordion
-              type="multiple"
-              defaultValue={["callout", "camera"]}
-              className="rounded-lg border border-zinc-800/80 bg-[#17171d] overflow-hidden"
-            >
-              <AccordionItem value="callout">
-                <AccordionTrigger className="px-3 py-2">
-                  <span className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-200">
-                    <Type className="h-3.5 w-3.5 text-amber-400" />
-                    Chữ mô tả điểm nhấn (Callout 2 dòng)
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="space-y-2.5 px-3 pb-3 pt-1">
+            {/* 2b. CALLOUT INSPECTOR — chỉ hiện khi chọn callout trong danh sách Layer */}
+            {calloutSelected && (
+              <div className="space-y-2.5 rounded-lg border border-zinc-800/80 bg-surface-3 p-3">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200">
+                  <Type className="h-3.5 w-3.5 text-primary-text" aria-hidden />
+                  Callout 2 dòng
+                </div>
                   <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-zinc-400">Dòng 1: Nhãn tính năng (Thanh mảnh)</span>
-                      <span className="text-[9px] text-zinc-500 font-mono">weight 400</span>
-                    </div>
+                    <span className="text-xs text-zinc-400">Dòng 1 · Nhãn</span>
                     <Input
                       value={activeScene.calloutTag ?? ""}
-                      placeholder="Ví dụ: Thiết kế, Cơ chế, Dung tích..."
+                      placeholder="VD: Thiết kế, Dung tích…"
+                      aria-label="Callout dòng 1 (nhãn)"
                       className="h-7 text-xs bg-zinc-900 border-zinc-700"
                       onChange={(e) => onSceneChange({ ...activeScene, calloutTag: e.target.value })}
                       onBlur={(e) => patchScene({ calloutTag: e.target.value })}
@@ -1394,13 +1481,11 @@ export function NleInspector({
                   </div>
 
                   <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-zinc-400">Dòng 2: Ý chính nổi bật (Cực đậm)</span>
-                      <span className="text-[9px] text-amber-400/80 font-mono font-bold">weight 800</span>
-                    </div>
+                    <span className="text-xs text-zinc-400">Dòng 2 · Ý chính</span>
                     <Input
                       value={activeScene.calloutText ?? ""}
-                      placeholder="Ví dụ: vung nồi 2 lớp, Đạp chân & nút nhấn..."
+                      placeholder="VD: Đạp chân & nút nhấn…"
+                      aria-label="Callout dòng 2 (ý chính)"
                       className="h-8 text-xs font-bold bg-zinc-900 border-zinc-700 text-white"
                       onChange={(e) => onSceneChange({ ...activeScene, calloutText: e.target.value })}
                       onBlur={(e) => patchScene({ calloutText: e.target.value })}
@@ -1412,7 +1497,7 @@ export function NleInspector({
 
                   <div className="grid grid-cols-2 gap-2 pt-0.5">
                     <div className="space-y-1">
-                      <span className="text-[10px] text-zinc-400">Vị trí</span>
+                      <span className="text-xs text-zinc-400">Vị trí</span>
                       <Select
                         value={activeScene.calloutPosition || "top_center"}
                         disabled={busy}
@@ -1420,25 +1505,25 @@ export function NleInspector({
                           patchScene({ calloutPosition: val as "top_center" | "top_left" | "top_right" })
                         }
                       >
-                        <SelectTrigger className="h-7 text-[11px] bg-zinc-900 border-zinc-700">
+                        <SelectTrigger className="h-7 text-xs bg-zinc-900 border-zinc-700">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="top_center" className="text-xs">
-                            Đỉnh giữa (Center)
+                            Giữa
                           </SelectItem>
                           <SelectItem value="top_left" className="text-xs">
-                            Đỉnh trái (Left)
+                            Trái
                           </SelectItem>
                           <SelectItem value="top_right" className="text-xs">
-                            Đỉnh phải (Right)
+                            Phải
                           </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="space-y-1">
-                      <span className="text-[10px] text-zinc-400">Tone màu</span>
+                      <span className="text-xs text-zinc-400">Màu nền</span>
                       <Select
                         value={activeScene.calloutTheme || "dark"}
                         disabled={busy}
@@ -1446,37 +1531,43 @@ export function NleInspector({
                           patchScene({ calloutTheme: val as "dark" | "light" | "glass" })
                         }
                       >
-                        <SelectTrigger className="h-7 text-[11px] bg-zinc-900 border-zinc-700">
+                        <SelectTrigger className="h-7 text-xs bg-zinc-900 border-zinc-700">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="dark" className="text-xs">
-                            Đen than #1C1C1E (Chuẩn)
+                            Tối
                           </SelectItem>
                           <SelectItem value="light" className="text-xs">
-                            Trắng viền đổ bóng
+                            Sáng
                           </SelectItem>
                           <SelectItem value="glass" className="text-xs">
-                            Thẻ kính mờ (Glass)
+                            Kính mờ
                           </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
+              </div>
+            )}
 
+            {/* Collapsible Accordion for Camera Motion & Prompt (Radix Accordion) */}
+            <Accordion
+              type="multiple"
+              defaultValue={["camera"]}
+              className="rounded-lg border border-zinc-800/80 bg-surface-3 overflow-hidden"
+            >
               <AccordionItem value="camera">
                 <AccordionTrigger className="px-3 py-2">
-                  <span className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-200">
-                    <Camera className="h-3.5 w-3.5 text-sky-400" />
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200">
+                    <Camera className="h-3.5 w-3.5 text-primary-text" />
                     Chuyển động máy &amp; Chuyển cảnh
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="px-3 pb-3 pt-1">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
-                      <Label className="flex items-center gap-1 text-[11px] text-zinc-400">
+                      <Label className="flex items-center gap-1 text-xs text-zinc-400">
                         <Camera className="h-3 w-3" /> Chuyển động máy
                       </Label>
                       <Select
@@ -1486,7 +1577,7 @@ export function NleInspector({
                           patchScene({ cameraEffect: val as Scene["cameraEffect"] })
                         }
                       >
-                        <SelectTrigger className="h-7 text-[11px]">
+                        <SelectTrigger className="h-7 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1500,7 +1591,7 @@ export function NleInspector({
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="flex items-center gap-1 text-[11px] text-zinc-400">
+                      <Label className="flex items-center gap-1 text-xs text-zinc-400">
                         <Wand2 className="h-3 w-3" /> Chuyển cảnh
                       </Label>
                       <Select
@@ -1510,7 +1601,7 @@ export function NleInspector({
                           patchScene({ transition: val as Scene["transition"] })
                         }
                       >
-                        <SelectTrigger className="h-7 text-[11px]">
+                        <SelectTrigger className="h-7 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1528,14 +1619,14 @@ export function NleInspector({
 
               <AccordionItem value="prompt" className="border-b-0">
                 <AccordionTrigger className="px-3 py-2">
-                  <span className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-200">
-                    <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200">
+                    <Sparkles className="h-3.5 w-3.5 text-primary-text" />
                     Lời thoại &amp; Prompt AI của cảnh
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2.5 px-3 pb-3 pt-1">
                   <div className="space-y-1">
-                    <span className="text-[10px] text-zinc-400">Lời thoại hiển thị (Transcript)</span>
+                    <span className="text-xs text-zinc-400">Lời thoại hiển thị (Transcript)</span>
                     <textarea
                       rows={2}
                       value={activeScene.transcriptText ?? ""}
@@ -1544,13 +1635,13 @@ export function NleInspector({
                       }
                       onBlur={(e) => patchScene({ transcriptText: e.target.value })}
                       placeholder="Nhập lời thoại cho phân cảnh này..."
-                      className="w-full rounded border border-zinc-700/80 bg-zinc-900 p-2 text-xs leading-relaxed text-zinc-200 focus:border-amber-400 focus:outline-none"
+                      className="w-full rounded border border-zinc-700/80 bg-zinc-900 p-2 text-xs leading-relaxed text-zinc-200 focus:border-primary/60 focus:outline-none"
                     />
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-zinc-400">Prompt tạo ảnh / video AI</span>
+                      <span className="text-xs text-zinc-400">Prompt tạo ảnh / video AI</span>
                       <button
                         type="button"
                         onClick={() => {
@@ -1558,7 +1649,7 @@ export function NleInspector({
                           navigator.clipboard.writeText(prompt);
                           toast.success("Đã sao chép Prompt AI vào clipboard!");
                         }}
-                        className="flex items-center gap-1 rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] text-amber-300 hover:bg-zinc-700"
+                        className="flex items-center gap-1 rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-primary-text hover:bg-zinc-700"
                       >
                         <Copy className="h-2.5 w-2.5" />
                         Copy
@@ -1572,7 +1663,7 @@ export function NleInspector({
                         patchScene({ imagePrompt: e.target.value });
                       }}
                       placeholder="Mô tả bối cảnh, góc máy và chuyển động cho AI..."
-                      className="w-full rounded border border-zinc-700/80 bg-zinc-950 p-2 font-mono text-[10.5px] leading-relaxed text-zinc-200 focus:border-amber-400 focus:outline-none"
+                      className="w-full rounded border border-zinc-700/80 bg-zinc-950 p-2 font-mono text-xs leading-relaxed text-zinc-200 focus:border-primary/60 focus:outline-none"
                     />
                   </div>
                 </AccordionContent>
@@ -1592,7 +1683,7 @@ export function NleInspector({
                     setTab("broadcast_stripes");
                     onBroadcastChange((c) => ({ ...c, templateId: "broadcast_stripes" }));
                   }}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-amber-500 py-1 text-[11px] font-bold text-black shadow-sm"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-primary py-1 text-xs font-bold text-primary-foreground shadow-sm"
                 >
                   <Tv className="h-3.5 w-3.5" />
                   Bản tin Đồ họa
@@ -1603,21 +1694,21 @@ export function NleInspector({
                     setTab("vtv_news_template");
                     onBroadcastChange((c) => ({ ...c, templateId: "vtv_news_template" }));
                   }}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md py-1 text-[11px] font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md py-1 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
                 >
-                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                  <Sparkles className="h-3.5 w-3.5 text-primary-text" />
                   VTV News Reel
                 </button>
               </div>
 
               {/* 1. Tông màu nền đồ họa kẻ sọc */}
-              <div className="space-y-1.5 rounded-lg bg-zinc-900/60 p-2.5">
+              <div className="space-y-1.5 border-t border-zinc-800/80 pt-2.5">
                 <div className="flex items-center justify-between">
-                  <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                    <Palette className="h-3.5 w-3.5 text-sky-400" />
+                  <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                    <Palette className="h-3.5 w-3.5 text-primary-text" />
                     Tông màu nền kẻ sọc
                   </Label>
-                  <span className="text-[10px] text-zinc-500">Stripe Graphic Theme</span>
+                  <span className="text-xs text-muted-foreground">Stripe Graphic Theme</span>
                 </div>
                 <div className="grid grid-cols-2 gap-1.5 pt-1">
                   <Button
@@ -1625,7 +1716,7 @@ export function NleInspector({
                     variant={broadcastConfig.backgroundTheme === "navy" ? "default" : "outline"}
                     size="sm"
                     onClick={() => onThemeChange?.("navy")}
-                    className="h-8 gap-1.5 text-[11px]"
+                    className="h-8 gap-1.5 text-xs"
                   >
                     <span className="h-2.5 w-2.5 rounded-full bg-[#0A1C3E] border border-white/40" />
                     Xanh Navy Thể thao
@@ -1635,7 +1726,7 @@ export function NleInspector({
                     variant={broadcastConfig.backgroundTheme === "crimson" ? "default" : "outline"}
                     size="sm"
                     onClick={() => onThemeChange?.("crimson")}
-                    className="h-8 gap-1.5 text-[11px]"
+                    className="h-8 gap-1.5 text-xs"
                   >
                     <span className="h-2.5 w-2.5 rounded-full bg-[#BA0C2F] border border-white/40" />
                     Đỏ Crimson Sôi động
@@ -1645,8 +1736,8 @@ export function NleInspector({
 
               {/* 2. Khung hình & Viền B-Roll */}
               <div className="space-y-2 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Crop className="h-3.5 w-3.5 text-amber-400" />
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Crop className="h-3.5 w-3.5 text-primary-text" />
                   Khung hình B-Roll & Viền
                 </Label>
                 <div className="grid grid-cols-4 gap-1">
@@ -1666,7 +1757,7 @@ export function NleInspector({
                           mediaAspectRatio: opt.value,
                         }))
                       }
-                      className="h-7 px-1 text-[11px]"
+                      className="h-7 px-1 text-xs"
                     >
                       {opt.value}
                     </Button>
@@ -1684,7 +1775,7 @@ export function NleInspector({
                 </div>
 
                 {broadcastConfig.showFrameBorders && (
-                  <div className="flex items-center justify-between pt-1 text-[11px] text-zinc-400">
+                  <div className="flex items-center justify-between pt-1 text-xs text-zinc-400">
                     <span>Màu viền khung</span>
                     <ColorPickerPopover
                       color={broadcastConfig.frameBorderColor || "#FFFFFF"}
@@ -1702,13 +1793,13 @@ export function NleInspector({
 
               {/* 3. Tiêu đề & Chuyên mục */}
               <div className="space-y-2 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Type className="h-3.5 w-3.5 text-amber-400" />
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Type className="h-3.5 w-3.5 text-primary-text" />
                   Tiêu đề & Chuyên mục
                 </Label>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
-                    <Label className="text-[10px] text-zinc-400">Chuyên mục</Label>
+                    <Label className="text-xs text-zinc-400">Chuyên mục</Label>
                     <Input
                       value={broadcastConfig.categoryText}
                       onChange={(e) =>
@@ -1722,7 +1813,7 @@ export function NleInspector({
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] text-zinc-400">Ngày phát sóng</Label>
+                    <Label className="text-xs text-zinc-400">Ngày phát sóng</Label>
                     <Input
                       value={broadcastConfig.dateText}
                       onChange={(e) =>
@@ -1735,7 +1826,7 @@ export function NleInspector({
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-[10px] text-zinc-400">Tiêu đề Dòng 1</Label>
+                  <Label className="text-xs text-zinc-400">Tiêu đề Dòng 1</Label>
                   <Input
                     value={broadcastConfig.headlines[0] ?? ""}
                     onChange={(e) =>
@@ -1750,7 +1841,7 @@ export function NleInspector({
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-[10px] text-zinc-400">Tiêu đề Dòng 2</Label>
+                  <Label className="text-xs text-zinc-400">Tiêu đề Dòng 2</Label>
                   <Input
                     value={broadcastConfig.headlines[1] ?? ""}
                     onChange={(e) =>
@@ -1764,7 +1855,7 @@ export function NleInspector({
                   />
                 </div>
 
-                <div className="flex items-center justify-between pt-1 text-[11px] text-zinc-400">
+                <div className="flex items-center justify-between pt-1 text-xs text-zinc-400">
                   <span>Cỡ chữ tiêu đề</span>
                   <div className="flex items-center gap-1">
                     {[36, 44, 50].map((sz) => (
@@ -1778,9 +1869,9 @@ export function NleInspector({
                           }))
                         }
                         className={cn(
-                          "rounded px-2 py-0.5 text-[10px] font-mono",
+                          "rounded px-2 py-0.5 text-xs font-mono",
                           (broadcastConfig.headlineFontSize || 44) === sz
-                            ? "bg-amber-400 text-black font-bold"
+                            ? "bg-primary/15 text-primary-text font-semibold"
                             : "bg-zinc-800 text-zinc-400 hover:text-white"
                         )}
                       >
@@ -1794,8 +1885,8 @@ export function NleInspector({
               {/* 4. Thanh Ticker Tin Tức (Social & News Ticker) */}
               <div className="space-y-2 rounded-lg bg-zinc-900/60 p-2.5">
                 <div className="flex items-center justify-between">
-                  <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                    <Film className="h-3.5 w-3.5 text-sky-400" />
+                  <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                    <Film className="h-3.5 w-3.5 text-primary-text" />
                     Thanh Ticker Tin Tức Dưới Cùng
                   </Label>
                   <Switch
@@ -1809,7 +1900,7 @@ export function NleInspector({
                 {broadcastConfig.showTicker && (
                   <div className="space-y-2 pt-1">
                     <div className="space-y-1">
-                      <Label className="text-[10px] text-zinc-400">Nhãn Ticker Chính (Xanh)</Label>
+                      <Label className="text-xs text-zinc-400">Nhãn Ticker Chính (Xanh)</Label>
                       <Input
                         value={broadcastConfig.tickerText}
                         onChange={(e) =>
@@ -1820,7 +1911,7 @@ export function NleInspector({
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-[10px] text-zinc-400">Dòng Ticker Social Mạng Xã Hội</Label>
+                      <Label className="text-xs text-zinc-400">Dòng Ticker Social Mạng Xã Hội</Label>
                       <Input
                         value={broadcastConfig.tickerSocialText || ""}
                         onChange={(e) =>
@@ -1836,12 +1927,12 @@ export function NleInspector({
 
               {/* 5. Watermark Thương Hiệu */}
               <div className="space-y-2 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Layers className="h-3.5 w-3.5 text-amber-400" />
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Layers className="h-3.5 w-3.5 text-primary-text" />
                   Watermark & Thương hiệu
                 </Label>
                 <div className="space-y-1">
-                  <Label className="text-[10px] text-zinc-400">Chữ Watermark góc dưới</Label>
+                  <Label className="text-xs text-zinc-400">Chữ Watermark góc dưới</Label>
                   <Input
                     value={broadcastConfig.watermarkText || ""}
                     onChange={(e) =>
@@ -1854,12 +1945,12 @@ export function NleInspector({
               </div>
 
               {/* 6. Phụ đề & Âm thanh */}
-              <div className="space-y-1.5 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Volume2 className="h-3.5 w-3.5 text-emerald-400" />
+              <div className="space-y-1.5 border-t border-zinc-800/80 pt-2.5">
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Volume2 className="h-3.5 w-3.5 text-primary-text" />
                   Phụ đề & Hiệu ứng âm thanh
                 </Label>
-                <div className="flex items-center justify-between rounded bg-[#17171d] px-2.5 py-1.5">
+                <div className="flex items-center justify-between rounded bg-surface-3 px-2.5 py-1.5">
                   <span className="text-zinc-300">Live Karaoke Pill (Chữ trực tiếp)</span>
                   <Switch
                     checked={broadcastConfig.showCaptions}
@@ -1868,7 +1959,7 @@ export function NleInspector({
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between rounded bg-[#17171d] px-2.5 py-1.5">
+                <div className="flex items-center justify-between rounded bg-surface-3 px-2.5 py-1.5">
                   <span className="text-zinc-300">Âm thanh chuyển cảnh (SFX Whoosh)</span>
                   <Switch
                     checked={broadcastConfig.enableTransitionSfx}
@@ -1877,7 +1968,7 @@ export function NleInspector({
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between rounded bg-[#17171d] px-2.5 py-1.5">
+                <div className="flex items-center justify-between rounded bg-surface-3 px-2.5 py-1.5">
                   <span className="text-zinc-300">Chớp trắng khi sang cảnh mới</span>
                   <Switch
                     checked={broadcastConfig.enableFlashOnTransition}
@@ -1889,7 +1980,7 @@ export function NleInspector({
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between pt-1 text-[11px] text-zinc-400">
+                <div className="flex items-center justify-between pt-1 text-xs text-zinc-400">
                   <span>Âm lượng nhạc nền BGM</span>
                   <div className="flex items-center gap-1">
                     {[0.1, 0.14, 0.25, 0.35].map((vol) => (
@@ -1900,9 +1991,9 @@ export function NleInspector({
                           onBroadcastChange((c) => ({ ...c, bgmVolume: vol }))
                         }
                         className={cn(
-                          "rounded px-1.5 py-0.5 font-mono text-[10px]",
+                          "rounded px-1.5 py-0.5 font-mono text-xs",
                           (broadcastConfig.bgmVolume ?? 0.14) === vol
-                            ? "bg-amber-400 text-black font-bold"
+                            ? "bg-primary/15 text-primary-text font-semibold"
                             : "bg-zinc-800 text-zinc-400 hover:text-white"
                         )}
                       >
@@ -1927,7 +2018,7 @@ export function NleInspector({
                     setTab("broadcast_stripes");
                     onBroadcastChange((c) => ({ ...c, templateId: "broadcast_stripes" }));
                   }}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md py-1 text-[11px] font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md py-1 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
                 >
                   <Tv className="h-3.5 w-3.5" />
                   Bản tin Đồ họa
@@ -1938,7 +2029,7 @@ export function NleInspector({
                     setTab("vtv_news_template");
                     onBroadcastChange((c) => ({ ...c, templateId: "vtv_news_template" }));
                   }}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-amber-500 py-1 text-[11px] font-bold text-black shadow-sm"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-primary py-1 text-xs font-bold text-primary-foreground shadow-sm"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   VTV News Reel
@@ -1948,15 +2039,15 @@ export function NleInspector({
               {/* 1. Video Nền Động (Background Loop) */}
               <div className="space-y-2 rounded-lg bg-zinc-900/60 p-2.5">
                 <div className="flex items-center justify-between">
-                  <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                    <Film className="h-3.5 w-3.5 text-amber-400" />
+                  <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                    <Film className="h-3.5 w-3.5 text-primary-text" />
                     Video Nền Động (Background Loop)
                   </Label>
                   <button
                     type="button"
                     onClick={() => bgVideoInputRef.current?.click()}
                     disabled={uploadingBgVideo}
-                    className="flex items-center gap-1 text-[10px] text-amber-400 hover:text-amber-300 hover:underline"
+                    className="flex items-center gap-1 text-xs text-primary-text hover:text-primary-text hover:underline"
                   >
                     {uploadingBgVideo ? (
                       <>
@@ -1999,16 +2090,15 @@ export function NleInspector({
                           }))
                         }
                         className={cn(
-                          "flex items-center gap-1.5 rounded-md p-1.5 text-left text-[11px] transition-all",
+                          "flex items-center gap-1.5 rounded-md p-1.5 text-left text-xs transition-all",
                           isSelected
-                            ? "bg-amber-500/15 text-amber-300 ring-1 ring-amber-500/50 font-semibold"
+                            ? "bg-primary/15 text-primary-text ring-1 ring-primary-text/50 font-semibold"
                             : "bg-zinc-800/60 text-zinc-300 hover:bg-zinc-800"
                         )}
                       >
-                        <span className="text-sm">{bg.icon}</span>
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium">{bg.title}</p>
-                          <p className="truncate text-[9px] text-zinc-500">{bg.desc}</p>
+                          <p className="truncate text-xs text-muted-foreground">{bg.desc}</p>
                         </div>
                       </button>
                     );
@@ -2017,7 +2107,7 @@ export function NleInspector({
 
                 {/* Opacity Control */}
                 {broadcastConfig.backgroundVideoUrl !== "none" && (
-                  <div className="flex items-center justify-between pt-1 text-[11px] text-zinc-400">
+                  <div className="flex items-center justify-between pt-1 text-xs text-zinc-400">
                     <span>Độ mờ video nền</span>
                     <div className="flex items-center gap-1">
                       {[1.0, 0.75, 0.5, 0.3].map((op) => (
@@ -2031,9 +2121,9 @@ export function NleInspector({
                             }))
                           }
                           className={cn(
-                            "rounded px-1.5 py-0.5 font-mono text-[10px]",
+                            "rounded px-1.5 py-0.5 font-mono text-xs",
                             (broadcastConfig.backgroundVideoOpacity ?? 1.0) === op
-                              ? "bg-amber-400 text-black font-bold"
+                              ? "bg-primary/15 text-primary-text font-semibold"
                               : "bg-zinc-800 text-zinc-400 hover:text-white"
                           )}
                         >
@@ -2046,9 +2136,9 @@ export function NleInspector({
               </div>
 
               {/* 2. Phong cách Khung Card (Liquid Glass Style) */}
-              <div className="space-y-1.5 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <div className="space-y-1.5 border-t border-zinc-800/80 pt-2.5">
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Sparkles className="h-3.5 w-3.5 text-primary-text" />
                   Phong cách Khung Card Tin Tức
                 </Label>
                 <div className="grid grid-cols-3 gap-1 pt-1">
@@ -2068,7 +2158,7 @@ export function NleInspector({
                           cardStyle: style,
                         }))
                       }
-                      className="h-7 px-1 text-[10px]"
+                      className="h-7 px-1 text-xs"
                     >
                       {style === "liquid_glass"
                         ? "Liquid Glass"
@@ -2081,9 +2171,9 @@ export function NleInspector({
               </div>
 
               {/* 3. Khung hình B-Roll VTV (16:9 hoặc 1:1) */}
-              <div className="space-y-1.5 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Crop className="h-3.5 w-3.5 text-sky-400" />
+              <div className="space-y-1.5 border-t border-zinc-800/80 pt-2.5">
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Crop className="h-3.5 w-3.5 text-primary-text" />
                   Khung hình B-Roll (Chuẩn VTV Reel)
                 </Label>
                 <div className="grid grid-cols-2 gap-1.5 pt-1">
@@ -2106,7 +2196,7 @@ export function NleInspector({
                           mediaAspectRatio: opt.value as MediaAspectRatio,
                         }))
                       }
-                      className="h-7 text-[11px]"
+                      className="h-7 text-xs"
                     >
                       {opt.label}
                     </Button>
@@ -2116,12 +2206,12 @@ export function NleInspector({
 
               {/* 4. Tag & Hashtags */}
               <div className="space-y-2 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Hash className="h-3.5 w-3.5 text-amber-400" />
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Hash className="h-3.5 w-3.5 text-primary-text" />
                   Tag Chủ đề & Hashtags
                 </Label>
                 <div className="space-y-1">
-                  <Label className="text-[10px] text-zinc-400">Tag Chủ đề góc trên</Label>
+                  <Label className="text-xs text-zinc-400">Tag Chủ đề góc trên</Label>
                   <Input
                     value={broadcastConfig.categoryText}
                     onChange={(e) =>
@@ -2136,7 +2226,7 @@ export function NleInspector({
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-[10px] text-zinc-400">Danh sách Hashtags</Label>
+                  <Label className="text-xs text-zinc-400">Danh sách Hashtags</Label>
                   <Input
                     value={(broadcastConfig.hashtags || []).join(" ")}
                     onChange={(e) => {
@@ -2148,7 +2238,7 @@ export function NleInspector({
                       onBroadcastChange((c) => ({ ...c, hashtags: tags }));
                     }}
                     placeholder="#NGUOIDABONG #VTVTHETHAO #NGOAIHANGANH"
-                    className="h-7 text-xs font-mono text-amber-300"
+                    className="h-7 text-xs font-mono text-primary-text"
                   />
                   <div className="flex flex-wrap gap-1 pt-1">
                     {["#NGƯỜIDÁBÓNG", "#VTVTHETHAO", "#NGOAIHANGANH", "#TINNONGBONGDA"].map((tag) => (
@@ -2164,7 +2254,7 @@ export function NleInspector({
                             }));
                           }
                         }}
-                        className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-[9px] text-zinc-400 hover:bg-zinc-700 hover:text-amber-300"
+                        className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-xs text-zinc-400 hover:bg-zinc-700 hover:text-primary-text"
                       >
                         + {tag}
                       </button>
@@ -2175,12 +2265,12 @@ export function NleInspector({
 
               {/* 5. Tiêu đề Editorial Báo chí */}
               <div className="space-y-2 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Type className="h-3.5 w-3.5 text-amber-400" />
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Type className="h-3.5 w-3.5 text-primary-text" />
                   Tiêu đề Báo chí Editorial
                 </Label>
                 <div className="space-y-1">
-                  <Label className="text-[10px] text-zinc-400">Tiêu đề Dòng 1 (Từ khóa tự động tô màu)</Label>
+                  <Label className="text-xs text-zinc-400">Tiêu đề Dòng 1 (Từ khóa tự động tô màu)</Label>
                   <Input
                     value={broadcastConfig.headlines[0] ?? ""}
                     onChange={(e) =>
@@ -2195,7 +2285,7 @@ export function NleInspector({
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-[10px] text-zinc-400">Tiêu đề Dòng 2</Label>
+                  <Label className="text-xs text-zinc-400">Tiêu đề Dòng 2</Label>
                   <Input
                     value={broadcastConfig.headlines[1] ?? ""}
                     onChange={(e) =>
@@ -2210,7 +2300,7 @@ export function NleInspector({
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-[10px] text-zinc-400">Nguồn tin tức / Ngày tháng</Label>
+                  <Label className="text-xs text-zinc-400">Nguồn tin tức / Ngày tháng</Label>
                   <Input
                     value={broadcastConfig.dateText}
                     onChange={(e) =>
@@ -2224,12 +2314,12 @@ export function NleInspector({
 
               {/* 6. Logo Kênh / Watermark */}
               <div className="space-y-2 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Layers className="h-3.5 w-3.5 text-amber-400" />
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Layers className="h-3.5 w-3.5 text-primary-text" />
                   Logo Kênh Watermark
                 </Label>
                 <div className="space-y-1">
-                  <Label className="text-[10px] text-zinc-400">Đường dẫn Logo Kênh</Label>
+                  <Label className="text-xs text-zinc-400">Đường dẫn Logo Kênh</Label>
                   <Input
                     value={broadcastConfig.watermarkLogoUrl || ""}
                     onChange={(e) =>
@@ -2242,12 +2332,12 @@ export function NleInspector({
               </div>
 
               {/* 7. Phụ đề Karaoke & Âm thanh */}
-              <div className="space-y-1.5 rounded-lg bg-zinc-900/60 p-2.5">
-                <Label className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300">
-                  <Volume2 className="h-3.5 w-3.5 text-emerald-400" />
+              <div className="space-y-1.5 border-t border-zinc-800/80 pt-2.5">
+                <Label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-300">
+                  <Volume2 className="h-3.5 w-3.5 text-primary-text" />
                   Phụ đề Karaoke & Âm thanh
                 </Label>
-                <div className="flex items-center justify-between rounded bg-[#17171d] px-2.5 py-1.5">
+                <div className="flex items-center justify-between rounded bg-surface-3 px-2.5 py-1.5">
                   <span className="text-zinc-300">Phụ đề Karaoke từng từ (Word-by-word)</span>
                   <Switch
                     checked={broadcastConfig.showCaptions}
@@ -2256,7 +2346,7 @@ export function NleInspector({
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between pt-1 text-[11px] text-zinc-400">
+                <div className="flex items-center justify-between pt-1 text-xs text-zinc-400">
                   <span>Âm lượng nhạc nền BGM</span>
                   <div className="flex items-center gap-1">
                     {[0.1, 0.16, 0.25, 0.35].map((vol) => (
@@ -2267,9 +2357,9 @@ export function NleInspector({
                           onBroadcastChange((c) => ({ ...c, bgmVolume: vol }))
                         }
                         className={cn(
-                          "rounded px-1.5 py-0.5 font-mono text-[10px]",
+                          "rounded px-1.5 py-0.5 font-mono text-xs",
                           (broadcastConfig.bgmVolume ?? 0.16) === vol
-                            ? "bg-amber-400 text-black font-bold"
+                            ? "bg-primary/15 text-primary-text font-semibold"
                             : "bg-zinc-800 text-zinc-400 hover:text-white"
                         )}
                       >
